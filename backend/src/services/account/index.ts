@@ -1,1 +1,0 @@
-export { service as loginService, validation as loginValidation } from "./login";

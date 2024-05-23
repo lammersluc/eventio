@@ -1,0 +1,90 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  username       String         @unique
+  email          String         @unique
+  password       String
+  created_at     DateTime       @default(now())
+  totp_seed      String?
+  wallets        Wallet[]
+  event_managers EventManager[]
+  tickets        Ticket[]
+}
+
+model Wallet {
+  id                    Int           @id @default(autoincrement())
+  user                  User          @relation(fields: [user_id], references: [id])
+  user_id               Int
+  event                 Event         @relation(fields: [event_id], references: [id])
+  event_id              Int
+  coins                 Int
+  transactions_sender   Transaction[] @relation("Sender")
+  transactions_receiver Transaction[] @relation("Receiver")
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  sender      Wallet   @relation("Sender", fields: [sender_id], references: [id])
+  sender_id   Int
+  receiver    Wallet   @relation("Receiver", fields: [receiver_id], references: [id])
+  receiver_id Int
+  created_at  DateTime
+  amount      Int
+}
+
+model EventManager {
+  id       Int   @id @default(autoincrement())
+  user     User  @relation(fields: [user_id], references: [id])
+  user_id  Int
+  event    Event @relation(fields: [event_id], references: [id])
+  event_id Int
+}
+
+model Ticket {
+  id               Int          @id @default(autoincrement())
+  ticket_option    TicketOption @relation(fields: [ticket_option_id], references: [id])
+  ticket_option_id Int
+  user             User         @relation(fields: [user_id], references: [id])
+  user_id          Int
+  purchased_at     DateTime
+}
+
+model TicketOption {
+  id            Int       @id @default(autoincrement())
+  event_date    EventDate @relation(fields: [event_date_id], references: [id])
+  event_date_id Int
+  name          String
+  price         Float
+  amount        Int
+  Ticket        Ticket[]
+}
+
+model EventDate {
+  id           Int            @id @default(autoincrement())
+  event        Event          @relation(fields: [event_id], references: [id])
+  event_id     Int
+  valid_from   DateTime
+  valid_until  DateTime
+  total_max    Int
+  user_max     Int
+  TicketOption TicketOption[]
+}
+
+model Event {
+  id           Int            @id @default(autoincrement())
+  name         String
+  location     String
+  start_at     DateTime
+  end_at       DateTime
+  event_dates  EventDate[]
+  wallets      Wallet[]
+  EventManager EventManager[]
+}

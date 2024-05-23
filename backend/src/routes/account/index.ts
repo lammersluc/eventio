@@ -1,6 +1,6 @@
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 
-import { loginService , loginValidation} from "@/services/account";
+import meRouter from "./me";
 
 export default new Elysia({ prefix: "/account" })
-    .post('/login', loginService, loginValidation)
+    .use(meRouter)
