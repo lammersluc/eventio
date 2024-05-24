@@ -2,13 +2,9 @@ import { Elysia } from "elysia";
 
 import loginRouter from "./login";
 import registerRouter from "./register";
-import jwt from "@elysiajs/jwt";
+import refreshRouter from "./refresh";
 
-export default new Elysia({ prefix: "/auth" })
+export default new Elysia({ prefix: "/auth", detail: { tags: ['Auth'] } })
     .use(loginRouter)
     .use(registerRouter)
-    .use(jwt({
-        name: 'jwt',
-        secret: process.env.JWT_SECRET!,
-        exp: process.env.JWT_EXP
-    }))
+    .use(refreshRouter)

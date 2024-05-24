@@ -1,40 +1,36 @@
 import { Elysia, t } from 'elysia'
 import { PrismaClient } from '@prisma/client';
-import jwt from '@elysiajs/jwt';
+
+import { generateTokens } from '@/services/tokens';
 
 export default new Elysia({ prefix: '/register' })
-    .use(jwt({
-        name: 'jwt',
-        secret: process.env.JWT_SECRET!,
-        exp: process.env.JWT_EXP
-    }))
-    .post('/', async ({ body, set, jwt }) => {
-
-        const emailRegex = /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()[\]\\.,;:\s@']+)*)|.('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-
-        if (
-            !emailRegex.test(body.email) ||
-            !passwordRegex.test(body.password)
-        ) {
-            set.status = 400;
-            return;
-        }
-
+    .post('/', async ({ body, set }) => {
         const prisma = new PrismaClient();
 
-        let username = body.email.split('@')[0].toLowerCase().replace(/[^a-z]/g, '');
-        const count = await prisma.user.count({
-            where: {
-                username: { startsWith: username }
-            }
-        });
+        const username = body.email.split('@')[0].toLowerCase().replace(/[^a-z]/g, '');
+        let newUsername = username;
 
-        username += count ? count : '';
+        let count = 1;
+        let range = 100;
+        let userExists = true;
+
+        while (userExists) {
+            const digits = Math.floor(range + (Math.random() * range * 9));
+            newUsername = username + digits;
+
+            userExists = await prisma.user.findUnique({
+                where: {
+                    username: newUsername
+                }
+            }) ? true : false;
+
+            if (count % 10 === 0) range *= 10;
+            count++;
+        }
 
         const user = await prisma.user.create({
             data: {
-                username,
+                username: newUsername,
                 email: body.email,
                 password: await Bun.password.hash(body.password)
             }
@@ -45,16 +41,17 @@ export default new Elysia({ prefix: '/register' })
             return;
         }
     
-        set.headers['Authorization'] = await jwt.sign({ id: user.id });
+        return generateTokens(user.id);
     }, {
         body: t.Object({
-            email: t.String(),
-            password: t.String()
+            email: t.String({ pattern: "^(([^<>()[\]\\.,;:\s@']+(\.[^<>()[\]\\.,;:\s@']+)*)|.('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$", default: ''}),
+            password: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', default: ''})
         }),
         response: {
-            200: t.Void(),
-            400: t.Void(),
+            200: t.Object({
+                accessToken: t.String(),
+                refreshToken: t.String()
+            }),
             409: t.Void()
         }
-    }
-)
+    })

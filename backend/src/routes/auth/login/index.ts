@@ -1,14 +1,9 @@
 import { Elysia, t } from 'elysia'
 import { PrismaClient } from '@prisma/client';
-import jwt from '@elysiajs/jwt';
+import { generateTokens } from '../../../services/tokens';
 
 export default new Elysia({ prefix: '/login' })
-    .use(jwt({
-        name: 'jwt',
-        secret: process.env.JWT_SECRET!,
-        exp: process.env.JWT_EXP
-    }))
-    .post('/', async ({ body, error, set, jwt }) => {
+    .post('/', async ({ body, set }) => {
         const prisma = new PrismaClient();
 
         const user = await prisma.user.findFirst({
@@ -20,20 +15,22 @@ export default new Elysia({ prefix: '/login' })
         if (
             !user ||
             !await Bun.password.verify(body.password, user.password)
-        ) return error(401, undefined);
+        ) {
+             set.status = 401;
+            return;
+        }
     
-        set.headers['Authorization'] = await jwt.sign({ id: user.id });
+        return generateTokens(user.id);
     }, {
         body: t.Object({
             email: t.String(),
             password: t.String()
         }),
-        cookie: t.Cookie({
-            auth: t.Optional(t.String())
-        }),
         response: {
-            200: t.Void(),
+            200: t.Object({
+                accessToken: t.String(),
+                refreshToken: t.String()
+            }),
             401: t.Void()
         }
-    }
-)
+    })
