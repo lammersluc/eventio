@@ -1,6 +1,6 @@
-import { Elysia } from "elysia";
+import { Elysia } from 'elysia';
 
-import meRouter from "./me";
+import meRouter from './me';
 
-export default new Elysia({ prefix: "/account" })
+export default new Elysia({ prefix: '/account' })
     .use(meRouter)

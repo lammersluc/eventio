@@ -7,7 +7,7 @@ const app = new Elysia()
   .listen(3000);
 
 console.log(
-  `🦊 Swagger is running at ${app.server?.hostname}:${app.server?.port}/swagger`
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
 
 export type App = typeof app;
