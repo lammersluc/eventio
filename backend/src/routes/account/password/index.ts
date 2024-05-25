@@ -1,10 +1,9 @@
 import { Elysia, t } from 'elysia'
-import { PrismaClient } from '@prisma/client';
+
+import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/password' })
     .patch('/', async ({ body, set, store }) => {
-        const prisma = new PrismaClient();
-
         let user = await prisma.user.findUnique({
             where: {
                 id: (store as { uid: number }).uid
@@ -21,7 +20,8 @@ export default new Elysia({ prefix: '/password' })
                 id: (store as { uid: number }).uid
             },
             data: {
-                password: await Bun.password.hash(body.newPassword)
+                password: await Bun.password.hash(body.newPassword),
+                updated_at: new Date
             }
         }).catch(() => null);
         

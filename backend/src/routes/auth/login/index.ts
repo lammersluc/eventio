@@ -1,11 +1,10 @@
 import { Elysia, t } from 'elysia'
-import { PrismaClient } from '@prisma/client';
-import { generateTokens } from '../../../services/tokens';
+
+import { generateTokens } from '@/services/tokens';
+import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/login' })
     .post('/', async ({ body, set }) => {
-        const prisma = new PrismaClient();
-
         const user = await prisma.user.findFirst({
             where: {
                 email: body.email

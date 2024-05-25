@@ -1,12 +1,10 @@
 import { Elysia, t } from 'elysia'
-import { PrismaClient } from '@prisma/client';
 
 import { generateTokens } from '@/services/tokens';
+import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/register' })
     .post('/', async ({ body, set }) => {
-        const prisma = new PrismaClient();
-
         const username = body.email.split('@')[0].toLowerCase().replace(/[^a-z]/g, '');
         let newUsername = username;
 
@@ -44,8 +42,8 @@ export default new Elysia({ prefix: '/register' })
         return generateTokens(user.id);
     }, {
         body: t.Object({
-            email: t.String({ pattern: "^(([^<>()[\]\\.,;:\s@']+(\.[^<>()[\]\\.,;:\s@']+)*)|.('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$", default: ''}),
-            password: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', default: ''})
+            email: t.String({ pattern: '^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+$', default: ''}),
+            password: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,128}$', default: ''})
         }),
         response: {
             200: t.Object({

@@ -11,7 +11,8 @@ export default new Elysia({ prefix: '/refresh' })
             return;
         }
         
-        const uid = checkTokens(bearer, body.refreshToken); 
+        const uid = await checkTokens(bearer, body.refreshToken); 
+        
         if (!uid) {
             set.status = 401;
             return;

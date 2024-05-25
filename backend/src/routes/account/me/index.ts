@@ -1,10 +1,9 @@
 import { Elysia, t } from 'elysia'
-import { PrismaClient } from '@prisma/client';
+
+import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/me' })
     .get('/', async ({ set, store }) => {
-        const prisma = new PrismaClient();
-
         const user = await prisma.user.findUnique({
             where: {
                 id: (store as { uid: number }).uid

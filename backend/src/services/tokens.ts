@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 
+import prisma from '@/services/database';
+
 const secret = process.env.JWT_SECRET!;
 
 type Token = {
@@ -9,7 +11,7 @@ type Token = {
     exp: number;
 };
 
-export const checkTokens = (accessToken: string, refreshToken?: string) => {
+export const checkTokens = async (accessToken: string, refreshToken?: string) => {
     let access: Token;
 
     try {
@@ -37,10 +39,18 @@ export const checkTokens = (accessToken: string, refreshToken?: string) => {
         access.iat !== refresh.iat
     ) return false;
 
+    const user = await prisma.user.findUnique({
+        where: {
+            id: access.uid
+        }
+    });
+
+    if (!user || (user.updated_at.getTime() / 1000) > access.iat) return false;
+
     return access.uid;
 }
 
 export const generateTokens = (uid: number) => ({
-    accessToken: jwt.sign({ type: 'access', uid }, secret, { expiresIn: '10m' }),
+    accessToken: jwt.sign({ type: 'access', uid }, secret, { expiresIn: '1h' }),
     refreshToken: jwt.sign({ type: 'refresh', uid }, secret, { expiresIn: '7d' }),
 });

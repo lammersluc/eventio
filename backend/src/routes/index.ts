@@ -2,9 +2,10 @@ import { Elysia, t } from 'elysia'
 import { swagger } from '@elysiajs/swagger'
 import bearer from '@elysiajs/bearer'
 
+import { checkTokens } from '@/services/tokens'
+
 import authRouter from './auth'
 import accountRouter from './account'
-import { checkTokens } from '@/services/tokens'
 
 export default new Elysia()
     .use(bearer())
@@ -18,7 +19,7 @@ export default new Elysia()
                 return;
             }
 
-            const uid = checkTokens(bearer);
+            const uid = await checkTokens(bearer);
 
             if (!uid) {
                 set.status = 401;
