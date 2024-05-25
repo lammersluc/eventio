@@ -25,7 +25,7 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
     if (access.type !== 'access') return false;
     if (!refreshToken) return access.uid;
 
-    let refresh: Token
+    let refresh: Token;
 
     try {
         refresh = jwt.verify(refreshToken, secret) as Token;
@@ -45,12 +45,15 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
         }
     });
 
-    if (!user || (user.updated_at.getTime() / 1000) > access.iat) return false;
+    if (
+        !user ||
+        Math.floor(user.updated_at.getTime() / 1000) > access.iat
+    ) return false;
 
     return access.uid;
-}
+};
 
 export const generateTokens = (uid: number) => ({
     accessToken: jwt.sign({ type: 'access', uid }, secret, { expiresIn: '1h' }),
-    refreshToken: jwt.sign({ type: 'refresh', uid }, secret, { expiresIn: '7d' }),
+    refreshToken: jwt.sign({ type: 'refresh', uid }, secret, { expiresIn: '7d' })
 });

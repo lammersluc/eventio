@@ -1,24 +1,21 @@
-import { Elysia, t } from 'elysia'
+import { Elysia, t } from 'elysia';
 
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/me' })
-    .get('/', async ({ set, store }) => {
+    .get('/', async ({ error, store }) => {
         const user = await prisma.user.findUnique({
             where: {
                 id: (store as { uid: number }).uid
             }
         });
 
-        if (!user) {
-            set.status = 404;
-            return;
-        }
+        if (!user) return error(404, '');
 
         return {
             username: user.username,
             email: user.email,
-            createdAt: user.created_at,
+            createdAt: user.created_at
         };
     }, {
         response: {
@@ -27,6 +24,6 @@ export default new Elysia({ prefix: '/me' })
                 email: t.String(),
                 createdAt: t.Date(),
             }),
-            404: t.Void()
+            404: t.String()
         }
     })

@@ -1,19 +1,20 @@
-import { Elysia, t } from 'elysia'
+import { Elysia, t } from 'elysia';
 
+import { generateTokens } from '@/services/tokens';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/password' })
-    .patch('/', async ({ body, set, store }) => {
+    .patch('/', async ({ body, error, store }) => {
         let user = await prisma.user.findUnique({
             where: {
                 id: (store as { uid: number }).uid
             }
         });
 
-        if (!user || !await Bun.password.verify(body.oldPassword, user.password)) {
-            set.status = 401;
-            return;
-        }
+        if (
+            !user || 
+            !(await Bun.password.verify(body.oldPassword, user.password))
+        ) return error(401, '');
 
         user = await prisma.user.update({
             where: {
@@ -24,21 +25,21 @@ export default new Elysia({ prefix: '/password' })
                 updated_at: new Date
             }
         }).catch(() => null);
-        
-        if (!user) {
-            set.status = 500;
-            return;
-        }
 
-        return;
+        if (!user) return error(500, '');
+
+        return generateTokens(user.id);
     }, {
         body: t.Object({
             oldPassword: t.String(),
-            newPassword: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$', default: '' }),
+            newPassword: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,128}$', default: '' })
         }),
         response: {
-            200: t.Void(),
-            401: t.Void(),
-            500: t.Void()
+            200: t.Object({
+                accessToken: t.String(),
+                refreshToken: t.String(),
+            }),
+            401: t.String(),
+            500: t.String()
         }
     })

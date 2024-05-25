@@ -1,23 +1,17 @@
-import { Elysia, t } from 'elysia'
+import { Elysia, t } from 'elysia';
 import bearer from '@elysiajs/bearer';
 
 import { checkTokens, generateTokens } from '@/services/tokens';
 
-export default new Elysia({ prefix: '/refresh' })
-    .use(bearer())
-    .post('/', async ({ body, bearer, set }) => {
-        if (!bearer) {
-            set.status = 401;
-            return;
-        }
-        
-        const uid = await checkTokens(bearer, body.refreshToken); 
-        
-        if (!uid) {
-            set.status = 401;
-            return;
-        }
-    
+export default new Elysia({ prefix: '/refresh' }).use(bearer())
+    .post('/', async ({ body, error, bearer }) => {
+
+        if (!bearer) return error(401, '');
+
+        const uid = await checkTokens(bearer, body.refreshToken);
+
+        if (!uid) return error(401, '');
+
         return generateTokens(uid);
     }, {
         body: t.Object({
@@ -28,6 +22,6 @@ export default new Elysia({ prefix: '/refresh' })
                 accessToken: t.String(),
                 refreshToken: t.String()
             }),
-            401: t.Void()
+            401: t.String()
         }
     })

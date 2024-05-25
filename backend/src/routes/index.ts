@@ -1,38 +1,32 @@
-import { Elysia, t } from 'elysia'
-import { swagger } from '@elysiajs/swagger'
-import bearer from '@elysiajs/bearer'
+import { Elysia, t } from 'elysia';
+import { swagger } from '@elysiajs/swagger';
+import bearer from '@elysiajs/bearer';
 
-import { checkTokens } from '@/services/tokens'
+import { checkTokens } from '@/services/tokens';
 
-import authRouter from './auth'
-import accountRouter from './account'
+import authRouter from './auth';
+import accountRouter from './account';
 
 export default new Elysia()
     .use(bearer())
     .state({
-        uid: 0
+        uid: 0,
     })
     .guard({
-        async beforeHandle({ set, bearer, store }) {
-            if (!bearer) {
-                set.status = 401;
-                return;
-            }
+        async beforeHandle({ error, bearer, store }) {
+            
+            if (!bearer) return error(401, '');
 
             const uid = await checkTokens(bearer);
 
-            if (!uid) {
-                set.status = 401;
-                return;
-            }
-            
+            if (!uid) return error(401, '');
+
             store.uid = uid as number;
         },
         response: {
             401: t.String()
-        }
-    }, app => app
-        .use(accountRouter)
+        }},
+        app => app.use(accountRouter)
     )
     .use(authRouter)
     .use(swagger({
@@ -41,21 +35,19 @@ export default new Elysia()
         documentation: {
             info: {
                 title: 'Eventio API',
-                version: '0.0.1'
+                version: '0.0.1',
             },
             components: {
                 securitySchemes: {
                     bearerAuth: {
-                        type: 'http',
-                        scheme: 'bearer',
-                        bearerFormat: 'JWT'
-                    }
-                }
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    },
+                },
             },
             security: [
-                {
-                    bearerAuth: []
-                }
+                { bearerAuth: [] }
             ]
         }
     }))

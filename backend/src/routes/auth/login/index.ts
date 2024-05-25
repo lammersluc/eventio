@@ -1,10 +1,10 @@
-import { Elysia, t } from 'elysia'
+import { Elysia, t } from 'elysia';
 
 import { generateTokens } from '@/services/tokens';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/login' })
-    .post('/', async ({ body, set }) => {
+    .post('/', async ({ body, error }) => {
         const user = await prisma.user.findFirst({
             where: {
                 email: body.email
@@ -13,12 +13,9 @@ export default new Elysia({ prefix: '/login' })
 
         if (
             !user ||
-            !await Bun.password.verify(body.password, user.password)
-        ) {
-             set.status = 401;
-            return;
-        }
-    
+            !(await Bun.password.verify(body.password, user.password))
+        ) return error(401, '');
+
         return generateTokens(user.id);
     }, {
         body: t.Object({
@@ -30,6 +27,6 @@ export default new Elysia({ prefix: '/login' })
                 accessToken: t.String(),
                 refreshToken: t.String()
             }),
-            401: t.Void()
+            401: t.String()
         }
     })

@@ -1,26 +1,29 @@
-import { Elysia, t } from 'elysia'
+import { Elysia, t } from 'elysia';
 
 import { generateTokens } from '@/services/tokens';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/register' })
-    .post('/', async ({ body, set }) => {
-        const username = body.email.split('@')[0].toLowerCase().replace(/[^a-z]/g, '');
-        let newUsername = username;
+    .post('/', async ({ body, error }) => {
+        const username = body.email
+            .split('@')[0]
+            .toLowerCase()
+            .replace(/[^a-z]/g, '');
 
+        let newUsername = username;
         let count = 1;
         let range = 100;
         let userExists = true;
 
         while (userExists) {
-            const digits = Math.floor(range + (Math.random() * range * 9));
-            newUsername = username + digits;
+            const digits = Math.floor(range + Math.random() * range * 9);
 
-            userExists = await prisma.user.findUnique({
+            newUsername = username + digits;
+            userExists = (await prisma.user.findUnique({
                 where: {
                     username: newUsername
                 }
-            }) ? true : false;
+            })) ? true : false;
 
             if (count % 10 === 0) range *= 10;
             count++;
@@ -34,22 +37,19 @@ export default new Elysia({ prefix: '/register' })
             }
         }).catch(() => null);
 
-        if (!user) {
-            set.status = 409;
-            return;
-        }
-    
+        if (!user) return error(409, '');
+
         return generateTokens(user.id);
     }, {
         body: t.Object({
-            email: t.String({ pattern: '^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+$', default: ''}),
-            password: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,128}$', default: ''})
+            email: t.String({ format: 'email' }),
+            password: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,128}$', default: '' })
         }),
         response: {
             200: t.Object({
                 accessToken: t.String(),
                 refreshToken: t.String()
             }),
-            409: t.Void()
+            409: t.String()
         }
     })
