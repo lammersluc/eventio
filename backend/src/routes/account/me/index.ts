@@ -3,10 +3,17 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/me' })
-    .get('/', async ({ error, store }) => {
+    .get('', async ({ error, store }) => {
+        const { uid } = store as { uid: number };
+        
         const user = await prisma.user.findUnique({
             where: {
-                id: (store as { uid: number }).uid
+                id: uid
+            },
+            select: {
+                username: true,
+                email: true,
+                created_at: true
             }
         });
 

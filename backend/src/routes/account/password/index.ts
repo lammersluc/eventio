@@ -4,10 +4,15 @@ import { generateTokens } from '@/services/tokens';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/password' })
-    .patch('/', async ({ body, error, store }) => {
-        let user = await prisma.user.findUnique({
+    .patch('', async ({ body, error, store }) => {
+        const { uid } = store as { uid: number };
+
+        const user = await prisma.user.findUnique({
             where: {
-                id: (store as { uid: number }).uid
+                id: uid
+            },
+            select: {
+                password: true
             }
         });
 
@@ -16,19 +21,22 @@ export default new Elysia({ prefix: '/password' })
             !(await Bun.password.verify(body.oldPassword, user.password))
         ) return error(401, '');
 
-        user = await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where: {
-                id: (store as { uid: number }).uid
+                id: uid
             },
             data: {
                 password: await Bun.password.hash(body.newPassword),
                 updated_at: new Date
+            },
+            select: {
+                id: true
             }
         }).catch(() => null);
 
-        if (!user) return error(500, '');
+        if (!updatedUser) return error(500, '');
 
-        return generateTokens(user.id);
+        return generateTokens(updatedUser.id);
     }, {
         body: t.Object({
             oldPassword: t.String(),

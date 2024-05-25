@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import prisma from '@/services/database';
 
-const secret = process.env.JWT_SECRET!;
+const secret = process.env.SECRET!;
 
 type Token = {
     type: 'access' | 'refresh';
@@ -16,7 +16,7 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
 
     try {
         access = jwt.verify(accessToken, secret, {
-            ignoreExpiration: refreshToken ? true : false
+            ignoreExpiration: refreshToken ? true : true
         }) as Token;
     } catch {
         return false;

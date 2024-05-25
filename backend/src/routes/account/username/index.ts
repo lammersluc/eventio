@@ -3,13 +3,18 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/username' })
-    .patch('/', async ({ body, error, store }) => {
+    .patch('', async ({ body, error, store }) => {
+        const { uid } = store as { uid: number };
+
         const user = await prisma.user.update({
             where: {
-                id: (store as { uid: number }).uid
+                id: uid
             },
             data: {
                 username: body.username
+            },
+            select: {
+                id: true
             }
         }).catch(() => null);
 

@@ -8,16 +8,15 @@ generator client {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
-  username       String         @unique
-  email          String         @unique
-  password       String
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @default(now())
-  totp_seed      String?
-  wallets        Wallet[]
-  event_managers EventManager[]
-  tickets        Ticket[]
+  id            Int           @id @default(autoincrement())
+  username      String        @unique
+  email         String        @unique
+  password      String
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @default(now())
+  totp_seed     String?
+  wallets       Wallet[]
+  event_members EventMember[]
 }
 
 model Wallet {
@@ -26,9 +25,12 @@ model Wallet {
   user_id               Int
   event                 Event         @relation(fields: [event_id], references: [id])
   event_id              Int
-  coins                 Int
+  coins                 Int           @default(0)
+  tickets               Ticket[]
   transactions_sender   Transaction[] @relation("Sender")
   transactions_receiver Transaction[] @relation("Receiver")
+
+  @@unique([user_id, event_id])
 }
 
 model Transaction {
@@ -37,55 +39,70 @@ model Transaction {
   sender_id   Int
   receiver    Wallet   @relation("Receiver", fields: [receiver_id], references: [id])
   receiver_id Int
-  created_at  DateTime
+  created_at  DateTime @default(now())
   amount      Int
 }
 
-model EventManager {
+model EventMember {
   id       Int   @id @default(autoincrement())
   user     User  @relation(fields: [user_id], references: [id])
   user_id  Int
   event    Event @relation(fields: [event_id], references: [id])
   event_id Int
+  role     Role
+
+  @@unique([user_id, event_id])
+}
+
+enum Role {
+  Owner
+  Manager
+  Moderator
+  Cashier
 }
 
 model Ticket {
   id               Int          @id @default(autoincrement())
   ticket_option    TicketOption @relation(fields: [ticket_option_id], references: [id])
   ticket_option_id Int
-  user             User         @relation(fields: [user_id], references: [id])
-  user_id          Int
-  purchased_at     DateTime
+  wallet           Wallet       @relation(fields: [wallet_id], references: [id])
+  wallet_id        Int
+  purchased_at     DateTime     @default(now())
+  scanned_at       DateTime?
 }
 
 model TicketOption {
-  id            Int       @id @default(autoincrement())
-  event_date    EventDate @relation(fields: [event_date_id], references: [id])
-  event_date_id Int
-  name          String
-  price         Float
-  amount        Int
-  Ticket        Ticket[]
+  id             Int        @id @default(autoincrement())
+  ticket_date    TicketDate @relation(fields: [ticket_date_id], references: [id])
+  ticket_date_id Int
+  name           String
+  price          Float
+  tickets_max    Int
+  tickets_sold   Int        @default(0)
+  tickets        Ticket[]
 }
 
-model EventDate {
-  id           Int            @id @default(autoincrement())
-  event        Event          @relation(fields: [event_id], references: [id])
-  event_id     Int
-  valid_from   DateTime
-  valid_until  DateTime
-  total_max    Int
-  user_max     Int
-  TicketOption TicketOption[]
+model TicketDate {
+  id             Int            @id @default(autoincrement())
+  event          Event          @relation(fields: [event_id], references: [id])
+  event_id       Int
+  name           String
+  valid_from     DateTime
+  valid_until    DateTime
+  tickets_max    Int
+  tickets_sold   Int            @default(0)
+  ticket_options TicketOption[]
 }
 
 model Event {
-  id           Int            @id @default(autoincrement())
-  name         String
-  location     String
-  start_at     DateTime
-  end_at       DateTime
-  event_dates  EventDate[]
-  wallets      Wallet[]
-  EventManager EventManager[]
+  id                Int           @id @default(autoincrement())
+  name              String
+  location          String
+  start_at          DateTime
+  end_at            DateTime
+  tickets_users_max Int
+  tickets_sold      Int           @default(0)
+  ticket_dates      TicketDate[]
+  wallets           Wallet[]
+  event_members     EventMember[]
 }

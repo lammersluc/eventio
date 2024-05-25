@@ -5,6 +5,8 @@ import bearer from '@elysiajs/bearer';
 import { checkTokens } from '@/services/tokens';
 
 import authRouter from './auth';
+import eventsRouter from './event';
+import walletRouter from './wallet';
 import accountRouter from './account';
 
 export default new Elysia()
@@ -26,7 +28,10 @@ export default new Elysia()
         response: {
             401: t.String()
         }},
-        app => app.use(accountRouter)
+        app => app
+            .use(accountRouter)
+            .use(eventsRouter)
+            .use(walletRouter)
     )
     .use(authRouter)
     .use(swagger({

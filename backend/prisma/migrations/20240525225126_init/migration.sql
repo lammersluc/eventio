@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('Owner', 'Manager', 'Moderator', 'Cashier');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -16,7 +19,7 @@ CREATE TABLE "Wallet" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "event_id" INTEGER NOT NULL,
-    "coins" INTEGER NOT NULL,
+    "coins" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Wallet_pkey" PRIMARY KEY ("id")
 );
@@ -26,27 +29,29 @@ CREATE TABLE "Transaction" (
     "id" SERIAL NOT NULL,
     "sender_id" INTEGER NOT NULL,
     "receiver_id" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "amount" INTEGER NOT NULL,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "EventManager" (
+CREATE TABLE "EventMember" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "event_id" INTEGER NOT NULL,
+    "role" "Role" NOT NULL,
 
-    CONSTRAINT "EventManager_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "EventMember_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Ticket" (
     "id" SERIAL NOT NULL,
     "ticket_option_id" INTEGER NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "purchased_at" TIMESTAMP(3) NOT NULL,
+    "wallet_id" INTEGER NOT NULL,
+    "purchased_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "scanned_at" TIMESTAMP(3),
 
     CONSTRAINT "Ticket_pkey" PRIMARY KEY ("id")
 );
@@ -54,24 +59,26 @@ CREATE TABLE "Ticket" (
 -- CreateTable
 CREATE TABLE "TicketOption" (
     "id" SERIAL NOT NULL,
-    "event_date_id" INTEGER NOT NULL,
+    "ticket_date_id" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "amount" INTEGER NOT NULL,
+    "tickets_max" INTEGER NOT NULL,
+    "tickets_sold" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "TicketOption_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "EventDate" (
+CREATE TABLE "TicketDate" (
     "id" SERIAL NOT NULL,
     "event_id" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
     "valid_from" TIMESTAMP(3) NOT NULL,
     "valid_until" TIMESTAMP(3) NOT NULL,
-    "total_max" INTEGER NOT NULL,
-    "user_max" INTEGER NOT NULL,
+    "tickets_max" INTEGER NOT NULL,
+    "tickets_sold" INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT "EventDate_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TicketDate_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -81,6 +88,8 @@ CREATE TABLE "Event" (
     "location" TEXT NOT NULL,
     "start_at" TIMESTAMP(3) NOT NULL,
     "end_at" TIMESTAMP(3) NOT NULL,
+    "tickets_users_max" INTEGER NOT NULL,
+    "tickets_sold" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
@@ -90,6 +99,12 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Wallet_user_id_event_id_key" ON "Wallet"("user_id", "event_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EventMember_user_id_event_id_key" ON "EventMember"("user_id", "event_id");
 
 -- AddForeignKey
 ALTER TABLE "Wallet" ADD CONSTRAINT "Wallet_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -104,19 +119,19 @@ ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_sender_id_fkey" FOREIGN KE
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_receiver_id_fkey" FOREIGN KEY ("receiver_id") REFERENCES "Wallet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventManager" ADD CONSTRAINT "EventManager_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventMember" ADD CONSTRAINT "EventMember_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventManager" ADD CONSTRAINT "EventManager_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventMember" ADD CONSTRAINT "EventMember_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_ticket_option_id_fkey" FOREIGN KEY ("ticket_option_id") REFERENCES "TicketOption"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_wallet_id_fkey" FOREIGN KEY ("wallet_id") REFERENCES "Wallet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TicketOption" ADD CONSTRAINT "TicketOption_event_date_id_fkey" FOREIGN KEY ("event_date_id") REFERENCES "EventDate"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TicketOption" ADD CONSTRAINT "TicketOption_ticket_date_id_fkey" FOREIGN KEY ("ticket_date_id") REFERENCES "TicketDate"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EventDate" ADD CONSTRAINT "EventDate_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TicketDate" ADD CONSTRAINT "TicketDate_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

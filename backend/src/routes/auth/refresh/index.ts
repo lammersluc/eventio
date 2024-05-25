@@ -4,8 +4,7 @@ import bearer from '@elysiajs/bearer';
 import { checkTokens, generateTokens } from '@/services/tokens';
 
 export default new Elysia({ prefix: '/refresh' }).use(bearer())
-    .post('/', async ({ body, error, bearer }) => {
-
+    .post('', async ({ body, error, bearer }) => {
         if (!bearer) return error(401, '');
 
         const uid = await checkTokens(bearer, body.refreshToken);
