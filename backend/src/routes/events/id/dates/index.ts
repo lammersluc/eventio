@@ -26,7 +26,7 @@ export default new Elysia({ prefix: '/dates'})
             name: date.name,
             validFrom: date.valid_from,
             validUntil: date.valid_until,
-            ticketsAvailable: date.tickets_max - date.tickets_sold
+            ticketsAvailable: date.tickets_max ? date.tickets_max - date.tickets_sold : null
         }));
     }, {
         params: t.Object({
@@ -36,9 +36,9 @@ export default new Elysia({ prefix: '/dates'})
             200: t.Array(t.Object({
                 id: t.Number(),
                 name: t.String(),
-                validFrom: t.Date(),
-                validUntil: t.Date(),
-                ticketsAvailable: t.Number()
+                validFrom: t.Nullable(t.Date()),
+                validUntil: t.Nullable(t.Date()),
+                ticketsAvailable: t.Nullable(t.Number())
             })),
             404: t.String()
         }

@@ -5,10 +5,11 @@ import bearer from '@elysiajs/bearer';
 import { checkTokens } from '@/services/tokens';
 
 import authRouter from './auth';
-import eventsRouter from './event';
-import walletRouter from './wallet';
 import accountRouter from './account';
-import managementRouter from './management';
+import walletRouter from './wallet';
+import eventsRouter from './events';
+import dateRouter from './date';
+import manageRouter from './manage';
 
 export default new Elysia()
     .use(bearer())
@@ -31,9 +32,10 @@ export default new Elysia()
         }},
         app => app
         .use(accountRouter)
-        .use(eventsRouter)
         .use(walletRouter)
-        .use(managementRouter)
+        .use(eventsRouter)
+        .use(dateRouter)
+        .use(manageRouter)
     )
     .use(authRouter)
     .use(swagger({

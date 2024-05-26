@@ -3,7 +3,7 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/user' })
-    .get('', async ({ params, store }) => {
+    .get('', async ({ query, store }) => {
         const { uid } = store as { uid: number };
         
         const events = await prisma.event.findMany({
@@ -24,10 +24,7 @@ export default new Elysia({ prefix: '/user' })
                 start_at: true,
                 end_at: true
             },
-            take: params.limit,
-            orderBy: {
-                start_at: 'asc'
-            }
+            take: query.limit ? +query.limit : 10
         });
 
         return events.map(event => ({
@@ -38,16 +35,17 @@ export default new Elysia({ prefix: '/user' })
             endAt: event.end_at,
         }));
     }, {
-        params: t.Object({
-            limit: t.Number()
-        }),
+        query: t.Partial(t.Object({
+            search: t.String(),
+            limit: t.String()
+        })),
         response: {
             200: t.Array(t.Object({
                 id: t.Number(),
                 name: t.String(),
-                location: t.String(),
-                startAt: t.Date(),
-                endAt: t.Date()
+                location: t.Nullable(t.String()),
+                startAt: t.Nullable(t.Date()),
+                endAt: t.Nullable(t.Date())
             }))
         }
     })

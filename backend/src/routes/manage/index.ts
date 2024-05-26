@@ -2,16 +2,52 @@ import { Elysia, t } from 'elysia';
 
 import prisma from '@/services/database';
 
-export default new Elysia({ prefix: '/event/:id/management', tags: ['Management'] })
-    .state('role', -1)
+import creatorRouter from './creator';
+import ownerRouter from './owner';
+import managerRouter from './manager';
+import moderatorRouter from './moderator';
+import cashierRouter from './cashier';
+
+
+export default new Elysia({ prefix: '/events/:id' })
+    .use(creatorRouter)
+    .state('role', 0)
     .guard({
-        async beforeHandle({ params, store }) {
+        async beforeHandle({ params, error, store }) {
             const { uid } = store as { role: number, uid: number };
 
-            prisma.eventMember.findUnique
+            const eventMember = await prisma.eventMember.findUnique({
+                where: {
+                    user_id_event_id: {
+                        user_id: uid,
+                        event_id: +params.id
+                    }
+                },
+                select: {
+                    role: true
+                }
+            })
 
+            if (!eventMember) return error(403, '');
+            
+            const roles = {
+                creator: 5,
+                owner: 4,
+                manager: 3,
+                moderator: 2,
+                cashier: 1
+            }
+
+            store.role = roles[eventMember.role];
         },
         params: t.Object({
             id: t.String()
-        })
-    })
+        }),
+        response: {
+            403: t.String()
+        }}, app => app
+        .use(ownerRouter)
+        .use(managerRouter)
+        .use(moderatorRouter)
+        .use(cashierRouter)
+    )

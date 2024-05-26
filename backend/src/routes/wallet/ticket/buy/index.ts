@@ -20,7 +20,7 @@ export default new Elysia({ prefix: '/buy' })
             }
         });
 
-        if (!ticketOption || ticketOption.tickets_max - ticketOption.tickets_sold <= 0) return error(404, '');
+        if (!ticketOption || (ticketOption.tickets_max && ticketOption.tickets_max - ticketOption.tickets_sold <= 0)) return error(404, '');
 
         //Check digital payment
 

@@ -14,7 +14,8 @@
     "elysia": "latest",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^5.14.0",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "bun-types": "latest"

@@ -11,6 +11,7 @@ model User {
   id            Int           @id @default(autoincrement())
   username      String        @unique
   email         String        @unique
+  has_image     Boolean       @default(false)
   password      String
   created_at    DateTime      @default(now())
   updated_at    DateTime      @default(now())
@@ -35,10 +36,10 @@ model Wallet {
 
 model Transaction {
   id          Int      @id @default(autoincrement())
-  sender      Wallet   @relation("Sender", fields: [sender_id], references: [id])
-  sender_id   Int
-  receiver    Wallet   @relation("Receiver", fields: [receiver_id], references: [id])
-  receiver_id Int
+  sender      Wallet?  @relation("Sender", fields: [sender_id], references: [id])
+  sender_id   Int?
+  receiver    Wallet?  @relation("Receiver", fields: [receiver_id], references: [id])
+  receiver_id Int?
   created_at  DateTime @default(now())
   amount      Int
 }
@@ -55,6 +56,7 @@ model EventMember {
 }
 
 enum Role {
+  creator
   owner
   manager
   moderator
@@ -76,8 +78,8 @@ model TicketOption {
   ticket_date    TicketDate @relation(fields: [ticket_date_id], references: [id])
   ticket_date_id Int
   name           String
-  price          Float
-  tickets_max    Int
+  price          Float?
+  tickets_max    Int?
   tickets_sold   Int        @default(0)
   tickets        Ticket[]
 }
@@ -87,9 +89,9 @@ model TicketDate {
   event          Event          @relation(fields: [event_id], references: [id])
   event_id       Int
   name           String
-  valid_from     DateTime
-  valid_until    DateTime
-  tickets_max    Int
+  valid_from     DateTime?
+  valid_until    DateTime?
+  tickets_max    Int?
   tickets_sold   Int            @default(0)
   ticket_options TicketOption[]
 }
@@ -97,11 +99,13 @@ model TicketDate {
 model Event {
   id                Int           @id @default(autoincrement())
   name              String
-  location          String
-  start_at          DateTime
-  end_at            DateTime
-  tickets_users_max Int
+  has_image         Boolean       @default(false)
+  location          String?
+  start_at          DateTime?
+  end_at            DateTime?
+  tickets_users_max Int?
   tickets_sold      Int           @default(0)
+  is_private        Boolean       @default(true)
   ticket_dates      TicketDate[]
   wallets           Wallet[]
   event_members     EventMember[]
