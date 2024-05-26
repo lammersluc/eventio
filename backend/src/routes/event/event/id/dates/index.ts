@@ -21,29 +21,25 @@ export default new Elysia({ prefix: '/dates'})
 
         if (!dates) return error(404, '');
 
-        return {
-            dates: dates.map(date => ({
-                id: date.id,
-                name: date.name,
-                validFrom: date.valid_from,
-                validUntil: date.valid_until,
-                ticketsAvailable: date.tickets_max - date.tickets_sold
-            }))
-        };
+        return dates.map(date => ({
+            id: date.id,
+            name: date.name,
+            validFrom: date.valid_from,
+            validUntil: date.valid_until,
+            ticketsAvailable: date.tickets_max - date.tickets_sold
+        }));
     }, {
         params: t.Object({
             id: t.String()
         }),
         response: {
-            200: t.Object({
-                dates: t.Array(t.Object({
-                    id: t.Number(),
-                    name: t.String(),
-                    validFrom: t.Date(),
-                    validUntil: t.Date(),
-                    ticketsAvailable: t.Number()
-                }))
-            }),
+            200: t.Array(t.Object({
+                id: t.Number(),
+                name: t.String(),
+                validFrom: t.Date(),
+                validUntil: t.Date(),
+                ticketsAvailable: t.Number()
+            })),
             404: t.String()
         }
     })

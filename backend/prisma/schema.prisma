@@ -55,10 +55,10 @@ model EventMember {
 }
 
 enum Role {
-  Owner
-  Manager
-  Moderator
-  Cashier
+  owner
+  manager
+  moderator
+  cashier
 }
 
 model Ticket {

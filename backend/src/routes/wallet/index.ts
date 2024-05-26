@@ -1,10 +1,10 @@
-import { Elysia } from 'elysia';
+import { Elysia } from "elysia";
 
-import ticketsRouter from './tickets';
 import ticketRouter from './ticket'
-import coinsrouter from './coins'
+import coinsRouter from './coins'
+import walletRouter from './wallet'
 
-export default new Elysia({ detail: { tags: ['Wallet'] } })
-    .use(ticketsRouter)
+export default new Elysia({ tags: ['Wallet'] })
     .use(ticketRouter)
-    .use(coinsrouter)
+    .use(coinsRouter)
+    .use(walletRouter)

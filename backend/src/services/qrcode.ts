@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken';
 import qrcode from 'qrcode';
 
-const secret = process.env.SECRET!;
+const secret = process.env.QR_SECRET!;
+const expiry = process.env.QR_EXPIRY!;
 
 type Token = {
-    ticket: number;
+    id: number;
+    type: 'ticket' | 'wallet';
     iat: number;
     exp: number;
 };
@@ -17,4 +19,4 @@ export const checkQR = async (qrCode: string) => {
     }
 };
 
-export const generateQR = async (ticket: number) => await qrcode.toDataURL(jwt.sign({ ticket }, secret, { expiresIn: '30s' }));
+export const generateQR = async (id: number, type: string) => await qrcode.toDataURL(jwt.sign({ id, type }, secret, { expiresIn: expiry }));

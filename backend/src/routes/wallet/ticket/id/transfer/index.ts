@@ -3,8 +3,9 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/transfer' })
-    .post('', async ({ body, error, store}) => {
+    .patch('', async ({ body, params, error, store }) => {
         const { uid } = store as { uid: number };
+        const ticketId = +params.id;
 
         const wallet = await prisma.wallet.findFirst({
             where: {
@@ -13,7 +14,7 @@ export default new Elysia({ prefix: '/transfer' })
                 },
                 tickets: {
                     some: {
-                        id: body.ticket
+                        id: ticketId
                     }
                 }
             },
@@ -37,7 +38,7 @@ export default new Elysia({ prefix: '/transfer' })
 
         const updated = await prisma.ticket.update({
             where: {
-                id: body.ticket
+                id: ticketId
             },
             data: {
                 wallet_id: newWallet.id
@@ -52,8 +53,10 @@ export default new Elysia({ prefix: '/transfer' })
         return '';
     }, {
         body: t.Object({
-            ticket: t.Number(),
             to: t.Number()
+        }),
+        params: t.Object({
+            id: t.String()
         }),
         response: {
             200: t.String(),

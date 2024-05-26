@@ -8,6 +8,7 @@ import authRouter from './auth';
 import eventsRouter from './event';
 import walletRouter from './wallet';
 import accountRouter from './account';
+import managementRouter from './management';
 
 export default new Elysia()
     .use(bearer())
@@ -29,9 +30,10 @@ export default new Elysia()
             401: t.String()
         }},
         app => app
-            .use(accountRouter)
-            .use(eventsRouter)
-            .use(walletRouter)
+        .use(accountRouter)
+        .use(eventsRouter)
+        .use(walletRouter)
+        .use(managementRouter)
     )
     .use(authRouter)
     .use(swagger({

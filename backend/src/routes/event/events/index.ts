@@ -22,28 +22,24 @@ export default new Elysia({ prefix: '/events' })
             take: params.limit
         });
 
-        return {
-            events: events.map(event => ({
-                id: event.id,
-                name: event.name,
-                location: event.location,
-                startAt: event.start_at,
-                endAt: event.end_at
-            }))
-        };
+        return events.map(event => ({
+            id: event.id,
+            name: event.name,
+            location: event.location,
+            startAt: event.start_at,
+            endAt: event.end_at
+        }));
     }, {
         params: t.Object({
             limit: t.Number()
         }),
         response: {
-            200: t.Object({
-                events: t.Array(t.Object({
-                    id: t.Number(),
-                    name: t.String(),
-                    location: t.String(),
-                    startAt: t.Date(),
-                    endAt: t.Date()
-                }))
-            })
+            200: t.Array(t.Object({
+                id: t.Number(),
+                name: t.String(),
+                location: t.String(),
+                startAt: t.Date(),
+                endAt: t.Date()
+            }))
         }
     })

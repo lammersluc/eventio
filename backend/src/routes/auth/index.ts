@@ -4,7 +4,7 @@ import loginRouter from './login';
 import registerRouter from './register';
 import refreshRouter from './refresh';
 
-export default new Elysia({ prefix: '/auth', detail: { tags: ['Auth'] } })
+export default new Elysia({ prefix: '/auth', tags: ['Auth'] })
     .use(loginRouter)
     .use(registerRouter)
     .use(refreshRouter);

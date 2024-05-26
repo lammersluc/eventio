@@ -2,7 +2,9 @@ import jwt from 'jsonwebtoken';
 
 import prisma from '@/services/database';
 
-const secret = process.env.SECRET!;
+const secret = process.env.JWT_SECRET!;
+const accessExpiry = process.env.ACCESS_EXPIRY!;
+const refreshExpiry = process.env.REFRESH_EXPIRY!;
 
 type Token = {
     type: 'access' | 'refresh';
@@ -54,6 +56,6 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
 };
 
 export const generateTokens = (uid: number) => ({
-    accessToken: jwt.sign({ type: 'access', uid }, secret, { expiresIn: '1h' }),
-    refreshToken: jwt.sign({ type: 'refresh', uid }, secret, { expiresIn: '7d' })
+    accessToken: jwt.sign({ type: 'access', uid }, secret, { expiresIn: accessExpiry }),
+    refreshToken: jwt.sign({ type: 'refresh', uid }, secret, { expiresIn: refreshExpiry })
 });
