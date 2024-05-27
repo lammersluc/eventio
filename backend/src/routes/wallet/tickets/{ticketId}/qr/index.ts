@@ -9,7 +9,7 @@ export default new Elysia({ prefix: '/qr' })
 
         const ticket = await prisma.ticket.findUnique({
             where: {
-                id: +params.id,
+                id: +params.ticketId,
                 wallet: {
                     user_id: uid
                 }
@@ -21,7 +21,7 @@ export default new Elysia({ prefix: '/qr' })
         return await generateQR(ticket.id, 'ticket');
     }, {
         params: t.Object({
-            id: t.String()
+            ticketId: t.String()
         }),
         response: {
             200: t.String(),

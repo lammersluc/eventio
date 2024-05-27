@@ -1,0 +1,102 @@
+import { Elysia, t } from 'elysia';
+
+import { checkQR } from '@/services/qrcode';
+import prisma from '@/services/database';
+
+export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
+    .get('', async ({ params, error }) => {
+
+        const data = await checkQR(params.walletQR);
+
+        if (!data || data.type !== 'wallet') return error(404, '');
+
+        const purchases = await prisma.wallet.findUnique({
+            where: {
+                id: data.id
+            }
+        }).transactions_sender({
+            where: {
+                receiver_id: null,
+                created_at: {
+                    gte: new Date(new Date().getTime() - 3 * 60 * 1000)
+                }
+            },
+            select: {
+                id: true,
+                amount: true,
+                created_at: true
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+
+        if (!purchases) return error(404, '');
+    
+        return purchases.map(purchase => ({
+            id: purchase.id,
+            amount: purchase.amount,
+            createdAt: purchase.created_at
+        }))
+    }, {
+        params: t.Object({
+            walletQR: t.String()
+        }),
+        response: {
+            200: t.Array(t.Object({
+                id: t.Number(),
+                amount: t.Number(),
+                createdAt: t.Date()
+            })),
+            404: t.String()
+        }
+    })
+
+    .put('', async ({ body, params, error }) => {
+
+        const data = await checkQR(params.walletQR);
+
+        if (!data || data.type !== 'wallet') return error(404, '');
+
+        const result = await prisma.$transaction([
+            prisma.transaction.create({
+                data: {
+                    sender_id: data.id,
+                    receiver_id: null,
+                    amount: body.amount
+                },
+                select: {
+                    id: true
+                }
+            }),
+            prisma.wallet.update({
+                where: {
+                    id: data.id
+                },
+                data: {
+                    coins: {
+                        decrement: body.amount
+                    }
+                },
+                select: {
+                    id: true
+                }
+            }),
+        ]).catch(() => null);
+
+        if (!result) return error(500, '');
+
+        return '';
+    }, {
+        body: t.Object({
+            amount: t.Number({ minimum: 1 })
+        }),
+        params: t.Object({
+            walletQR: t.String()
+        }),
+        response: {
+            200: t.String(),
+            404: t.String(),
+            500: t.String()
+        }
+    })

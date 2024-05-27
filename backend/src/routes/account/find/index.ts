@@ -4,7 +4,8 @@ import fs from 'fs';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/find' })
-    .get('', async ({ query }) => {        
+    .get('', async ({ query }) => {   
+             
         const users = await prisma.user.findMany({
             where: {
                 username: {
@@ -14,7 +15,7 @@ export default new Elysia({ prefix: '/find' })
             orderBy: {
                 username: 'asc'
             },
-            take: query.limit ? +query.limit : 1,
+            take: +query.limit,
             select: {
                 id: true,
                 username: true,
@@ -33,7 +34,7 @@ export default new Elysia({ prefix: '/find' })
     }, {
         query: t.Object({
             search: t.String(),
-            limit: t.Optional(t.String({ pattern: '^(10|[1-9])$' }))
+            limit: t.String({ pattern: '^(10|[1-9])$', default: '1' })
         }),
         response: {
             200: t.Array(t.Object({

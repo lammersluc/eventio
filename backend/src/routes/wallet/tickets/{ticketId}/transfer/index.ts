@@ -5,7 +5,7 @@ import prisma from '@/services/database';
 export default new Elysia({ prefix: '/transfer' })
     .patch('', async ({ body, params, error, store }) => {
         const { uid } = store as { uid: number };
-        const ticketId = +params.id;
+        const ticketId = +params.ticketId;
 
         const wallet = await prisma.wallet.findFirst({
             where: {
@@ -27,7 +27,7 @@ export default new Elysia({ prefix: '/transfer' })
 
         const newWallet = await prisma.wallet.findFirst({
             where: {
-                user_id: body.to
+                user_id: body.walletId
             },
             select: {
                 id: true
@@ -53,10 +53,10 @@ export default new Elysia({ prefix: '/transfer' })
         return '';
     }, {
         body: t.Object({
-            to: t.Number()
+            walletId: t.Number()
         }),
         params: t.Object({
-            id: t.String()
+            ticketId: t.String()
         }),
         response: {
             200: t.String(),

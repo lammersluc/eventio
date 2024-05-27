@@ -9,7 +9,7 @@ import moderatorRouter from './moderator';
 import cashierRouter from './cashier';
 
 
-export default new Elysia({ prefix: '/events/:id' })
+export default new Elysia({ prefix: '/events/:eventId' })
     .use(creatorRouter)
     .state('role', 0)
     .guard({
@@ -45,7 +45,8 @@ export default new Elysia({ prefix: '/events/:id' })
         }),
         response: {
             403: t.String()
-        }}, app => app
+        }
+    }, app => app
         .use(ownerRouter)
         .use(managerRouter)
         .use(moderatorRouter)

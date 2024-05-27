@@ -8,10 +8,21 @@ export default new Elysia({ tags: ['Creator'] })
 
         if (role < 5) return error(403, '');
     })
+    
     .delete('', async ({ params }) => {
+        const eventId = +params.eventId;
+
+        const wallets = await prisma.wallet.findFirst({
+            where: {
+                id: eventId
+            }
+        });
+
+        if (wallets) return error(409, '');
+
         const deleted = await prisma.event.delete({
             where: {
-                id: +params.id
+                id: eventId
             }
         }).catch(() => null);
 
@@ -20,10 +31,11 @@ export default new Elysia({ tags: ['Creator'] })
         return '';
     }, {
         params: t.Object({
-            id: t.String()
+            eventId: t.String()
         }),
         response: {
             200: t.String(),
+            409: t.String(),
             500: t.String()
         }
     })

@@ -1,4 +1,5 @@
 import { Elysia, t } from 'elysia';
+import fs from 'fs';
 
 import prisma from '@/services/database';
 
@@ -8,44 +9,50 @@ export default new Elysia({ prefix: '/user' })
         
         const events = await prisma.event.findMany({
             where: {
+                is_private: false,
                 wallets: {
                     some: {
                         user_id: uid
                     }
                 },
+                name: {
+                    startsWith: query.search
+                },
                 end_at: {
                     gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
                 }
             },
+            orderBy: {
+                start_at: 'asc'
+            },
             select: {
                 id: true,
                 name: true,
-                location: true,
-                start_at: true,
-                end_at: true
-            },
-            take: query.limit ? +query.limit : 10
+                has_image: true,
+                start_at: true
+            }
         });
 
-        return events.map(event => ({
-            id: event.id,
-            name: event.name,
-            location: event.location,
-            startAt: event.start_at,
-            endAt: event.end_at,
-        }));
+        return events.map(event => {
+            const image = event.has_image ? fs.readFileSync(`./images/events/${event.id}.png`, { encoding: 'base64' }) : null;
+
+            return {
+                id: event.id,
+                name: event.name,
+                image,
+                startAt: event.start_at
+            }
+        });
     }, {
-        query: t.Partial(t.Object({
-            search: t.String(),
-            limit: t.String()
+        query: (t.Object({
+            search: t.Optional(t.String())
         })),
         response: {
             200: t.Array(t.Object({
                 id: t.Number(),
                 name: t.String(),
-                location: t.Nullable(t.String()),
-                startAt: t.Nullable(t.Date()),
-                endAt: t.Nullable(t.Date())
+                image: t.Nullable(t.String()),
+                startAt: t.Nullable(t.Date())
             }))
         }
     })

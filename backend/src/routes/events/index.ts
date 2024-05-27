@@ -1,17 +1,20 @@
 import { Elysia, t } from 'elysia';
+import fs from 'fs';
 
 import prisma from '@/services/database';
 
 import userRouter from './user';
-import idRouter from './id';
+import eventIdRouter from './{eventId}';
 
 export default new Elysia({ prefix: '/events', tags: ['Event'] })
     .use(userRouter)
-    .use(idRouter)
+    .use(eventIdRouter)
     
-    .get('', async ({ query }) => {        
+    .get('', async ({ query }) => {    
+            
         const events = await prisma.event.findMany({
             where: {
+                is_private: false,
                 name: {
                     contains: query.search
                 },
@@ -22,32 +25,33 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
             select: {
                 id: true,
                 name: true,
-                location: true,
-                start_at: true,
-                end_at: true
+                has_image: true,
+                start_at: true
             },
-            take: query.limit ? +query.limit : 10
+            take: +query.limit
         });
 
-        return events.map(event => ({
-            id: event.id,
-            name: event.name,
-            location: event.location,
-            startAt: event.start_at,
-            endAt: event.end_at
-        }));
+        return events.map(event => {
+            const image = event.has_image ? fs.readFileSync(`./images/events/${event.id}.png`, { encoding: 'base64' }) : null;
+            
+            return {
+                id: event.id,
+                name: event.name,
+                image,
+                startAt: event.start_at
+            }
+        });
     }, {
-        query: t.Partial(t.Object({
-            search: t.String(),
-            limit: t.String()
-        })),
+        query: t.Object({
+            search: t.Optional(t.String()),
+            limit: t.String({ pattern: '^([1]?[0-9]|20)$', default: '5' })
+        }),
         response: {
             200: t.Array(t.Object({
                 id: t.Number(),
                 name: t.String(),
-                location: t.Nullable(t.String()),
-                startAt: t.Nullable(t.Date()),
-                endAt: t.Nullable(t.Date())
+                image: t.Nullable(t.String()),
+                startAt: t.Nullable(t.Date())
             }))
         }
     })

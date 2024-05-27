@@ -7,7 +7,7 @@ export default new Elysia({ prefix: '/members'})
     .get('', async ({ params, error }) => {
         const members = await prisma.eventMember.findMany({
             where: {
-                event_id: +params.id
+                event_id: +params.eventId
             },
             select: {
                 user_id: true,
@@ -34,7 +34,7 @@ export default new Elysia({ prefix: '/members'})
         });
     }, {
         params: t.Object({
-            id: t.String()
+            eventId: t.String()
         }),
         response: {
             200: t.Array(t.Object({
@@ -55,32 +55,20 @@ export default new Elysia({ prefix: '/members'})
         });
 
         if (!user) return error(404, '');
+        
+        const role = body.role as 'owner' | 'manager' | 'moderator' | 'cashier';
 
         const eventMember = await prisma.eventMember.findUnique({
             where: {
                 user_id_event_id: {
                     user_id: body.userId,
-                    event_id: +params.id
+                    event_id: +params.eventId
                 }
             }
         });
 
-        const role = body.role as 'owner' | 'manager' | 'moderator' | 'cashier';
-
         if (eventMember) {
             if (eventMember.role === 'creator') return error(403, '');
-
-            if (!role) {
-                const deleted = await prisma.eventMember.delete({
-                    where: {
-                        id: eventMember.id
-                    }
-                }).catch(() => null);
-        
-                if (!deleted) return error(500, '');
-        
-                return '';
-            }
 
             const updated = await prisma.eventMember.update({
                 where: {
@@ -96,12 +84,10 @@ export default new Elysia({ prefix: '/members'})
             return '';
         }
 
-        if (!role) return error(400, '');
-
         const created = await prisma.eventMember.create({
             data: {
                 user_id: body.userId,
-                event_id: +params.id,
+                event_id: +params.eventId,
                 role
             }
         }).catch(() => null);
@@ -112,16 +98,49 @@ export default new Elysia({ prefix: '/members'})
     }, {
         body: t.Object({
             userId: t.Number(),
-            role: t.Optional(t.String({
-                pattern: '/^(owner|manager|moderator|cashier)$/'
-            }))
+            role: t.String({ pattern: '/^(owner|manager|moderator|cashier)$/' })
         }),
         params: t.Object({
-            id: t.String()
+            eventId: t.String()
         }),
         response: {
             200: t.String(),
             400: t.String(),
+            403: t.String(),
+            404: t.String(),
+            500: t.String()
+        }
+    })
+
+    .delete('/:userId', async ({ params, error }) => {
+        const eventMember = await prisma.eventMember.findUnique({
+            where: {
+                user_id_event_id: {
+                    user_id: +params.userId,
+                    event_id: +params.eventId
+                }
+            }
+        });
+
+        if (!eventMember) return error(404, '');
+        if (eventMember.role === 'creator') return error(403, '');
+
+        const deleted = await prisma.eventMember.delete({
+            where: {
+                id: eventMember.id
+            }
+        }).catch(() => null);
+
+        if (!deleted) return error(500, '');
+
+        return '';
+    }, {
+        params: t.Object({
+            eventId: t.String(),
+            userId: t.String()
+        }),
+        response: {
+            200: t.String(),
             403: t.String(),
             404: t.String(),
             500: t.String()

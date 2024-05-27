@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 
 import prisma from '@/services/database';
 
-import memberRouter from './member';
+import membersRouter from './members';
 import imageRouter from './image';
 
 export default new Elysia({ tags: ['Owner'] })
@@ -12,7 +12,7 @@ export default new Elysia({ tags: ['Owner'] })
         if (role < 4) return error(403, '');
     })
     
-    .use(memberRouter)
+    .use(membersRouter)
     .use(imageRouter)
 
     .patch('', async ({ body, params, error }) => {
@@ -26,9 +26,9 @@ export default new Elysia({ tags: ['Owner'] })
             isPrivate: body.isPrivate
         }
 
-        const event = await prisma.event.update({
+        const updated = await prisma.event.update({
             where: {
-                id: +params.id
+                id: +params.eventId
             },
             data,
             select: {
@@ -36,7 +36,7 @@ export default new Elysia({ tags: ['Owner'] })
             }
         });
 
-        if (!event) return error(500, '');
+        if (!updated) return error(500, '');
 
         return '';
     }, {
@@ -50,7 +50,7 @@ export default new Elysia({ tags: ['Owner'] })
             isPrivate: t.Boolean()
         })),
         params: t.Object({
-            id: t.String()
+            eventId: t.String()
         }),
         response: {
             200: t.String(),

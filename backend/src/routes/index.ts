@@ -8,7 +8,6 @@ import authRouter from './auth';
 import accountRouter from './account';
 import walletRouter from './wallet';
 import eventsRouter from './events';
-import dateRouter from './date';
 import manageRouter from './manage';
 
 export default new Elysia()
@@ -16,6 +15,7 @@ export default new Elysia()
     .state({
         uid: 0,
     })
+    .use(authRouter)
     .guard({
         async beforeHandle({ error, bearer, store }) {
             
@@ -29,15 +29,13 @@ export default new Elysia()
         },
         response: {
             401: t.String()
-        }},
-        app => app
+        }
+    }, app => app
         .use(accountRouter)
         .use(walletRouter)
         .use(eventsRouter)
-        .use(dateRouter)
         .use(manageRouter)
     )
-    .use(authRouter)
     .use(swagger({
         path: '/docs',
         exclude: ['/docs', '/docs/json'],
