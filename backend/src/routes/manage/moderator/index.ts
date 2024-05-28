@@ -6,9 +6,9 @@ import ticketsRouter from './tickets';
 
 export default new Elysia({ tags: ['Moderator'] })
     .onBeforeHandle(({ error, store }) => {
-        const { role } = store as { role: number };
+        const { eventMember } = store as { eventMember: { role: number } };
 
-        if (role < 2) return error(403, '');
+        if (eventMember.role < 2) return error(403, '');
     })
     .use(usersRouter)
     .use(walletsRouter)

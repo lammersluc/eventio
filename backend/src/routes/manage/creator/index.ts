@@ -4,9 +4,9 @@ import prisma from '@/services/database';
 
 export default new Elysia({ tags: ['Creator'] })
     .onBeforeHandle(({ error, store }) => {
-        const { role } = store as { role: number };
+        const { eventMember } = store as { eventMember: { role: number } };
 
-        if (role < 5) return error(403, '');
+        if (eventMember.role < 5) return error(403, '');
     })
     
     .delete('', async ({ params }) => {
@@ -20,13 +20,32 @@ export default new Elysia({ tags: ['Creator'] })
 
         if (wallets) return error(409, '');
 
-        const deleted = await prisma.event.delete({
-            where: {
-                id: eventId
-            }
-        }).catch(() => null);
+        const result = await prisma.$transaction([
+            prisma.ticketOption.deleteMany({
+                where: {
+                    ticket_date: {
+                        event_id: eventId
+                    }
+                }
+            }),
+            prisma.ticketDate.deleteMany({
+                where: {
+                    event_id: eventId
+                }
+            }),
+            prisma.eventMember.deleteMany({
+                where: {
+                    event_id: eventId
+                }
+            }),
+            prisma.event.delete({
+                where: {
+                    id: eventId
+                }
+            })
+        ]).catch(() => null);
 
-        if (!deleted) return error(500, '');
+        if (!result) return error(500, '');
 
         return '';
     }, {

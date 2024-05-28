@@ -13,12 +13,22 @@ export default new Elysia({ prefix: '/options' })
                 id: true,
                 name: true,
                 price: true,
-                tickets_max: true,
-                tickets_sold: true
-            }
+                amount: true,
+                _count: {
+                    select: {
+                        tickets: true
+                    }
+                }
+            },
         });
 
-        return ticketOptions;
+        return ticketOptions.map(option => ({
+            id: option.id,
+            name: option.name,
+            price: option.price,
+            amount: option.amount,
+            sold: option._count.tickets
+        }));
     }, {
         params: t.Object({
             dateId: t.String()
@@ -28,8 +38,8 @@ export default new Elysia({ prefix: '/options' })
                 id: t.Number(),
                 name: t.String(),
                 price: t.Nullable(t.Number()),
-                tickets_max: t.Nullable(t.Number()),
-                tickets_sold: t.Number()
+                amount: t.Nullable(t.Number()),
+                sold: t.Number()
             }))
         }
     })

@@ -35,22 +35,25 @@ model Wallet {
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
-  sender      Wallet?  @relation("Sender", fields: [sender_id], references: [id])
-  sender_id   Int?
-  receiver    Wallet?  @relation("Receiver", fields: [receiver_id], references: [id])
-  receiver_id Int?
-  amount      Int
-  created_at  DateTime @default(now())
+  id              Int          @id @default(autoincrement())
+  sender          Wallet?      @relation("Sender", fields: [sender_id], references: [id])
+  sender_id       Int?
+  receiver        Wallet?      @relation("Receiver", fields: [receiver_id], references: [id])
+  receiver_id     Int?
+  event_member    EventMember? @relation(fields: [event_member_id], references: [id])
+  event_member_id Int?
+  amount          Int
+  created_at      DateTime     @default(now())
 }
 
 model EventMember {
-  id       Int   @id @default(autoincrement())
-  user     User  @relation(fields: [user_id], references: [id])
-  user_id  Int
-  event    Event @relation(fields: [event_id], references: [id])
-  event_id Int
-  role     Role
+  id           Int   @id @default(autoincrement())
+  user         User  @relation(fields: [user_id], references: [id])
+  user_id      Int
+  event        Event @relation(fields: [event_id], references: [id])
+  event_id     Int
+  role         Role
+  transactions Transaction[]
 
   @@unique([user_id, event_id])
 }
@@ -78,9 +81,8 @@ model TicketOption {
   ticket_date    TicketDate @relation(fields: [ticket_date_id], references: [id])
   ticket_date_id Int
   name           String
-  price          Float?
-  tickets_max    Int?
-  tickets_sold   Int        @default(0)
+  price          Float      @default(0)
+  amount         Int        @default(-1)
   tickets        Ticket[]
 }
 
@@ -91,8 +93,7 @@ model TicketDate {
   name           String
   valid_from     DateTime?
   valid_until    DateTime?
-  tickets_max    Int?
-  tickets_sold   Int            @default(0)
+  amount         Int            @default(-1)
   ticket_options TicketOption[]
 }
 
@@ -105,8 +106,7 @@ model Event {
   start_at          DateTime?
   end_at            DateTime?
   is_private        Boolean       @default(true)
-  tickets_users_max Int?
-  tickets_sold      Int           @default(0)
+  tickets_users_max Int           @default(-1)
   ticket_dates      TicketDate[]
   wallets           Wallet[]
   event_members     EventMember[]

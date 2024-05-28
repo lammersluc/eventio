@@ -10,6 +10,7 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 360
 
         const image = await sharp(Buffer.from(body.image, 'base64'))
             .resize(360, 900)
+            .png()
             .toFile(`./images/events/${eventId}.png`)
             .catch(() => null);
 

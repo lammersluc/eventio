@@ -6,6 +6,7 @@ import dateIdRouter from './{dateId}';
 
 export default new Elysia({ prefix: '/dates' })
     .use(dateIdRouter)
+
     .get('', async ({ params }) => {
                     
         const ticketDates = await prisma.ticketDate.findMany({
@@ -17,12 +18,27 @@ export default new Elysia({ prefix: '/dates' })
                 name: true,
                 valid_from: true,
                 valid_until: true,
-                tickets_max: true,
-                tickets_sold: true
+                amount: true,
+                ticket_options: {
+                    select: {
+                        _count: {
+                            select: {
+                                tickets: true
+                            }
+                        }
+                    }
+                }
             }
         });
 
-        return ticketDates;
+        return ticketDates.map(date => ({
+            id: date.id,
+            name: date.name,
+            validFrom: date.valid_from,
+            validUntil: date.valid_until,
+            amount: date.amount,
+            sold: date.ticket_options.reduce((sold, option) => sold + option._count.tickets, 0)
+        }));
     }, {
         params: t.Object({
             eventId: t.String()
@@ -31,10 +47,10 @@ export default new Elysia({ prefix: '/dates' })
             200: t.Array(t.Object({
                 id: t.Number(),
                 name: t.String(),
-                valid_from: t.Nullable(t.Date()),
-                valid_until: t.Nullable(t.Date()),
-                tickets_max: t.Nullable(t.Number()),
-                tickets_sold: t.Number()
+                validFrom: t.Nullable(t.Date()),
+                validUntil: t.Nullable(t.Date()),
+                amount: t.Nullable(t.Number()),
+                sold: t.Number()
             }))
         }
     })

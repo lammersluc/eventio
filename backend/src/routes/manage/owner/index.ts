@@ -7,9 +7,9 @@ import imageRouter from './image';
 
 export default new Elysia({ tags: ['Owner'] })
     .onBeforeHandle(({ error, store }) => {
-        const { role } = store as { role: number };
+        const { eventMember } = store as { eventMember: { role: number } };
 
-        if (role < 4) return error(403, '');
+        if (eventMember.role < 4) return error(403, '');
     })
     
     .use(membersRouter)

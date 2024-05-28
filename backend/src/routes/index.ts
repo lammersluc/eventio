@@ -6,8 +6,8 @@ import { checkTokens } from '@/services/tokens';
 
 import authRouter from './auth';
 import accountRouter from './account';
-import walletRouter from './wallet';
-import eventsRouter from './events';
+import walletsRouter from './wallets';
+import eventRouter from './event';
 import manageRouter from './manage';
 
 export default new Elysia()
@@ -32,8 +32,8 @@ export default new Elysia()
         }
     }, app => app
         .use(accountRouter)
-        .use(walletRouter)
-        .use(eventsRouter)
+        .use(walletsRouter)
+        .use(eventRouter)
         .use(manageRouter)
     )
     .use(swagger({

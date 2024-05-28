@@ -3,24 +3,61 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/transactions/:transactionId' })
-    .patch('', async ({ params, body, error }) => {
+    .patch('', async ({ params, body, error, store }) => {
+        const { eventMember } = store as { eventMember: { id: number } };
+        const transactionId = +params.transactionId;
 
-        const updated = await prisma.transaction.update({
+        const transaction = await prisma.transaction.findFirst({
             where: {
-                id: +params.transactionId,
-                created_at: {
-                    gte: new Date(new Date().getTime() - 5 * 60 * 1000)
-                }
-            },
-            data: {
-                amount: +body.amount
+                id: transactionId,
+                receiver_id: null,
+                event_member_id: eventMember.id
             },
             select: {
-                id: true
+                sender: {
+                    select: {
+                        id: true,
+                        coins: true
+                    }
+                },
+                amount: true
             }
         });
 
-        if (!updated) return error(404, '');
+        if (!transaction || !transaction.sender) return error(404, '');
+
+        const change = body.amount - transaction.amount;
+
+        if (transaction.sender.coins + change < 0) return error(402, '');
+
+        const result = await prisma.$transaction([
+            prisma.wallet.update({
+                where: {
+                    id: transactionId,
+                },
+                data: {
+                    coins: {
+                        increment: change
+                    }
+                },
+                select: {
+                    id: true
+                }
+            }),
+            prisma.transaction.update({
+                where: {
+                    id: transactionId
+                },
+                data: {
+                    amount: body.amount
+                },
+                select: {
+                    id: true
+                }
+            })
+        ]);
+
+        if (!result) return error(500, '');
 
         return '';
     }, {
@@ -32,57 +69,7 @@ export default new Elysia({ prefix: '/transactions/:transactionId' })
         }),
         response: {
             200: t.String(),
-            404: t.String()
-        }
-    })
-
-    .delete('', async ({ params, error }) => {
-
-        const transaction = await prisma.transaction.findUnique({
-            where: {
-                id: +params.transactionId
-            },
-            select: {
-                amount: true
-            }
-        });
-
-        if (!transaction) return error(404, '');
-
-        const result = await prisma.$transaction([
-           
-            prisma.transaction.delete({
-                where: {
-                    id: +params.transactionId
-                },
-                select: {
-                    id: true
-                }
-            }),
-            prisma.wallet.update({
-                where: {
-                    id: 1
-                },
-                data: {
-                    coins: {
-                        decrement: transaction.amount
-                    }
-                },
-                select: {
-                    id: true
-                }
-            })
-        ]).catch(() => null);
-
-        if (!result) return error(500, '');
-
-        return '';
-    }, {
-        params: t.Object({
-            transactionId: t.String()
-        }),
-        response: {
-            200: t.String(),
+            402: t.String(),
             404: t.String(),
             500: t.String()
         }

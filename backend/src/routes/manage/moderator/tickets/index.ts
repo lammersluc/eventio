@@ -5,12 +5,11 @@ import prisma from '@/services/database';
 export default new Elysia({ prefix: '/tickets' })
     .put('', async ({ body, error, set }) => {
 
-        const data = {
+        let data = {
             wallet_id: body.walletId,
             ticket_option_id: body.optionId,
-            purchased_at: new Date,
             scanned_at: body.scannedAt
-        }
+        };
         
         const created = await prisma.ticket.create({ data });
 
@@ -32,14 +31,16 @@ export default new Elysia({ prefix: '/tickets' })
 
     .patch('/:ticketId', async ({ body, params, error }) => {
 
+        const data = {
+            ticket_option_id: body.optionId,
+            scanned_at: body.scannedAt
+        }
+
         const updated = await prisma.ticket.update({
             where: {
                 id: +params.ticketId
             },
-            data: {
-                ticket_option_id: body.optionId,
-                scanned_at: body.scannedAt
-            }
+            data
         });
 
         if (!updated) return error(404, '');

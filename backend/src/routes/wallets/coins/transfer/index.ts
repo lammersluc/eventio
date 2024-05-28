@@ -6,13 +6,14 @@ import prisma from '@/services/database';
 export default new Elysia({ prefix: '/transfer' })
     .patch('', async ({ body, error, store}) => {
         const { uid } = store as { uid: number };
-        const token = await checkQR(body.walletId);
 
-        if (!token || token.type !== 'wallet') return error(404, '');
+        const data = await checkQR(body.walletQR);
+
+        if (!data || data.type !== 'wallet') return error(404, '');
 
         const receiver = await prisma.wallet.findUnique({
             where: {
-                id: token.id
+                id: data.id
             },
             select: {
                 id: true,
@@ -37,35 +38,36 @@ export default new Elysia({ prefix: '/transfer' })
 
         if (!sender || sender.coins < body.amount) return error(402, '');
 
-        const updated = await prisma.wallet.update({
-            where: {
-                id: sender.id
-            },
-            data: {
-                coins: {
-                    decrement: body.amount
+        const result = await prisma.$transaction([
+            prisma.wallet.update({
+                where: {
+                    id: sender.id
+                },
+                data: {
+                    coins: {
+                        decrement: body.amount
+                    }
+                },
+            }),
+            prisma.wallet.update({
+                where: {
+                    id: receiver.id
+                },
+                data: {
+                    coins: {
+                        increment: body.amount
+                    }
                 }
-            },
-        });
+            })
+        ])
 
-        if (!updated) return error(500, '');
-
-        await prisma.wallet.update({
-            where: {
-                id: receiver.id
-            },
-            data: {
-                coins: {
-                    increment: body.amount
-                }
-            }
-        });
+        if (!result) return error(500, '');
         
         return '';
     }, {
         body: t.Object({
             amount: t.Number({ minimum: 1 }),
-            walletId: t.String()
+            walletQR: t.String()
         }),
         response: {
             200: t.String(),

@@ -13,7 +13,7 @@ export default new Elysia({ prefix: '/:dateId' })
             name: body.name,
             valid_from: body.validFrom,
             valid_until: body.validUntil,
-            tickets_max: body.ticketsMax
+            amount: body.amount
         }
             
         const updated = await prisma.ticketDate.update({
@@ -34,7 +34,7 @@ export default new Elysia({ prefix: '/:dateId' })
             name: t.String(),
             validFrom: t.Nullable(t.Date()),
             validUntil: t.Nullable(t.Date()),
-            ticketsMax: t.Nullable(t.Number())
+            amount: t.Number()
         })),
         response: {
             200: t.String(),
@@ -46,11 +46,18 @@ export default new Elysia({ prefix: '/:dateId' })
             
         const deleted = await prisma.ticketDate.delete({
             where: {
-                id: +params.dateId
+                id: +params.dateId,
+                ticket_options: {
+                    every: {
+                        tickets: {
+                            none: {}
+                        }
+                    }
+                }
             }
         });
 
-        if (!deleted) return error(404, '');
+        if (!deleted) return error(409, '');
 
         return '';
     }, {
@@ -59,6 +66,6 @@ export default new Elysia({ prefix: '/:dateId' })
         }),
         response: {
             200: t.String(),
-            404: t.String()
+            409: t.String()
         }
     })

@@ -39,7 +39,7 @@ export default new Elysia({ prefix: '/password' })
         body: t.Object({
             password: t.Object({
                 current: t.String(),
-                new: t.String()
+                new: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,128}$' })
             })
         }),
         response: {

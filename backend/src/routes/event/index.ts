@@ -16,6 +16,7 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
             where: {
                 is_private: false,
                 name: {
+                    mode: 'insensitive',
                     contains: query.search
                 },
                 end_at: {
@@ -26,7 +27,21 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
                 id: true,
                 name: true,
                 has_image: true,
-                start_at: true
+                start_at: true,
+                wallets: {
+                    select: {
+                        _count: {
+                            select: {
+                                tickets: true
+                            }
+                        }
+                    }
+                },
+                ticket_dates: {
+                    select: {
+                        amount: true
+                    }
+                }
             },
             take: +query.limit
         });
@@ -38,7 +53,8 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
                 id: event.id,
                 name: event.name,
                 image,
-                startAt: event.start_at
+                startAt: event.start_at,
+                available: event.ticket_dates.reduce((amount, date) => amount + date.amount, 0) - event.wallets.reduce((amount, wallet) => amount + wallet._count.tickets, 0)
             }
         });
     }, {
@@ -51,7 +67,8 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
                 id: t.Number(),
                 name: t.String(),
                 image: t.Nullable(t.String()),
-                startAt: t.Nullable(t.Date())
+                startAt: t.Nullable(t.Date()),
+                available: t.Number()
             }))
         }
     })

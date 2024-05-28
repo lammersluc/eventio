@@ -8,7 +8,7 @@ export default new Elysia({ prefix: '/options/:optionId' })
         const data = {
             name: body.name,
             price: body.price,
-            tickets_max: body.ticketsMax
+            amount: body.amount
         }
             
         const updated = await prisma.ticketOption.update({
@@ -27,8 +27,8 @@ export default new Elysia({ prefix: '/options/:optionId' })
         }),
         body: t.Partial(t.Object({
             name: t.String(),
-            price: t.Nullable(t.Number()),
-            ticketsMax: t.Nullable(t.Number())
+            price: t.Number(),
+            amount: t.Number()
         })),
         response: {
             200: t.String(),
@@ -40,11 +40,14 @@ export default new Elysia({ prefix: '/options/:optionId' })
             
         const deleted = await prisma.ticketOption.delete({
             where: {
-                id: +params.optionId
+                id: +params.optionId,
+                tickets: {
+                    none: {}
+                }
             }
         });
 
-        if (!deleted) return error(404, '');
+        if (!deleted) return error(409, '');
 
         return '';
     }, {
@@ -53,6 +56,6 @@ export default new Elysia({ prefix: '/options/:optionId' })
         }),
         response: {
             200: t.String(),
-            404: t.String()
+            409: t.String()
         }
     })

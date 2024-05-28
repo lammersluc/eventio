@@ -3,14 +3,10 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/buy' })
-    .post('', async ({ body, error, store}) => {
-        const { uid } = store as { uid: number };
+    .post('', async ({ body, params, error }) => {
         const wallet = await prisma.wallet.findUnique({
             where: {
-                user_id_event_id: {
-                    user_id: uid,
-                    event_id: body.eventId
-                }
+                id: +params.walletId
             },
             select: {
                 id: true
@@ -19,16 +15,11 @@ export default new Elysia({ prefix: '/buy' })
 
         if (!wallet) return error(404, '');
 
-        //Check ideal payment
-        const payed = true;
-        if (!payed) return error(402, '');
+        //Check stripe payment
 
         const updated = await prisma.wallet.update({
             where: {
-                user_id_event_id: {
-                    user_id: uid,
-                    event_id: body.eventId
-                }
+                id: wallet.id
             },
             data: {
                 coins: {
@@ -38,9 +29,9 @@ export default new Elysia({ prefix: '/buy' })
             select: {
                 id: true
             }
-        });
+        }).catch(() => null);
 
-        if (!updated) return error(404, '');
+        if (!updated) return error(500, '');
 
         return '';
     }, {
@@ -48,9 +39,13 @@ export default new Elysia({ prefix: '/buy' })
             eventId: t.Number(),
             amount: t.Number({ minimum: 1 }),
         }),
+        params: t.Object({
+            walletId: t.String()
+        }),
         response: {
             200: t.String(),
             402: t.String(),
-            404: t.String()
+            404: t.String(),
+            500: t.String()
         }
     })

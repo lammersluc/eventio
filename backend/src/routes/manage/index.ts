@@ -11,10 +11,13 @@ import cashierRouter from './cashier';
 
 export default new Elysia({ prefix: '/events/:eventId' })
     .use(creatorRouter)
-    .state('role', 0)
+    .state('eventMember', {
+        id: 0,
+        role: 0
+    })
     .guard({
         async beforeHandle({ params, error, store }) {
-            const { uid } = store as { role: number, uid: number };
+            const { uid } = store as { eventMember: { id: number, role: number }, uid: number };
 
             const eventMember = await prisma.eventMember.findUnique({
                 where: {
@@ -24,6 +27,7 @@ export default new Elysia({ prefix: '/events/:eventId' })
                     }
                 },
                 select: {
+                    id: true,
                     role: true
                 }
             })
@@ -37,8 +41,8 @@ export default new Elysia({ prefix: '/events/:eventId' })
                 moderator: 2,
                 cashier: 1
             }
-
-            store.role = roles[eventMember.role];
+    
+            store.eventMember = { id: eventMember.id, role: roles[eventMember.role] };
         },
         params: t.Object({
             id: t.String()

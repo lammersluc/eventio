@@ -21,7 +21,6 @@ type Data = {
 export const checkQR = async (qr: string) => {
 
     const encrypted = await JSON.parse(qr) as Encrypted;
-
     const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secret), Buffer.from(encrypted.iv, 'hex'));
 
     let decrypted = decipher.update(Buffer.from(encrypted.encryptedData, 'hex'));
@@ -41,7 +40,6 @@ export const generateQR = async (id: number, type: string) => {
 
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-
 
     return await qrcode.toDataURL(JSON.stringify({ iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') }));
 }

@@ -4,22 +4,18 @@ import { checkQR } from '@/services/qrcode';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
-    .get('', async ({ params, error }) => {
+    .get('', async ({ params, error, store }) => {
+        const { eventMember } = store as { eventMember: { id: number } };
 
         const data = await checkQR(params.walletQR);
 
         if (!data || data.type !== 'wallet') return error(404, '');
 
-        const purchases = await prisma.wallet.findUnique({
+        const purchase = await prisma.transaction.findFirst({
             where: {
-                id: data.id
-            }
-        }).transactions_sender({
-            where: {
+                sender_id: data.id,
                 receiver_id: null,
-                created_at: {
-                    gte: new Date(new Date().getTime() - 3 * 60 * 1000)
-                }
+                event_member_id: eventMember.id
             },
             select: {
                 id: true,
@@ -27,27 +23,28 @@ export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
                 created_at: true
             },
             orderBy: {
-                created_at: 'desc'
+                id: 'desc'
             }
         });
 
-        if (!purchases) return error(404, '');
+        if (!purchase) return error(404, '');
     
-        return purchases.map(purchase => ({
+        return {
             id: purchase.id,
             amount: purchase.amount,
             createdAt: purchase.created_at
-        }))
+        };
     }, {
         params: t.Object({
+            eventId: t.String(),
             walletQR: t.String()
         }),
         response: {
-            200: t.Array(t.Object({
+            200: t.Object({
                 id: t.Number(),
                 amount: t.Number(),
                 createdAt: t.Date()
-            })),
+            }),
             404: t.String()
         }
     })

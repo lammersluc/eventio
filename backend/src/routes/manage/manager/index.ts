@@ -5,9 +5,9 @@ import optionsRouter from './options';
 
 export default new Elysia({ tags: ['Manager'] })
     .onBeforeHandle(({ error, store }) => {
-        const { role } = store as { role: number };
+        const { eventMember } = store as { eventMember: { role: number } };
 
-        if (role < 3) return error(403, '');
+        if (eventMember.role < 3) return error(403, '');
     })
     .use(datesRouter)
     .use(optionsRouter)
