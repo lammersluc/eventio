@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import qrcode from 'qrcode';
 
 const algorithm = 'aes-256-cbc';
 const secret = process.env.QR_SECRET!;
@@ -18,9 +17,9 @@ type Data = {
     exp: number;
 };
 
-export const checkQR = async (qr: string) => {
+export const checkData = async (string: string) => {
 
-    const encrypted = await JSON.parse(qr) as Encrypted;
+    const encrypted = await JSON.parse(string) as Encrypted;
     const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secret), Buffer.from(encrypted.iv, 'hex'));
 
     let decrypted = decipher.update(Buffer.from(encrypted.encryptedData, 'hex'));
@@ -33,7 +32,7 @@ export const checkQR = async (qr: string) => {
     return data;
 };
 
-export const generateQR = async (id: number, type: string) => {
+export const generateData = (id: number, type: string) => {
     const text = JSON.stringify({ id, type, exp: Date.now() + expiry });
     
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(secret), iv);
@@ -41,5 +40,5 @@ export const generateQR = async (id: number, type: string) => {
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
 
-    return await qrcode.toDataURL(JSON.stringify({ iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') }));
+    return JSON.stringify({ iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') });
 }

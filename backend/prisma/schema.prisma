@@ -105,8 +105,8 @@ model Event {
   location          String?
   start_at          DateTime?
   end_at            DateTime?
-  is_private        Boolean       @default(true)
   tickets_users_max Int           @default(-1)
+  is_private        Boolean       @default(true)
   ticket_dates      TicketDate[]
   wallets           Wallet[]
   event_members     EventMember[]

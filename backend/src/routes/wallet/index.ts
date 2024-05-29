@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 
-import { generateQR } from '@/services/qrcode';
+import { generateData } from '@/services/qrcode';
 import prisma from '@/services/database';
 
 import ticketsRouter from './tickets';
@@ -42,7 +42,7 @@ export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
 
             if (!wallet) return error(404, '');
 
-            return await generateQR(wallet.id, 'wallet');
+            return generateData(wallet.id, 'wallet');
         }, {
             params: t.Object({
                 walletId: t.String()

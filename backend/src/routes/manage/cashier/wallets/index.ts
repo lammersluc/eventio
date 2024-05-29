@@ -1,13 +1,13 @@
 import { Elysia, t } from 'elysia';
 
-import { checkQR } from '@/services/qrcode';
+import { checkData } from '@/services/qrcode';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
     .get('', async ({ params, error, store }) => {
         const { eventMember } = store as { eventMember: { id: number } };
 
-        const data = await checkQR(params.walletQR);
+        const data = await checkData(params.walletQR);
 
         if (!data || data.type !== 'wallet') return error(404, '');
 
@@ -51,7 +51,7 @@ export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
 
     .put('', async ({ body, params, error }) => {
 
-        const data = await checkQR(params.walletQR);
+        const data = await checkData(params.walletQR);
 
         if (!data || data.type !== 'wallet') return error(404, '');
 

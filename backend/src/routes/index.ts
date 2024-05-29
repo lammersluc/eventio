@@ -6,7 +6,7 @@ import { checkTokens } from '@/services/tokens';
 
 import authRouter from './auth';
 import accountRouter from './account';
-import walletsRouter from './wallets';
+import walletRouter from './wallet';
 import eventRouter from './event';
 import manageRouter from './manage';
 
@@ -32,7 +32,7 @@ export default new Elysia()
         }
     }, app => app
         .use(accountRouter)
-        .use(walletsRouter)
+        .use(walletRouter)
         .use(eventRouter)
         .use(manageRouter)
     )
@@ -42,7 +42,7 @@ export default new Elysia()
         documentation: {
             info: {
                 title: 'Eventio API',
-                version: '0.0.1',
+                version: '0.1.0',
             },
             components: {
                 securitySchemes: {

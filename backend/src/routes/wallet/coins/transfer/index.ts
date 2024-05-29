@@ -1,13 +1,13 @@
 import { Elysia, t } from 'elysia';
 
-import { checkQR } from '@/services/qrcode';
+import { checkData } from '@/services/qrcode';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/transfer' })
     .patch('', async ({ body, error, store}) => {
         const { uid } = store as { uid: number };
 
-        const data = await checkQR(body.walletQR);
+        const data = await checkData(body.walletQR);
 
         if (!data || data.type !== 'wallet') return error(404, '');
 
