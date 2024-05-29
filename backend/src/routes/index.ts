@@ -15,6 +15,7 @@ export default new Elysia()
     .state({
         uid: 0,
     })
+    
     .use(authRouter)
     .guard({
         async beforeHandle({ error, bearer, store }) {
@@ -36,6 +37,7 @@ export default new Elysia()
         .use(eventRouter)
         .use(manageRouter)
     )
+
     .use(swagger({
         path: '/docs',
         exclude: ['/docs', '/docs/json'],
