@@ -5,7 +5,7 @@ import prisma from '@/services/database';
 import { generateData } from '@/services/qrcode';
 
 export default new Elysia({ prefix: '/:ticketId' })
-    .patch('', async ({ body, params, error, store }) => {
+    .patch('/transfer', async ({ body, params, error }) => {
         const ticketId = +params.ticketId;
 
         const ticket = await prisma.ticket.findUnique({
@@ -69,7 +69,7 @@ export default new Elysia({ prefix: '/:ticketId' })
         }
     })
 
-    .get('', async ({ error, params, store }) => {
+    .get('/qr', async ({ error, params, store }) => {
         const { uid } = store as { uid: number };
 
         const ticket = await prisma.ticket.findUnique({
@@ -83,7 +83,7 @@ export default new Elysia({ prefix: '/:ticketId' })
 
         if (!ticket) return error(404, '');
 
-        return await generateData(ticket.id, 'ticket');
+        return generateData(ticket.id, 'ticket');
     }, {
         params: t.Object({
             ticketId: t.String()

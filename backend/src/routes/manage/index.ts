@@ -9,7 +9,7 @@ import moderatorRouter from './moderator';
 import cashierRouter from './cashier';
 
 
-export default new Elysia({ prefix: '/events/:eventId' })
+export default new Elysia({ prefix: '/manage/events/:eventId' })
     .use(creatorRouter)
     .state('eventMember', {
         id: 0,

@@ -1,5 +1,4 @@
 import { Elysia, t } from 'elysia';
-import fs from 'fs';
 
 import prisma from '@/services/database';
 

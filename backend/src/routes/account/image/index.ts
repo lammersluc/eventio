@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/image', detail: { description: 'base64 128x128' } })
-    .post('', async ({ body, error, set, store }) => {  
+    .post('', async ({ body, error, store }) => {  
         const { uid } = store as { uid: number };
 
         const image = await sharp(Buffer.from(body.image, 'base64'))

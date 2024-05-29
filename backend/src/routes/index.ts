@@ -15,7 +15,7 @@ export default new Elysia()
     .state({
         uid: 0,
     })
-    
+
     .use(authRouter)
     .guard({
         async beforeHandle({ error, bearer, store }) {

@@ -3,10 +3,10 @@ import fs from 'fs';
 
 import prisma from '@/services/database';
 
-import datesRouter from './dates';
+import dateRouter from './date';
 
 export default new Elysia({ prefix: '/:eventId' })
-    .use(datesRouter)
+    .use(dateRouter)
 
     .get('', async ({ error, params }) => {
         const eventId = +params.eventId;
