@@ -1,7 +1,18 @@
-import { Center, Paper, Text, Input, Stack, Button, PasswordInput } from '@mantine/core'
+'use client';
+
+import { Center, Paper, Text, Input, Stack, Button, PasswordInput,  } from '@mantine/core'
+import { useForm } from '@mantine/form';
 import { IconMail } from '@tabler/icons-react'
 
 export default () => {
+    const form = useForm({
+        mode: 'uncontrolled',
+        initialValues: { email: '', password: '' },
+        validate: {
+            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email')
+        }
+    });
+
     return (
         <Center
             h='100%'
@@ -9,48 +20,53 @@ export default () => {
             <Paper
                 radius='lg'
                 shadow='xl'
-                withBorder
             >
-                <Stack
-                    p='xl'
-                    gap='lg'
-                    align='center'
-                >
-
-                    <Text fw={600} size='xl'>
-                        Login
-                    </Text>
+                <form onSubmit={console.log}>
 
                     <Stack
-                        gap='xs'
+                        p='xl'
+                        gap='lg'
+                        align='center'
                     >
-                        <Text
-                            fw={500}
-                            opacity={0.5}
-                        >
-                            Email
+
+                        <Text fw={600} size='xl'>
+                            Login
                         </Text>
-                        <Input variant='filled' size='md' type='email' rightSection={<IconMail size={20}/>} required={true} placeholder='you@example.com' />
+
+                            <Input
+                                variant='filled'
+                                size='md'
+                                type='email'
+                                {...form.getInputProps('name')}
+                                required={true}
+                                placeholder='Email'
+                                rightSection={<IconMail stroke={1.5} size={20}/>}
+                                key={form.key('email')}
+                                {...form.getInputProps('email')}
+                            />
+                            <PasswordInput
+                                w='100%'
+                                variant='filled'
+                                size='md'
+                                required={true}
+                                placeholder='Password'
+                                key={form.key('password')}
+                                {...form.getInputProps('password')}
+                            />
+
+                            <Button
+                                type='submit'
+                                fullWidth
+                            >
+                                Login
+                            </Button>
+
                     </Stack>
 
-                    <Stack
-                        gap='xs'
-                        w='100%'
-                    >
-                        <Text
-                            fw={500}
-                            opacity={0.5}
-                        >
-                            Password
-                        </Text>
-                        <PasswordInput variant='filled' size='md' placeholder='Password123!' />
-                    </Stack>
-
-                    <Button fullWidth>Login</Button>
-
-                </Stack>
+                </form>
 
             </Paper>
+
         </Center>
     );
 }

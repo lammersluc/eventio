@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import '@mantine/core/styles.css';
-import { MantineProvider, Box, Center } from '@mantine/core';
-import Menu from "@/components/layout/menu";
+import { MantineProvider, useMantineColorScheme, Center } from '@mantine/core';
+import App from "./app";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   title: "Eventio",
   description: "Event management",
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,12 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <MantineProvider>
-          <Box h='100dvh'>
-            <Menu />
-            <Center h='85dvh' p='lg'>
-              {children}
-            </Center>
-          </Box>
+          <App children={children}/>
         </MantineProvider>
       </body>
     </html>
