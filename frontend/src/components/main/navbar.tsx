@@ -1,10 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Group, Text, Image, Paper } from '@mantine/core';
+import { Group, Text, Image, Paper, ActionIcon, useMantineColorScheme } from '@mantine/core';
+import { IconSun, IconMoon } from '@tabler/icons-react';
 
 export default () => {
       const router = useRouter();
+
+      const { colorScheme, toggleColorScheme } = useMantineColorScheme()
 
     return (
         <Paper
@@ -22,8 +25,7 @@ export default () => {
                     }}
                 >
                     <Image
-                        src='/eventio.png'
-                        alt='Eventio'
+                        src='/logo.png'
                         width={40}
                         height={40}
                     />
@@ -34,8 +36,20 @@ export default () => {
                         Eventio
                     </Text>
                 </Group>
+                
                 <Group>
-                    
+                    <ActionIcon
+                        onClick={toggleColorScheme}
+                        variant="default"
+                        size="xl"
+                        aria-label="Toggle color scheme"
+                        >
+                            {
+                                colorScheme === 'dark' ?
+                                <IconSun stroke={1.5} /> :
+                                <IconMoon stroke={1.5} />
+                            }
+                    </ActionIcon>
                 </Group>
             </Group>
         </Paper>

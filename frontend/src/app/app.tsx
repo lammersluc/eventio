@@ -1,6 +1,6 @@
 'use client';
 
-import { useMantineColorScheme, Box } from "@mantine/core"
+import { Box, useMantineColorScheme } from "@mantine/core"
 
 import Navbar from '@/components/main/navbar';
 
@@ -9,12 +9,11 @@ export default ({
   }: Readonly<{
     children: React.ReactNode;
   }>) => {
-
     const { colorScheme } = useMantineColorScheme();
 
     return (
         <Box
-            bg='#f8f8ff'
+            bg={colorScheme === 'dark' ? '#191919' : '#f8f8ff'}
             h='100dvh'
         >
             <Navbar />
