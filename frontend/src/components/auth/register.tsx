@@ -17,7 +17,7 @@ export default ({
     const form = useForm({
         initialValues: { username: '', email: '', password: '' },
         validate: {
-            username: (value) => !/^[a-z0-9_]{3,16}$/.test(value),
+            username: (value) => /^[a-z0-9_]{3,16}$/.test(value) ? null : '3-16 characters (a-z, 0-9, _)',
             email: (value) => !/^\S+@\S+$/.test(value),
             password: (value) => zxcvbn(value).score < 3
         }

@@ -38,7 +38,7 @@ export default () => {
                             justifyContent: 'center',
                             alignItems: 'center',
                             transition: 'transform 0.5s ease-in-out',
-                            zIndex: 100
+                            zIndex: 10
                         }}
                     >
                         <Image
