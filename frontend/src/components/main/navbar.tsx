@@ -5,12 +5,14 @@ import { Group, Text, Image, Paper, ActionIcon, useMantineColorScheme } from '@m
 import { IconSun, IconMoon } from '@tabler/icons-react';
 
 export default () => {
-      const router = useRouter();
-
       const { colorScheme, toggleColorScheme } = useMantineColorScheme()
+      const router = useRouter();
 
     return (
         <Paper
+            pos='absolute'
+            top={0}
+            w='100%'
             shadow='md'
             radius={0}
         >

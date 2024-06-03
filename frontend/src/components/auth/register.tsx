@@ -1,8 +1,9 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { Text, Stack, Button, TextInput, PasswordInput, Anchor } from '@mantine/core'
+import { Text, Stack, Button, TextInput, PasswordInput, Anchor, Progress } from '@mantine/core'
 import { useForm } from '@mantine/form';
 import { IconUser, IconMail } from '@tabler/icons-react'
+import { zxcvbn } from '@zxcvbn-ts/core';
 
 import client from '@/lib/client';
 
@@ -14,12 +15,11 @@ export default ({
     const router = useRouter();
 
     const form = useForm({
-        initialValues: { username: '', email: '', password: '', confirm: '' },
+        initialValues: { username: '', email: '', password: '' },
         validate: {
-            username: (value) => /^[a-z0-9_]{3,16}$/.test(value) ? null : 'Invalid username',
-            email: (value) => /^\S+@\S+$/.test(value) ? null : 'Invalid email',
-            password: (value) => value.length > 0 ? null : 'Password is required',
-            confirm: (value, other) => value === other.password ? null : 'Passwords do not match'
+            username: (value) => !/^[a-z0-9_]{3,16}$/.test(value),
+            email: (value) => !/^\S+@\S+$/.test(value),
+            password: (value) => zxcvbn(value).score < 3
         }
     });
 
@@ -63,6 +63,7 @@ export default ({
                     variant='filled'
                     size='md'
                     placeholder='Username'
+                    spellCheck={false}
                     rightSection={<IconUser stroke={1.5} size={20}/>}
                     key={form.key('username')}
                     {...form.getInputProps('username')}
@@ -72,28 +73,30 @@ export default ({
                     variant='filled'
                     size='md'
                     placeholder='Email'
+                    spellCheck={false}
                     rightSection={<IconMail stroke={1.5} size={20}/>}
                     key={form.key('email')}
                     {...form.getInputProps('email')}
                 />
 
-                <PasswordInput
+                <Stack
                     w='100%'
-                    variant='filled'
-                    size='md'
-                    placeholder='Password'
-                    key={form.key('password')}
-                    {...form.getInputProps('password')}
-                />
-
-                <PasswordInput
-                    w='100%'
-                    variant='filled'
-                    size='md'
-                    placeholder='Confirm Password'
-                    key={form.key('confirm')}
-                    {...form.getInputProps('confirm')}
-                />
+                    gap={3}
+                >
+                    <PasswordInput
+                        variant='filled'
+                        size='md'
+                        placeholder='Password'
+                        key={form.key('password')}
+                        {...form.getInputProps('password')}
+                    />
+                    <Progress
+                        value={zxcvbn(form.values.password).score * 25}
+                        color={zxcvbn(form.values.password).score < 3 ? 'red' : 'blue'}
+                        size={4}
+                        radius='xl'
+                    />
+                </Stack>
 
                 <Button
                     type='submit'

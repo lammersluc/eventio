@@ -55,15 +55,18 @@ export default ({
                         variant='filled'
                         size='md'
                         placeholder='Email'
+                        spellCheck={false}
                         rightSection={<IconMail stroke={1.5} size={20}/>}
                         key={form.key('email')}
                         {...form.getInputProps('email')}
                     />
+
                     <PasswordInput
                         w='100%'
                         variant='filled'
                         size='md'
                         placeholder='Password'
+                        spellCheck={false}
                         key={form.key('password')}
                         {...form.getInputProps('password')}
                     />

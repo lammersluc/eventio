@@ -1,4 +1,5 @@
 import { Elysia, t } from 'elysia';
+import { zxcvbn } from '@zxcvbn-ts/core';
 
 import prisma from '@/services/database';
 
@@ -18,14 +19,14 @@ export default new Elysia({ prefix: '/password' })
         if (!user) return error(500, '');
         if (!await Bun.password.verify(body.password.current, user.password)) return error(401, '');
 
-        const password = await Bun.password.hash(body.password.new);
+        if (zxcvbn(body.password.new).score < 3) return error(400, '');
 
         const updated = await prisma.user.update({
             where: {
                 id: uid
             },
             data: {
-                password
+                password: await Bun.password.hash(body.password.new)
             },
             select: {
                 id: true
@@ -44,8 +45,8 @@ export default new Elysia({ prefix: '/password' })
         }),
         response: {
             200: t.String(),
+            400: t.String(),
             401: t.String(),
-            409: t.String(),
             500: t.String()
         }
     })
