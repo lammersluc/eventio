@@ -1,59 +1,121 @@
 'use client';
 
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Group, Text, Image, Paper, ActionIcon, useMantineColorScheme } from '@mantine/core';
-import { IconSun, IconMoon } from '@tabler/icons-react';
+import { useMantineColorScheme, Group, Stack, Text, Image, Paper, ActionIcon, Divider } from '@mantine/core';
+import { IconSun, IconMoon, IconChevronsLeft, IconChevronsRight } from '@tabler/icons-react';
 
 export default () => {
-      const { colorScheme, toggleColorScheme } = useMantineColorScheme()
-      const router = useRouter();
+    const [collapsed, setCollapsed] = React.useState(true);
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme({
+        keepTransitions: true
+    })
+    const router = useRouter();
 
     return (
-        <Paper
-            pos='absolute'
-            top={0}
-            w='100%'
-            shadow='md'
-            radius={0}
+        <Stack
+            w={collapsed ? '50px' : '180px'}
+            h='100%'
+            py='xs'
+            justify='space-between'
+            style={{
+                transition: 'all 0.5s ease-in-out'
+            }}
         >
-            <Group
-                p='sm'
-                justify='space-between'
+
+            <Stack
+                align='center'
             >
-                <Group
+
+                <Paper
+                    p='xs'
+                    radius='md'
+                    withBorder
                     onClick={() => router.push('/')}
                     style={{
                         cursor: 'pointer'
                     }}
                 >
-                    <Image
-                        src='/logo.png'
-                        width={40}
-                        height={40}
-                    />
-                    <Text
-                        size='xl'
-                        fw={700}
+
+                    <Group
+                        w={collapsed ? 25 : 100}
+                        pl='2px'
+                        gap='xs'
+                        wrap='nowrap'
+                        style={{
+                            transition: 'all 0.5s ease-in-out',
+                            overflow: 'hidden'
+                        }}
                     >
-                        Eventio
-                    </Text>
-                </Group>
-                
-                <Group>
-                    <ActionIcon
-                        onClick={toggleColorScheme}
-                        variant="default"
-                        size="xl"
-                        aria-label="Toggle color scheme"
+
+                        <Image
+                            src='/logo.png'
+                            w={25}
+                            h={25}
+                        />
+
+                        <Text
+                            size='md'
+                            fw={700}
                         >
-                            {
-                                colorScheme === 'dark' ?
-                                <IconSun stroke={1.5} /> :
-                                <IconMoon stroke={1.5} />
-                            }
-                    </ActionIcon>
-                </Group>
-            </Group>
-        </Paper>
+                            Eventio
+                        </Text>
+
+                    </Group>
+
+                </Paper>
+
+                <ActionIcon
+                    radius='md'
+                    size='lg'
+                    variant='default'
+                    onClick={() => setCollapsed(!collapsed)}
+                >
+                    {
+                        collapsed ?
+                            <IconChevronsRight stroke={1.5} /> :
+                            <IconChevronsLeft stroke={1.5} />
+                    }
+                </ActionIcon>
+
+                <Divider
+                    size='sm'
+                    w='100%'
+                />
+
+            </Stack>
+
+            <Stack
+                justify='space-evenly'
+            >
+
+
+
+            </Stack>
+
+            <Stack
+                align='center'
+            >
+
+                <Divider
+                    size='sm'
+                    w='100%'
+                />
+
+                <ActionIcon
+                    onClick={toggleColorScheme}
+                    variant='default'
+                    size='xl'
+                >
+                    {
+                        colorScheme === 'dark' ?
+                            <IconSun stroke={1.5} /> :
+                            <IconMoon stroke={1.5} />
+                    }
+                </ActionIcon>
+
+            </Stack>
+
+        </Stack>
     );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Box, useMantineColorScheme } from "@mantine/core"
+import { Flex, Group, Paper, useMantineColorScheme, useMantineTheme } from "@mantine/core"
 
 import Navbar from '@/components/main/navbar';
 
@@ -11,6 +11,7 @@ export default ({
     children: React.ReactNode;
   }>) => {
     const { colorScheme } = useMantineColorScheme();
+    const theme = useMantineTheme();
     const pathname = usePathname();
 
     const hiddenNavbarRoutes = [
@@ -18,20 +19,38 @@ export default ({
     ]
 
     return (
-        <Box
-            bg={colorScheme === 'dark' ? '#191919' : '#f8f8ff'}
+        <Group
+            bg={colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1]}
             h='100dvh'
+            p='md'
         >
+
             {
-                hiddenNavbarRoutes.some(route => !pathname.startsWith(route)) &&
+                hiddenNavbarRoutes.every(route => pathname !== route) &&
                 <Navbar />
             }
-            <Box
-                h='100dvh'
-                p='68px'
-            >
-                {children}
-            </Box>
-        </Box>
+
+                <Flex
+                    h='100%'
+                    justify='center'
+                    align='center'
+                    style={{
+                        flexGrow: 1,
+                    }}
+                >
+
+                    <Paper
+                        w='100%'
+                        h='100%'
+                        radius='lg'
+                        shadow='xl'
+                        bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
+                    >
+                        {children}
+                    </Paper>
+
+                </Flex>
+
+        </Group>
     );
 }

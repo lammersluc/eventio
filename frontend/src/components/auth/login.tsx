@@ -17,7 +17,8 @@ export default ({
     const form = useForm({
         initialValues: { email: '', password: '' },
         validate: {
-            email: (value) => /^\S+@\S+$/.test(value) ? null : 'Invalid email',
+            email: (value) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                .test(value) ? null : 'Invalid email',
             password: (value) => value.length > 0 ? null : 'Password is required'
         }
     });
