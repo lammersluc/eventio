@@ -2,8 +2,14 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useMantineColorScheme, Box, Group, Stack, Text, Image, Paper, ActionIcon, Divider, Tooltip } from '@mantine/core';
-import { IconSun, IconMoon, IconChevronsLeft, IconChevronsRight, IconDashboard, IconTicket, IconUser } from '@tabler/icons-react';
+import { useMantineColorScheme, Box, Group, Stack, Text, Image, ActionIcon, Divider, Tooltip } from '@mantine/core';
+import { IconSun, IconMoon, IconChevronsLeft, IconChevronsRight, IconHome, IconTicket, IconUser, IconSettings } from '@tabler/icons-react';
+
+type barItem = {
+    name: string;
+    icon: typeof IconHome;
+    clickEvent: () => void;
+} | null;
 
 export default () => {
     const [collapsed, setCollapsed] = React.useState(true);
@@ -12,32 +18,37 @@ export default () => {
     })
     const router = useRouter();
 
-    const routes: ({
-        name: string;
-        icon: typeof IconDashboard;
-        path: string;
-    } | null)[] = [
+    const topBar: barItem[] = [
         {
-            name: 'Dashboard',
-            icon: IconDashboard,
-            path: '/dashboard'
+            name: 'Home',
+            icon: IconHome,
+            clickEvent: () => router.push('/')
         },
         {
             name: 'Events',
             icon: IconTicket,
-            path: '/events'
-        },
+            clickEvent: () => router.push('/events')
+        }
+    ];
+
+    const bottomBar: barItem[] = [
         null,
         {
             name: 'Account',
             icon: IconUser,
-            path: '/account'
+            clickEvent: () => router.push('/account')
+        },
+        {
+            name: 'Settings',
+            icon: IconSettings,
+            clickEvent: () => {}
         }
-    ]
+    ];
 
     return (
         <Stack
-            w={collapsed ? '40px' : '135px'}
+            pos='relative'
+            w={collapsed ? '35px' : '120px'}
             h='100%'
             py='xs'
             justify='space-between'
@@ -46,40 +57,55 @@ export default () => {
             }}
         >
 
+            <ActionIcon
+                pos='absolute'
+                bottom='96px'
+                right='-32px'
+                radius='xl'
+                variant='default'
+                onClick={() => setCollapsed(!collapsed)}
+            >
+                {
+                    collapsed ?
+                        <IconChevronsRight stroke={1.5} /> :
+                        <IconChevronsLeft stroke={1.5} />
+                }
+            </ActionIcon>
+
             <Stack
-                align='center'
+                pos='relative'
                 gap='xs'
             >
 
-                <Paper
-                    p='xs'
-                    radius='md'
-                    withBorder
+                <ActionIcon
+                    p={0}
+                    radius={0}
+                    w='100%'
+                    h='100%'
+                    variant='transparent'
+                    color='normal'
                     onClick={() => router.push('/')}
-                    style={{
-                        cursor: 'pointer'
-                    }}
                 >
 
                     <Group
-                        w={collapsed ? 25 : 100}
-                        pl='2px'
                         gap='xs'
                         wrap='nowrap'
+                        pos='relative'
                         style={{
                             transition: 'width 0.5s ease-in-out',
                             overflow: 'hidden'
                         }}
+                        onClick={() => router.push('/')}
                     >
-
+                    
                         <Image
                             src='/logo.png'
-                            w={25}
-                            h={25}
+                            w={42}
+                            h={42}
                         />
 
                         <Text
-                            size='md'
+                            size='lg'
                             fw={700}
                         >
                             Eventio
@@ -87,19 +113,6 @@ export default () => {
 
                     </Group>
 
-                </Paper>
-
-                <ActionIcon
-                    radius='md'
-                    size='lg'
-                    variant='default'
-                    onClick={() => setCollapsed(!collapsed)}
-                >
-                    {
-                        collapsed ?
-                            <IconChevronsRight stroke={1.5} /> :
-                            <IconChevronsLeft stroke={1.5} />
-                    }
                 </ActionIcon>
 
                 <Divider
@@ -111,80 +124,156 @@ export default () => {
 
             <Stack
                 h='100%'
-                align='start'
+                justify='space-between'
                 gap='xs'
             >
+                <Stack>
 
-                {
-                    routes.map((route, i) => route ?
+                    {
+                        topBar.map((barItem, i) => barItem ?
 
-                        <Box
-                            key={i}
-                            w='100%'
-                        >
-                            <Tooltip
-                                label={route.name}
-                                disabled={!collapsed}
+                            <Box
+                                key={i}
+                                w='100%'
                             >
 
-                                <ActionIcon
-                                    radius='md'
-                                    size='lg'
-                                    w='100%'
-                                    variant='subtle'
-                                    color='dark'
-                                    onClick={() => router.push(route.path)}
+                                <Tooltip
+                                    label={barItem.name}
+                                    disabled={!collapsed}
                                 >
 
-                                    <Group
-                                        w={collapsed ? '40px' : '135px'}
-                                        justify='start'
-                                        gap='xs'
-                                        wrap='nowrap'
-                                        pl='7px'
-                                        style={{
-                                            transition: 'width 0.5s ease-in-out',
-                                            overflow: 'hidden'
-                                        }}
+                                    <ActionIcon
+                                        w='100%'
+                                        radius='md'
+                                        size='lg'
+                                        variant='subtle'
+                                        color='normal'
+                                        onClick={barItem.clickEvent}
                                     >
-                                    
-                                        <Box
-                                            w='25px'
-                                            h='25px'
+
+                                        <Group
+                                            w='100%'
+                                            ml='3.5px'
+                                            gap='xs'
+                                            wrap='nowrap'
+                                            style={{
+                                                transition: 'width 0.5s ease-in-out',
+                                                overflow: 'hidden'
+                                            }}
                                         >
+                                        
+                                            <Box
+                                                w='25px'
+                                                h='25px'
+                                            >
 
-                                            <route.icon
-                                                stroke={1.5}
-                                            />
+                                                <barItem.icon
+                                                    stroke={1.5}
+                                                />
 
-                                        </Box>
+                                            </Box>
 
-                                        <Text
-                                            size='sm'
-                                            fw={700}
+                                            <Text
+                                                w='100%'
+                                                size='sm'
+                                                fw={700}
+                                            >
+                                                {barItem.name}
+                                            </Text>
+
+                                        </Group>
+
+                                    </ActionIcon>
+
+                                </Tooltip>
+
+                            </Box>
+                            :
+                            <Divider
+                                key={i}
+                                size='sm'
+                                w='100%'
+                            />
+                        )
+                    }
+
+                </Stack>
+
+                <Stack>
+
+                    {
+                        bottomBar.map((barItem, i) => barItem ?
+
+                            <Box
+                                key={i}
+                                w='100%'
+                            >
+
+                                <Tooltip
+                                    label={barItem.name}
+                                    disabled={!collapsed}
+                                >
+
+                                    <ActionIcon
+                                        w='100%'
+                                        radius='md'
+                                        size='lg'
+                                        variant='subtle'
+                                        color='normal'
+                                        onClick={barItem.clickEvent}
+                                    >
+
+                                        <Group
+                                            w='100%'
+                                            ml='3.5px'
+                                            gap='xs'
+                                            wrap='nowrap'
+                                            style={{
+                                                transition: 'width 0.5s ease-in-out',
+                                                overflow: 'hidden'
+                                            }}
                                         >
-                                            {route.name}
-                                        </Text>
+                                        
+                                            <Box
+                                                w='25px'
+                                                h='25px'
+                                            >
 
-                                    </Group>
+                                                <barItem.icon
+                                                    stroke={1.5}
+                                                />
 
-                                </ActionIcon>
+                                            </Box>
 
-                            </Tooltip>
-                        </Box>
-                        :
-                        <Divider
-                            key={i}
-                            size='sm'
-                            w='100%'
-                        />
-                    )
-                }
+                                            <Text
+                                                w='100%'
+                                                size='sm'
+                                                fw={700}
+                                            >
+                                                {barItem.name}
+                                            </Text>
+
+                                        </Group>
+
+                                    </ActionIcon>
+
+                                </Tooltip>
+
+                            </Box>
+                            :
+                            <Divider
+                                key={i}
+                                size='sm'
+                                w='100%'
+                            />
+                        )
+                    }
+
+                </Stack>
 
             </Stack>
 
-            <Stack
-                align='center'
+            {/* <Stack
                 gap='xs'
             >
 
@@ -205,7 +294,20 @@ export default () => {
                     }
                 </ActionIcon>
 
-            </Stack>
+                <ActionIcon
+                    radius='md'
+                    size='lg'
+                    variant='default'
+                    onClick={() => setCollapsed(!collapsed)}
+                >
+                    {
+                        collapsed ?
+                            <IconChevronsRight stroke={1.5} /> :
+                            <IconChevronsLeft stroke={1.5} />
+                    }
+                </ActionIcon>
+
+            </Stack> */}
 
         </Stack>
     );
