@@ -1,7 +1,7 @@
 import { treaty } from '@elysiajs/eden';
 import type { App } from '#';
 
-export default treaty<App>('localhost:3000', {
+const client = treaty<App>('localhost:3000', {
     async onRequest(path, options) {
         if (!path.startsWith('/auth')) {
             const tokens = await refreshTokens();
@@ -34,8 +34,6 @@ type Auth = {
     refreshToken: string;
 };
 
-const client = treaty<App>('localhost:3000');
-
 const refreshTokens = async () => {
     const tokens = localStorage.getItem('auth');
 
@@ -44,7 +42,7 @@ const refreshTokens = async () => {
     const json = JSON.parse(tokens) as Auth;
 
     if ((await decryptJWT(json.accessToken)).exp - 5 > Date.now() / 1000) return json;
-    if ((await decryptJWT(json.refreshToken)).exp - 5 < Date.now() / 1000) return json;
+    if ((await decryptJWT(json.refreshToken)).exp - 5 < Date.now() / 1000) return false;
 
     const result = await client.auth.refresh.post({
         refreshToken: json.refreshToken
@@ -62,3 +60,5 @@ const refreshTokens = async () => {
     localStorage.setItem('auth', JSON.stringify(result.data));
     return result.data;
 }
+
+export default client;
