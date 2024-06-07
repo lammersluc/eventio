@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Flex, Group, Paper, useMantineColorScheme, useMantineTheme } from "@mantine/core"
 
-import Navbar from '@/components/main/navbar';
+import Navbar from '@/components/navbar';
 
 export default ({
     children,
@@ -22,7 +22,9 @@ export default ({
         <Group
             bg={colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1]}
             h='100dvh'
-            p='md'
+            // p='md'
+            p={0}
+            gap={0}
         >
 
             {
@@ -37,6 +39,8 @@ export default ({
                     style={{
                         flexGrow: 1,
                     }}
+                    p='md'
+                    pl={0}
                 >
 
                     <Paper
