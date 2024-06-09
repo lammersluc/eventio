@@ -7,9 +7,9 @@ import Navbar from '@/components/navbar';
 
 export default ({
     children,
-  }: Readonly<{
+}: Readonly<{
     children: React.ReactNode;
-  }>) => {
+}>) => {
     const { colorScheme } = useMantineColorScheme();
     const theme = useMantineTheme();
     const pathname = usePathname();
@@ -32,28 +32,27 @@ export default ({
                 <Navbar />
             }
 
-                <Flex
+            <Flex
+                h='100%'
+                justify='center'
+                align='center'
+                style={{
+                    flexGrow: 1,
+                }}
+                p='md'
+            >
+
+                <Paper
+                    w='100%'
                     h='100%'
-                    justify='center'
-                    align='center'
-                    style={{
-                        flexGrow: 1,
-                    }}
-                    p='md'
-                    pl={0}
+                    radius='lg'
+                    shadow='xl'
+                    bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
                 >
+                    {children}
+                </Paper>
 
-                    <Paper
-                        w='100%'
-                        h='100%'
-                        radius='lg'
-                        shadow='xl'
-                        bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
-                    >
-                        {children}
-                    </Paper>
-
-                </Flex>
+            </Flex>
 
         </Group>
     );

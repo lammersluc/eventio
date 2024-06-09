@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useMantineColorScheme, Box, Group, Stack, Text, Image, ActionIcon, Divider, Tooltip } from '@mantine/core';
-import { IconSun, IconMoon, IconChevronsLeft, IconChevronsRight, IconHome, IconTicket, IconUser, IconSettings } from '@tabler/icons-react';
+import { IconSun, IconMoon, IconHome, IconTicket, IconUser, IconSettings } from '@tabler/icons-react';
 
 import BarProp, { type BarItem } from './barItem';
 
@@ -37,16 +37,17 @@ export default () => {
         {
             name: 'Settings',
             icon: IconSettings,
-            clickEvent: () => {}
+            clickEvent: () => { }
         }
     ];
 
     return (
         <Stack
             pos='relative'
-            w={collapsed ? '70px' : '155px'}
+            w={collapsed ? '50px' : '135px'}
             h='100%'
-            p='md'
+            pl='md'
+            pr={0}
             py='xl'
             justify='space-between'
             style={{
@@ -55,21 +56,6 @@ export default () => {
             onMouseEnter={() => setCollapsed(false)}
             onMouseLeave={() => setCollapsed(true)}
         >
-
-            {/* <ActionIcon
-                pos='absolute'
-                bottom='96px'
-                right='-32px'
-                radius='xl'
-                variant='default'
-                onClick={() => setCollapsed(!collapsed)}
-            >
-                {
-                    collapsed ?
-                        <IconChevronsRight stroke={1.5} /> :
-                        <IconChevronsLeft stroke={1.5} />
-                }
-            </ActionIcon> */}
 
             <Stack
                 pos='relative'
@@ -96,7 +82,7 @@ export default () => {
                         }}
                         onClick={() => router.push('/')}
                     >
-                    
+
                         <Image
                             src='/logo.png'
                             w={42}
@@ -129,23 +115,23 @@ export default () => {
                 <Stack>
 
                     {
-                        topBar.map((barItem, i) => 
+                        topBar.map((barItem, i) =>
                             <BarProp
                                 barItem={barItem}
                                 key={i}
-                                />
-                        )                    }
+                            />
+                        )}
 
                 </Stack>
 
                 <Stack>
 
                     {
-                        bottomBar.map((barItem, i) => 
+                        bottomBar.map((barItem, i) =>
                             <BarProp
                                 barItem={barItem}
                                 key={i}
-                                />
+                            />
                         )
                     }
 
