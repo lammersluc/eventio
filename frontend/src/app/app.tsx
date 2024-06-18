@@ -2,6 +2,9 @@
 
 import { usePathname } from 'next/navigation';
 import { Flex, Group, Paper, useMantineColorScheme, useMantineTheme } from "@mantine/core"
+import { Notifications } from '@mantine/notifications';
+
+import '@mantine/notifications/styles.css';
 
 import Navbar from '@/components/navbar';
 
@@ -50,6 +53,12 @@ export default ({
                     bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
                 >
                     {children}
+
+                    <Notifications
+                        m='sm'
+                        w='300px'
+                    />
+
                 </Paper>
 
             </Flex>
