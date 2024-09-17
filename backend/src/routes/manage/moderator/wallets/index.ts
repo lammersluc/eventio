@@ -7,7 +7,7 @@ export default new Elysia({ prefix: '/wallets/:walletId' })
 
         const updated = await prisma.wallet.update({
             where: {
-                id: +params.walletId
+                id: params.walletId
             },
             data: {
                 coins: body.amount

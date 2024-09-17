@@ -5,14 +5,14 @@ import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/user' })
     .get('', async ({ query, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
         
         const events = await prisma.event.findMany({
             where: {
                 is_private: false,
                 wallets: {
                     some: {
-                        user_id: uid
+                        user_id: id
                     }
                 },
                 name: {
@@ -49,7 +49,7 @@ export default new Elysia({ prefix: '/user' })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 name: t.String(),
                 image: t.Nullable(t.String()),
                 startAt: t.Nullable(t.Date())
@@ -58,14 +58,14 @@ export default new Elysia({ prefix: '/user' })
     })
 
     .get('/history', async ({ query, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
         
         const events = await prisma.event.findMany({
             where: {
                 is_private: false,
                 wallets: {
                     some: {
-                        user_id: uid
+                        user_id: id
                     }
                 },
                 name: {
@@ -102,7 +102,7 @@ export default new Elysia({ prefix: '/user' })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 name: t.String(),
                 image: t.Nullable(t.String()),
                 startAt: t.Nullable(t.Date())

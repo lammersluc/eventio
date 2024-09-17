@@ -8,7 +8,7 @@ const refreshExpiry = process.env.REFRESH_EXPIRY!;
 
 type Token = {
     type: 'access' | 'refresh';
-    uid: number;
+    id: string;
     iat: number;
     exp: number;
 };
@@ -25,7 +25,7 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
     }
 
     if (access.type !== 'access') return false;
-    if (!refreshToken) return access.uid;
+    if (!refreshToken) return access.id;
 
     let refresh: Token;
 
@@ -37,13 +37,13 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
 
     if (
         refresh.type !== 'refresh' ||
-        access.uid !== refresh.uid ||
+        access.id !== refresh.id ||
         access.iat !== refresh.iat
     ) return false;
 
     const user = await prisma.user.findUnique({
         where: {
-            id: access.uid
+            id: access.id
         }
     });
 
@@ -52,10 +52,10 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
         Math.floor(user.updated_at.getTime() / 1000) > access.iat
     ) return false;
 
-    return access.uid;
+    return access.id;
 };
 
-export const generateTokens = (uid: number) => ({
-    accessToken: jwt.sign({ type: 'access', uid }, secret, { expiresIn: accessExpiry }),
-    refreshToken: jwt.sign({ type: 'refresh', uid }, secret, { expiresIn: refreshExpiry })
+export const generateTokens = (id: string) => ({
+    accessToken: jwt.sign({ type: 'access', id }, secret, { expiresIn: accessExpiry }),
+    refreshToken: jwt.sign({ type: 'refresh', id }, secret, { expiresIn: refreshExpiry })
 });

@@ -15,11 +15,11 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
     .use(findRouter)
 
     .get('', async ({ error, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
         
         const user = await prisma.user.findUnique({
             where: {
-                id: uid
+                id
             },
             select: {
                 username: true,
@@ -31,7 +31,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
 
         if (!user) return error(404, '');
 
-        const image = user.has_image ? fs.readFileSync(`./images/users/${uid}.png`, { encoding: 'base64' }) : null;
+        const image = user.has_image ? fs.readFileSync(`./images/users/${id}.png`, { encoding: 'base64' }) : null;
 
         return {
             username: user.username,
@@ -52,11 +52,11 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
     })
 
     .delete('', async ({ body, error, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
 
         const user = await prisma.user.findUnique({
             where: {
-                id: uid
+                id
             },
             select: {
                 password: true
@@ -69,7 +69,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
 
         const deleted = await prisma.user.delete({
             where: {
-                id: uid
+                id
             },
             select: {
                 id: true

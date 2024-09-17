@@ -18,7 +18,7 @@ export default ({
         initialValues: { username: '', email: '', password: '' },
         validate: {
             username: (value) => /^[a-z0-9_]{3,16}$/.test(value) ? null : '3-16 characters (a-z, 0-9, _)',
-            email: (value) => !/^\S+@\S+$/.test(value),
+            email: (value) => !/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/.test(value),
             password: (value) => zxcvbn(value).score < 3
         }
     });
@@ -35,15 +35,19 @@ export default ({
             return router.push('/');
         }
 
-        if (result.data === 'username')
-            return form.setErrors({
-                username: 'Username already exists'
-            })
+        if (result.error.status === 409) {
 
-        if (result.data === 'email')
-            return form.setErrors({
-                email: 'Email already exists'
-            })
+            if (result.error.value === 'username')
+                return form.setErrors({
+                    username: 'Username already exists'
+                })
+
+            if (result.error.value === 'email')
+                return form.setErrors({
+                    email: 'Email already exists'
+                })
+
+        }
     }
 
     return (

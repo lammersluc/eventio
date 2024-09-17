@@ -10,7 +10,7 @@ export default new Elysia({ tags: ['Creator'] })
     })
     
     .delete('', async ({ params }) => {
-        const eventId = +params.eventId;
+        const eventId = params.eventId;
 
         const wallets = await prisma.wallet.findFirst({
             where: {

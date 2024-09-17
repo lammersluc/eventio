@@ -12,7 +12,7 @@ export default new Elysia({ prefix: '/users' })
                 },
                 wallets: {
                     some: {
-                        event_id: +params.eventId
+                        event_id: params.eventId
                     }
                 }
             },
@@ -45,7 +45,7 @@ export default new Elysia({ prefix: '/users' })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 username: t.String(),
                 image: t.Nullable(t.String())
             })),
@@ -57,8 +57,8 @@ export default new Elysia({ prefix: '/users' })
         const wallet = await prisma.wallet.findUnique({
             where: {
                 user_id_event_id: {
-                    user_id: +params.userId,
-                    event_id: +params.eventId
+                    user_id: params.userId,
+                    event_id: params.eventId
                 }
             },
             select: {
@@ -104,10 +104,10 @@ export default new Elysia({ prefix: '/users' })
         }),
         response: {
             200: t.Object({
-                id: t.Number(),
+                id: t.String(),
                 coins: t.Number(),
                 tickets: t.Array(t.Object({
-                    id: t.Number(),
+                    id: t.String(),
                     option: t.String(),
                     date: t.String(),
                     purchasedAt: t.Date(),

@@ -12,18 +12,18 @@ import cashierRouter from './cashier';
 export default new Elysia({ prefix: '/manage/events/:eventId' })
     .use(creatorRouter)
     .state('eventMember', {
-        id: 0,
+        id: '',
         role: 0
     })
     .guard({
         async beforeHandle({ params, error, store }) {
-            const { uid } = store as { eventMember: { id: number, role: number }, uid: number };
+            const { id } = store as { eventMember: { id: string, role: number }, id: string };
 
             const eventMember = await prisma.eventMember.findUnique({
                 where: {
                     user_id_event_id: {
-                        user_id: uid,
-                        event_id: +params.id
+                        user_id: id,
+                        event_id: params.id
                     }
                 },
                 select: {

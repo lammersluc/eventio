@@ -7,7 +7,7 @@ export default new Elysia({ prefix: '/options' })
                     
         const ticketOptions = await prisma.ticketOption.findMany({
             where: {
-                ticket_date_id: +params.dateId
+                ticket_date_id: params.dateId
             },
             select: {
                 id: true,
@@ -35,7 +35,7 @@ export default new Elysia({ prefix: '/options' })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 name: t.String(),
                 price: t.Nullable(t.Number()),
                 amount: t.Nullable(t.Number()),
@@ -48,7 +48,7 @@ export default new Elysia({ prefix: '/options' })
 
         const created = await prisma.ticketOption.create({
             data: {
-                ticket_date_id: +params.dateId,
+                ticket_date_id: params.dateId,
                 name: body.name,
             }
         });

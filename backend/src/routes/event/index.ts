@@ -64,7 +64,7 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 name: t.String(),
                 image: t.Nullable(t.String()),
                 startAt: t.Nullable(t.Date()),
@@ -74,14 +74,14 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
     })
 
     .post('', async ({ body, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
 
         const event = await prisma.event.create({
             data: {
                 name: body.name,
                 event_members: {
                     create: {
-                        user_id: uid,
+                        user_id: id,
                         role: 'creator'
                     }
                 }
@@ -100,7 +100,7 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
         }),
         response: {
             201: t.Object({
-                id: t.Number()
+                id: t.String()
             })
         },
         tags: ['Creator']

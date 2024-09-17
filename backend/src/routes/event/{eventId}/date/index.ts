@@ -4,7 +4,7 @@ import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/dates/:dateId' })
     .get('', async ({ error, params }) => {
-        const dateId = +params.dateId;
+        const dateId = params.dateId;
 
         const date = await prisma.ticketDate.findUnique({
             where: {
@@ -54,7 +54,7 @@ export default new Elysia({ prefix: '/dates/:dateId' })
                 validFrom: t.Nullable(t.Date()),
                 validUntil: t.Nullable(t.Date()),
                 options: t.Array(t.Object({
-                    id: t.Number(),
+                    id: t.String(),
                     name: t.String(),
                     price: t.Number(),
                     available: t.Number()

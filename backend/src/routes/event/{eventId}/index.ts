@@ -9,7 +9,7 @@ export default new Elysia({ prefix: '/:eventId' })
     .use(dateRouter)
 
     .get('', async ({ error, params }) => {
-        const eventId = +params.eventId;
+        const eventId = params.eventId;
 
         const event = await prisma.event.findUnique({
             where: {
@@ -75,7 +75,7 @@ export default new Elysia({ prefix: '/:eventId' })
                 startAt: t.Nullable(t.Date()),
                 endAt: t.Nullable(t.Date()),
                 dates: t.Array(t.Object({
-                    id: t.Number(),
+                    id: t.String(),
                     name: t.String(),
                     validFrom: t.Nullable(t.Date()),
                     validUntil: t.Nullable(t.Date()),
@@ -87,13 +87,13 @@ export default new Elysia({ prefix: '/:eventId' })
     })
 
     .get('/wallet', async ({ error, params, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
 
         const wallet = await prisma.wallet.findUnique({
             where: {
                 user_id_event_id: {
-                    user_id: uid,
-                    event_id: +params.eventId
+                    user_id: id,
+                    event_id: params.eventId
                 },
                 event: {
                     is_private: false
@@ -143,10 +143,10 @@ export default new Elysia({ prefix: '/:eventId' })
         }),
         response: {
             200: t.Object({
-                id: t.Number(),
+                id: t.String(),
                 coins: t.Number(),
                 tickets: t.Array(t.Object({
-                    id: t.Number(),
+                    id: t.String(),
                     option: t.String(),
                     date: t.String(),
                     validFrom: t.Nullable(t.Date()),

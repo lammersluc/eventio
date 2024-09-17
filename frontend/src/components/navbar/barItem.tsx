@@ -1,4 +1,4 @@
-import { Box, ActionIcon, Divider, Group, Text } from '@mantine/core';
+import { Box, ActionIcon, Divider, Group, Text, Image } from '@mantine/core';
 import { IconHome } from '@tabler/icons-react';
 
 export type BarItem = {
@@ -45,9 +45,7 @@ export default ({
                         h='25px'
                     >
 
-                        <barItem.icon
-                            stroke={1.5}
-                        />
+                        <barItem.icon stroke={1.5} />
 
                     </Box>
 

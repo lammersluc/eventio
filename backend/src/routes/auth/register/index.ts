@@ -38,7 +38,7 @@ export default new Elysia({ prefix: '/register' })
     }, {
         body: t.Object({
             username: t.String({ pattern: '^[a-z0-9_]{3,16}$' }),
-            email: t.String({ format: 'email' }),
+            email: t.String({ pattern: '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$' }),
             password: t.String()
         }),
         response: {

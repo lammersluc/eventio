@@ -9,12 +9,12 @@ import coinsRouter from './coins';
 export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
     .guard({
         async beforeHandle({ params, error, store }) {
-            const { uid } = store as { uid: number };
+            const { id } = store as { id: string };
 
             const wallet = await prisma.wallet.findUnique({
                 where: {
-                    id: +params.walletId,
-                    user_id: uid
+                    id: params.walletId,
+                    user_id: id
                 }
             });
 
@@ -31,12 +31,12 @@ export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
         .use(coinsRouter)
 
         .get('/qr', async ({ error, params, store }) => {
-            const { uid } = store as { uid: number };
+            const { id } = store as { id: string };
 
             const wallet = await prisma.wallet.findUnique({
                 where: {
-                    id: +params.walletId,
-                    user_id: uid
+                    id: params.walletId,
+                    user_id: id
                 }
             });
 
@@ -54,7 +54,7 @@ export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
         })
 
         .get('/transactions', async ({ error, params, query }) => {
-            const walletId = +params.walletId;
+            const walletId = params.walletId;
 
             const transactions = await prisma.transaction.findMany({
                 where: {

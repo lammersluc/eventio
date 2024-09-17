@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
+  id            String        @id @default(cuid())
   username      String        @unique
   email         String        @unique
   has_image     Boolean       @default(false)
@@ -21,11 +21,11 @@ model User {
 }
 
 model Wallet {
-  id                    Int           @id @default(autoincrement())
+  id                    String        @id @default(cuid())
   user                  User          @relation(fields: [user_id], references: [id])
-  user_id               Int
+  user_id               String
   event                 Event         @relation(fields: [event_id], references: [id])
-  event_id              Int
+  event_id              String
   coins                 Int           @default(0)
   tickets               Ticket[]
   transactions_sender   Transaction[] @relation("Sender")
@@ -35,23 +35,23 @@ model Wallet {
 }
 
 model Transaction {
-  id              Int          @id @default(autoincrement())
+  id              String       @id @default(cuid())
   sender          Wallet?      @relation("Sender", fields: [sender_id], references: [id])
-  sender_id       Int?
+  sender_id       String?
   receiver        Wallet?      @relation("Receiver", fields: [receiver_id], references: [id])
-  receiver_id     Int?
+  receiver_id     String?
   event_member    EventMember? @relation(fields: [event_member_id], references: [id])
-  event_member_id Int?
+  event_member_id String?
   amount          Int
   created_at      DateTime     @default(now())
 }
 
 model EventMember {
-  id           Int   @id @default(autoincrement())
-  user         User  @relation(fields: [user_id], references: [id])
-  user_id      Int
-  event        Event @relation(fields: [event_id], references: [id])
-  event_id     Int
+  id           String @id @default(cuid())
+  user         User   @relation(fields: [user_id], references: [id])
+  user_id      String
+  event        Event  @relation(fields: [event_id], references: [id])
+  event_id     String
   role         Role
   transactions Transaction[]
 
@@ -67,19 +67,19 @@ enum Role {
 }
 
 model Ticket {
-  id               Int          @id @default(autoincrement())
+  id               String       @id @default(cuid())
   ticket_option    TicketOption @relation(fields: [ticket_option_id], references: [id])
-  ticket_option_id Int
+  ticket_option_id String
   wallet           Wallet       @relation(fields: [wallet_id], references: [id])
-  wallet_id        Int
+  wallet_id        String
   purchased_at     DateTime     @default(now())
   scanned_at       DateTime?
 }
 
 model TicketOption {
-  id             Int        @id @default(autoincrement())
+  id             String     @id @default(cuid())
   ticket_date    TicketDate @relation(fields: [ticket_date_id], references: [id])
-  ticket_date_id Int
+  ticket_date_id String
   name           String
   price          Float      @default(0)
   amount         Int        @default(-1)
@@ -87,9 +87,9 @@ model TicketOption {
 }
 
 model TicketDate {
-  id             Int            @id @default(autoincrement())
+  id             String         @id @default(cuid())
   event          Event          @relation(fields: [event_id], references: [id])
-  event_id       Int
+  event_id       String
   name           String
   valid_from     DateTime?
   valid_until    DateTime?
@@ -98,7 +98,7 @@ model TicketDate {
 }
 
 model Event {
-  id                Int           @id @default(autoincrement())
+  id                String           @id @default(cuid())
   name              String
   description       String?
   has_image         Boolean       @default(false)

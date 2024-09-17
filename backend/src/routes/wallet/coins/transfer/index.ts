@@ -5,7 +5,7 @@ import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/transfer' })
     .patch('', async ({ body, error, store}) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
 
         const data = await checkData(body.walletQR);
 
@@ -26,7 +26,7 @@ export default new Elysia({ prefix: '/transfer' })
         const sender = await prisma.wallet.findUnique({
             where: {
                 user_id_event_id: {
-                    user_id: uid,
+                    user_id: id,
                     event_id: receiver.event_id
                 }
             },

@@ -3,9 +3,9 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Text, Stack, Button, TextInput, PasswordInput, Anchor } from '@mantine/core'
 import { useForm } from '@mantine/form';
-import { IconMail } from '@tabler/icons-react'
+import { IconUser } from '@tabler/icons-react'
+import { toast } from 'react-hot-toast';
 
-import { showNotification } from '@/lib/notification';
 import client from '@/lib/client';
 
 export default ({
@@ -16,29 +16,41 @@ export default ({
     const router = useRouter();
 
     const form = useForm({
-        initialValues: { email: 'test@example.com', password: 'Test123!' },
-        validate: {
-            email: (value) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                .test(value) ? null : 'Invalid email',
-            password: (value) => value.length > 0 ? null : 'Password is required'
-        }
+        initialValues: { username: 'test', password: 'Test123!@' }
     });
 
     const handleSubmit = async (values: typeof form.values) => {
-        const result = await client.auth.login.post({
-            email: values.email,
-            password: values.password
+        
+        const promise = new Promise(async (resolve, reject) => {
+
+            const result = await client.auth.login.post({
+                username: values.username,
+                password: values.password
+            });
+
+            if (!result.error) {
+                localStorage.setItem('auth', JSON.stringify(result.data));
+
+                resolve('');
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                router.push('/');
+                return;
+            }
+
+            if (result.status === 401) {
+                reject('Invalid username or password');
+                return;
+            }
+
+            reject('Something went wrong');
         });
 
-        if (!result.error) {
-            localStorage.setItem('auth', JSON.stringify(result.data));
-            return router.push('/');
-        }
-
-        if (result.status === 401)
-            return showNotification('error', 'Invalid email or password');
-
-        return showNotification('error', 'An error occurred');
+        toast.promise(promise, {
+            loading: 'Logging in...',
+            success: 'Logged in',
+            error: (error) => error
+        });
     }
 
     return (
@@ -57,11 +69,11 @@ export default ({
                 <TextInput
                     variant='filled'
                     size='md'
-                    placeholder='Email'
+                    placeholder='Username'
                     spellCheck={false}
-                    rightSection={<IconMail stroke={1.5} size={20} />}
-                    key={form.key('email')}
-                    {...form.getInputProps('email')}
+                    rightSection={<IconUser stroke={1.5} size={20} />}
+                    key={form.key('username')}
+                    {...form.getInputProps('username')}
                 />
 
                 <PasswordInput

@@ -18,7 +18,7 @@ export default new Elysia({ prefix: '/:dateId' })
             
         const updated = await prisma.ticketDate.update({
             where: {
-                id: +params.dateId
+                id: params.dateId
             },
             data
         });
@@ -46,7 +46,7 @@ export default new Elysia({ prefix: '/:dateId' })
             
         const deleted = await prisma.ticketDate.delete({
             where: {
-                id: +params.dateId,
+                id: params.dateId,
                 ticket_options: {
                     every: {
                         tickets: {

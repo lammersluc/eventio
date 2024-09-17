@@ -12,7 +12,7 @@ type Encrypted = {
 };
 
 type Data = {
-    id: number;
+    id: string;
     type: 'ticket' | 'wallet';
     exp: number;
 };
@@ -32,7 +32,7 @@ export const checkData = async (string: string) => {
     return data;
 };
 
-export const generateData = (id: number, type: string) => {
+export const generateData = (id: string, type: string) => {
     const text = JSON.stringify({ id, type, exp: Date.now() + expiry });
     
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(secret), iv);

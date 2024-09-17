@@ -7,7 +7,7 @@ export default new Elysia({ prefix: '/members'})
     .get('', async ({ params, error }) => {
         const members = await prisma.eventMember.findMany({
             where: {
-                event_id: +params.eventId
+                event_id: params.eventId
             },
             select: {
                 user_id: true,
@@ -38,7 +38,7 @@ export default new Elysia({ prefix: '/members'})
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 username: t.String(),
                 image: t.Nullable(t.String()),
                 role: t.String()
@@ -62,7 +62,7 @@ export default new Elysia({ prefix: '/members'})
             where: {
                 user_id_event_id: {
                     user_id: body.userId,
-                    event_id: +params.eventId
+                    event_id: params.eventId
                 }
             }
         });
@@ -87,7 +87,7 @@ export default new Elysia({ prefix: '/members'})
         const created = await prisma.eventMember.create({
             data: {
                 user_id: body.userId,
-                event_id: +params.eventId,
+                event_id: params.eventId,
                 role
             }
         }).catch(() => null);
@@ -97,7 +97,7 @@ export default new Elysia({ prefix: '/members'})
         return '';
     }, {
         body: t.Object({
-            userId: t.Number(),
+            userId: t.String(),
             role: t.String({ pattern: '/^(owner|manager|moderator|cashier)$/' })
         }),
         params: t.Object({
@@ -116,8 +116,8 @@ export default new Elysia({ prefix: '/members'})
         const eventMember = await prisma.eventMember.findUnique({
             where: {
                 user_id_event_id: {
-                    user_id: +params.userId,
-                    event_id: +params.eventId
+                    user_id: params.userId,
+                    event_id: params.eventId
                 }
             }
         });

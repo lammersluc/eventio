@@ -5,11 +5,11 @@ import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/password' })
     .patch('', async ({ body, error, store }) => {
-        const { uid } = store as { uid: number };
+        const { id } = store as { id: string };
 
         const user = await prisma.user.findUnique({
             where: {
-                id: uid
+                id
             },
             select: {
                 password: true
@@ -23,7 +23,7 @@ export default new Elysia({ prefix: '/password' })
 
         const updated = await prisma.user.update({
             where: {
-                id: uid
+                id
             },
             data: {
                 password: await Bun.password.hash(body.password.new)

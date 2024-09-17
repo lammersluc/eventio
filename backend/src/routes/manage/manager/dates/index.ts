@@ -11,7 +11,7 @@ export default new Elysia({ prefix: '/dates' })
                     
         const ticketDates = await prisma.ticketDate.findMany({
             where: {
-                event_id: +params.eventId
+                event_id: params.eventId
             },
             select: {
                 id: true,
@@ -45,7 +45,7 @@ export default new Elysia({ prefix: '/dates' })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 name: t.String(),
                 validFrom: t.Nullable(t.Date()),
                 validUntil: t.Nullable(t.Date()),
@@ -59,7 +59,7 @@ export default new Elysia({ prefix: '/dates' })
 
         const created = await prisma.ticketDate.create({
             data: {
-                event_id: +params.eventId,
+                event_id: params.eventId,
                 name: body.name,
             }
         });
@@ -92,7 +92,7 @@ export default new Elysia({ prefix: '/dates' })
             
         const updated = await prisma.ticketDate.update({
             where: {
-                id: +params.dateId
+                id: params.dateId
             },
             data
         });
@@ -120,7 +120,7 @@ export default new Elysia({ prefix: '/dates' })
             
         const deleted = await prisma.ticketDate.delete({
             where: {
-                id: +params.dateId
+                id: params.dateId
             }
         });
 

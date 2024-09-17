@@ -13,7 +13,7 @@ export default new Elysia({ prefix: '/options/:optionId' })
             
         const updated = await prisma.ticketOption.update({
             where: {
-                id: +params.optionId
+                id: params.optionId
             },
             data
         });
@@ -40,7 +40,7 @@ export default new Elysia({ prefix: '/options/:optionId' })
             
         const deleted = await prisma.ticketOption.delete({
             where: {
-                id: +params.optionId,
+                id: params.optionId,
                 tickets: {
                     none: {}
                 }

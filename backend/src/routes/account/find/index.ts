@@ -41,7 +41,7 @@ export default new Elysia({ prefix: '/find' })
         }),
         response: {
             200: t.Array(t.Object({
-                id: t.Number(),
+                id: t.String(),
                 username: t.String(),
                 image: t.Nullable(t.String())
             })),

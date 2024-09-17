@@ -31,7 +31,7 @@ export default new Elysia({ prefix: '/buy' })
 
         const wallet = await prisma.wallet.findUnique({
             where: {
-                id: +params.walletId
+                id: params.walletId
             },
             select: {
                 id: true,
@@ -58,7 +58,7 @@ export default new Elysia({ prefix: '/buy' })
         if (eventTooMany > 0) return error(410, { eventTooMany });
 
         const dates: {
-            id: number,
+            id: string,
             amount: number,
             tickets: number
         }[] = [];
@@ -82,7 +82,7 @@ export default new Elysia({ prefix: '/buy' })
         if (datesTooMany.length > 0) return error(410, { datesTooMany });
         
         const optionsTooMany: {
-            id: number,
+            id: string,
             tooMany: number
         }[] = [];
         
@@ -107,7 +107,7 @@ export default new Elysia({ prefix: '/buy' })
         const now = new Date();
 
         const tickets = body.map(option => ({
-            wallet_id: +params.walletId,
+            wallet_id: params.walletId,
             ticket_option_id: option.optionId,
             purchased_at: now
         }));
@@ -121,7 +121,7 @@ export default new Elysia({ prefix: '/buy' })
         return '';
     }, {
         body: t.Array(t.Object({
-            optionId: t.Number(),
+            optionId: t.String(),
             amount: t.Number({ minimum: 1 })
         })),
         params: t.Object({
@@ -133,11 +133,11 @@ export default new Elysia({ prefix: '/buy' })
             410: t.Partial(t.Object({
                 eventTooMany: t.Optional(t.Number()),
                 datesTooMany: t.Array(t.Object({
-                    id: t.Number(),
+                    id: t.String(),
                     tooMany: t.Number()
                 })),
                 optionsTooMany: t.Array(t.Object({
-                    id: t.Number(),
+                    id: t.String(),
                     tooMany: t.Number()
                 }))
             })),

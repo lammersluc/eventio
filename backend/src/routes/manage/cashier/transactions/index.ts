@@ -4,8 +4,8 @@ import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/transactions/:transactionId' })
     .patch('', async ({ params, body, error, store }) => {
-        const { eventMember } = store as { eventMember: { id: number } };
-        const transactionId = +params.transactionId;
+        const { eventMember } = store as { eventMember: { id: string } };
+        const transactionId = params.transactionId;
 
         const transaction = await prisma.transaction.findFirst({
             where: {

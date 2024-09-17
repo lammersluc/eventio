@@ -8,7 +8,10 @@ export default new Elysia({ prefix: '/login' })
 
         const user = await prisma.user.findFirst({
             where: {
-                email: body.email
+                OR: [
+                    { username: body.username },
+                    { email: body.username }
+                ]
             },
             select: {
                 id: true,
@@ -24,7 +27,7 @@ export default new Elysia({ prefix: '/login' })
         return generateTokens(user.id);
     }, {
         body: t.Object({
-            email: t.String(),
+            username: t.String(),
             password: t.String()
         }),
         response: {

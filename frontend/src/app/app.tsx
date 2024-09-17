@@ -1,10 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Flex, Group, Paper, useMantineColorScheme, useMantineTheme } from "@mantine/core"
-import { Notifications } from '@mantine/notifications';
-
-import '@mantine/notifications/styles.css';
+import { Flex, Group, Paper, useMantineColorScheme, useMantineTheme } from '@mantine/core'
+import { Toaster } from 'react-hot-toast';
 
 import Navbar from '@/components/navbar';
 
@@ -25,7 +23,6 @@ export default ({
         <Group
             bg={colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1]}
             h='100dvh'
-            // p='md'
             p={0}
             gap={0}
         >
@@ -52,11 +49,16 @@ export default ({
                     shadow='xl'
                     bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
                 >
+                    
                     {children}
 
-                    <Notifications
-                        m='sm'
-                        w='300px'
+                    <Toaster
+                        position='bottom-right'
+                        containerStyle={
+                            {
+                                margin: '16px'
+                            }
+                        }
                     />
 
                 </Paper>

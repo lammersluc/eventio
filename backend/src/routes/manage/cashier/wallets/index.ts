@@ -5,7 +5,7 @@ import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
     .get('', async ({ params, error, store }) => {
-        const { eventMember } = store as { eventMember: { id: number } };
+        const { eventMember } = store as { eventMember: { id: string } };
 
         const data = await checkData(params.walletQR);
 
@@ -41,7 +41,7 @@ export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
         }),
         response: {
             200: t.Object({
-                id: t.Number(),
+                id: t.String(),
                 amount: t.Number(),
                 createdAt: t.Date()
             }),

@@ -19,8 +19,8 @@ export default new Elysia({ prefix: '/tickets' })
         return '';
     }, {
         body: t.Object({
-            walletId: t.Number(),
-            optionId: t.Number(),
+            walletId: t.String(),
+            optionId: t.String(),
             scannedAt: t.Optional(t.Date())
         }),
         response: {
@@ -38,7 +38,7 @@ export default new Elysia({ prefix: '/tickets' })
 
         const updated = await prisma.ticket.update({
             where: {
-                id: +params.ticketId
+                id: params.ticketId
             },
             data
         });
@@ -48,7 +48,7 @@ export default new Elysia({ prefix: '/tickets' })
         return '';
     }, {
         body: t.Partial(t.Object({
-            optionId: t.Number(),
+            optionId: t.String(),
             scannedAt: t.Nullable(t.Date())
         })),
         params: t.Object({
@@ -64,7 +64,7 @@ export default new Elysia({ prefix: '/tickets' })
             
         const deleted = await prisma.ticket.delete({
             where: {
-                id: +params.ticketId
+                id: params.ticketId
             }
         });
 

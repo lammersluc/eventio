@@ -6,7 +6,7 @@ export default new Elysia({ prefix: '/buy' })
     .post('', async ({ body, params, error }) => {
         const wallet = await prisma.wallet.findUnique({
             where: {
-                id: +params.walletId
+                id: params.walletId
             },
             select: {
                 id: true

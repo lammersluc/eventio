@@ -15,7 +15,7 @@ export default new Elysia()
     .use(cors())
     .use(bearer())
     .state({
-        uid: 0,
+        id: '',
     })
 
     .use(authRouter)
@@ -24,11 +24,11 @@ export default new Elysia()
             
             if (!bearer) return error(401, '');
 
-            const uid = await checkTokens(bearer);
+            const id = await checkTokens(bearer);
 
-            if (!uid) return error(401, '');
+            if (!id) return error(401, '');
 
-            store.uid = uid as number;
+            store.id = id;
         },
         response: {
             401: t.String()

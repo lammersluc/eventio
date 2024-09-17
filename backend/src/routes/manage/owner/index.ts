@@ -28,7 +28,7 @@ export default new Elysia({ tags: ['Owner'] })
 
         const updated = await prisma.event.update({
             where: {
-                id: +params.eventId
+                id: params.eventId
             },
             data,
             select: {

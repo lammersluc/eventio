@@ -7,11 +7,11 @@ export default new Elysia({ prefix: '/refresh' }).use(bearer())
     .post('', async ({ body, error, bearer }) => {
         if (!bearer) return error(401, '');
 
-        const uid = await checkTokens(bearer, body.refreshToken);
+        const id = await checkTokens(bearer, body.refreshToken);
 
-        if (!uid) return error(401, '');
+        if (!id) return error(401, '');
 
-        return generateTokens(uid);
+        return generateTokens(id);
     }, {
         body: t.Object({
             refreshToken: t.String()
