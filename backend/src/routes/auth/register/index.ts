@@ -9,16 +9,28 @@ export default new Elysia({ prefix: '/register' })
 
         if (zxcvbn(body.password).score < 3) return error(400, '');
 
-        const user = await prisma.user.findUnique({
+        const users = await prisma.user.findMany({
             where: {
-                    username: body.username
+                OR: [
+                    { username: body.username },
+                    { email: body.email }
+                ]
             },
             select: {
-                id: true
+                username: true,
+                email: true
             }
         });
 
-        if (user) return error(409, 'username');
+        let conflicts: string[] = [];
+
+        users.forEach(({ username, email }) => {
+            if (username === body.username) conflicts.push('username');
+            if (email === body.email) conflicts.push('email');
+        });
+
+
+        if (conflicts.length) return error(409, conflicts);
 
         const created = await prisma.user.create({
             data: {
@@ -29,17 +41,15 @@ export default new Elysia({ prefix: '/register' })
             select: {
                 id: true
             }
-        }).catch(() => null);
-
-        if (!created) return error(409, 'email');
+        });
 
         set.status = 201;
         return generateTokens(created.id);
     }, {
         body: t.Object({
             username: t.String({ pattern: '^[a-z0-9_]{3,16}$' }),
-            email: t.String({ pattern: '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$' }),
-            password: t.String()
+            email: t.String({ format: 'email' }),
+            password: t.String({  })
         }),
         response: {
             201: t.Object({
@@ -47,6 +57,6 @@ export default new Elysia({ prefix: '/register' })
                 refreshToken: t.String()
             }),
             400: t.String(),
-            409: t.String()
+            409: t.Array(t.String())
         }
     })

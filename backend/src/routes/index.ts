@@ -29,9 +29,6 @@ export default new Elysia()
             if (!id) return error(401, '');
 
             store.id = id;
-        },
-        response: {
-            401: t.String()
         }
     }, app => app
         .use(accountRouter)

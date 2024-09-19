@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id            String        @id @default(cuid())
+  id            String        @id @default(uuid())
   username      String        @unique
   email         String        @unique
   has_image     Boolean       @default(false)
@@ -21,7 +21,7 @@ model User {
 }
 
 model Wallet {
-  id                    String        @id @default(cuid())
+  id                    String        @id @default(uuid())
   user                  User          @relation(fields: [user_id], references: [id])
   user_id               String
   event                 Event         @relation(fields: [event_id], references: [id])
@@ -35,7 +35,7 @@ model Wallet {
 }
 
 model Transaction {
-  id              String       @id @default(cuid())
+  id              String       @id @default(uuid())
   sender          Wallet?      @relation("Sender", fields: [sender_id], references: [id])
   sender_id       String?
   receiver        Wallet?      @relation("Receiver", fields: [receiver_id], references: [id])
@@ -47,7 +47,7 @@ model Transaction {
 }
 
 model EventMember {
-  id           String @id @default(cuid())
+  id           String @id @default(uuid())
   user         User   @relation(fields: [user_id], references: [id])
   user_id      String
   event        Event  @relation(fields: [event_id], references: [id])
@@ -67,7 +67,7 @@ enum Role {
 }
 
 model Ticket {
-  id               String       @id @default(cuid())
+  id               String       @id @default(uuid())
   ticket_option    TicketOption @relation(fields: [ticket_option_id], references: [id])
   ticket_option_id String
   wallet           Wallet       @relation(fields: [wallet_id], references: [id])
@@ -77,7 +77,7 @@ model Ticket {
 }
 
 model TicketOption {
-  id             String     @id @default(cuid())
+  id             String     @id @default(uuid())
   ticket_date    TicketDate @relation(fields: [ticket_date_id], references: [id])
   ticket_date_id String
   name           String
@@ -87,7 +87,7 @@ model TicketOption {
 }
 
 model TicketDate {
-  id             String         @id @default(cuid())
+  id             String         @id @default(uuid())
   event          Event          @relation(fields: [event_id], references: [id])
   event_id       String
   name           String
@@ -98,7 +98,7 @@ model TicketDate {
 }
 
 model Event {
-  id                String           @id @default(cuid())
+  id                String           @id @default(uuid())
   name              String
   description       String?
   has_image         Boolean       @default(false)

@@ -19,7 +19,7 @@ export default ({
         initialValues: { username: 'test', password: 'Test123!@' }
     });
 
-    const handleSubmit = async (values: typeof form.values) => {
+    const handleSubmit = (values: typeof form.values) => {
         
         const promise = new Promise(async (resolve, reject) => {
 

@@ -18,7 +18,7 @@ export default () => {
 
             <Paper
                 radius='lg'
-                shadow='xl'
+                shadow='lg'
                 style={{
                     overflow: 'hidden'
                 }}
@@ -33,6 +33,8 @@ export default () => {
                         pos='absolute'
                         h='100%'
                         w='50%'
+                        radius='md'
+                        shadow='md'
                         display='flex'
                         style={{
                             justifyContent: 'center',

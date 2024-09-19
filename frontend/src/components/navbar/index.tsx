@@ -3,24 +3,27 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Group, Stack, Text, Image, ActionIcon, Divider } from '@mantine/core';
-import { IconUser, IconSettings, IconBuildingCircus, IconWallet, IconDashboard } from '@tabler/icons-react';
+import { IconUser, IconWallet, IconDashboard, IconChevronRight, IconHome, IconSearch } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 
-import Settings from '@/components/settings';
-
 import BarProp, { type BarItem } from './barItem';
+import Settings from './settings';
 
 export default () => {
-    const [collapsed, setCollapsed] = React.useState(true);
-    const [opened, { open, close }] = useDisclosure(false);
+    const [menuOpened, menu] = useDisclosure(false);
 
     const router = useRouter();
 
     const topBar: BarItem[] = [
         {
-            name: 'Events',
-            icon: IconBuildingCircus,
-            clickEvent: () => router.push('/events')
+            name: 'Home',
+            icon: IconHome,
+            clickEvent: () => router.push('/')
+        },
+        {
+            name: 'Search',
+            icon: IconSearch,
+            clickEvent: () => router.push('/search')
         },
         {
             name: 'Wallet',
@@ -40,118 +43,123 @@ export default () => {
             name: 'Account',
             icon: IconUser,
             clickEvent: () => router.push('/account')
-        },
-        {
-            name: 'Settings',
-            icon: IconSettings,
-            clickEvent: () => open()
         }
     ];
 
     return (
-        <>
-        
+        <Stack
+            w={menuOpened ? '150px' : '50px'}
+            h='100%'
+            pl='md'
+            pr={0}
+            py='xl'
+            justify='space-between'
+            style={{
+                transition: 'width 0.5s ease-in-out'
+            }}
+        >
+
             <Stack
-                pos='relative'
-                w={collapsed ? '50px' : '135px'}
-                h='100%'
-                pl='md'
-                pr={0}
-                py='xl'
-                justify='space-between'
-                style={{
-                    transition: 'width 0.5s ease-in-out'
-                }}
-                onMouseEnter={() => setCollapsed(false)}
-                onMouseLeave={() => setCollapsed(true)}
+                gap='xs'
             >
 
-                <Stack
-                    pos='relative'
+                <Group
                     gap='xs'
+                    wrap='nowrap'
+                    justify='flex-end'
+                    style={{
+                        transition: 'width 0.5s ease-in-out',
+                        overflow: 'hidden'
+                    }}
+                    onClick={() => router.push('/')}
                 >
 
-                    <ActionIcon
-                        p={0}
-                        radius={0}
-                        w='100%'
-                        h='100%'
-                        variant='transparent'
-                        color='normal'
-                        onClick={() => router.push('/')}
+                    <Group
+                        align='end'
+                        wrap='nowrap'
+                        gap='0'
                     >
 
-                        <Group
-                            gap='xs'
-                            wrap='nowrap'
-                            pos='relative'
-                            style={{
-                                transition: 'width 0.5s ease-in-out',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => router.push('/')}
+                        <Image
+                            src='/logo.png'
+                            w={32}
+                        />
+
+                        <Text
+                            inline
+                            size='xl'
+                            fw={700}
                         >
+                            ventio
+                        </Text>
 
-                            <Image
-                                src='/logo.png'
-                                w={42}
-                                h={42}
-                            />
+                    </Group>
 
-                            <Text
-                                size='lg'
-                                fw={700}
-                            >
-                                Eventio
-                            </Text>
-
-                        </Group>
-
+                    <ActionIcon
+                        radius='md'
+                        size='lg'
+                        variant='default'
+                        color='normal'
+                        onClick={() => menu.toggle()}
+                        style={{
+                            zIndex: 1,
+                            transform: menuOpened ? 'rotate(0.25turn)' : 'rotate(0turn)',
+                            transition: 'transform 0.3s ease-in-out'
+                        }}
+                    >
+                        <IconChevronRight
+                            stroke={1.5}
+                            style={{
+                                transform: menuOpened ? 'rotate(0.25turn)' : 'rotate(0turn)',
+                                transition: 'transform 0.5s ease-in-out'
+                            }}
+                        />
                     </ActionIcon>
 
-                    <Divider
-                        size='sm'
-                        w='100%'
-                    />
+                </Group>
+
+
+                <Divider
+                    size='sm'
+                    w='100%'
+                />
+
+            </Stack>
+
+            <Stack
+                h='100%'
+                justify='space-between'
+                gap='xs'
+            >
+                <Stack>
+
+                    {
+                        topBar.map((barItem, i) =>
+                            <BarProp
+                                barItem={barItem}
+                                key={i}
+                            />
+                        )}
 
                 </Stack>
 
-                <Stack
-                    h='100%'
-                    justify='space-between'
-                    gap='xs'
-                >
-                    <Stack>
+                <Stack>
 
-                        {
-                            topBar.map((barItem, i) =>
-                                <BarProp
-                                    barItem={barItem}
-                                    key={i}
-                                />
-                            )}
+                    {
+                        bottomBar.map((barItem, i) =>
+                            <BarProp
+                                barItem={barItem}
+                                key={i}
+                            />
+                        )
+                    }
 
-                    </Stack>
-
-                    <Stack>
-
-                        {
-                            bottomBar.map((barItem, i) =>
-                                <BarProp
-                                    barItem={barItem}
-                                    key={i}
-                                />
-                            )
-                        }
-
-                    </Stack>
+                    <Settings />
 
                 </Stack>
 
             </Stack>
 
-            <Settings opened={opened} close={close} />
-
-        </>
+        </Stack>
     );
 }
