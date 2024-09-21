@@ -1,31 +1,52 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { Menu } from '@mantine/core';
+import { Box, Group, Menu, SegmentedControl, useMantineColorScheme } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconSettings } from '@tabler/icons-react';
+import { IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
 
 import BarItem from './barItem';
+import React from 'react';
 
 export default () => {
-    const [opened, { toggle }] = useDisclosure(false);
+    const { colorScheme, setColorScheme } = useMantineColorScheme({
+        keepTransitions: true
+    });
+    const [opened, menu] = useDisclosure(false);
 
     const barItem = {
         name: 'Settings',
         icon: IconSettings,
-        clickEvent: () => toggle()
+        clickEvent: () => menu.toggle()
     };
 
-    const router = useRouter();
+
+    const colorSchemeOptions = [
+        {
+            name: 'Light',
+            icon: IconSun,
+            value: 'light'
+        },
+        {
+            name: 'Dark',
+            icon: IconMoon,
+            value: 'dark'
+        },
+        {
+            name: 'System',
+            icon: IconSettings,
+            value: 'auto'
+        }
+    ];
 
     return (
         <Menu
             opened={opened}
+            onClose={menu.close}
             shadow='md'
-            width={200}
+            radius='md'
             position='right-end'
             offset={32}
             transitionProps={{
-                transition: 'rotate-right',
+                transition: 'fade',
                 duration: 200
             }}
         >
@@ -35,16 +56,43 @@ export default () => {
             </Menu.Target>
 
 
-            <Menu.Dropdown>
+            <Menu.Dropdown
+                p='xs'
+            >
 
-                <Menu.Item>
+                <Menu.Label>
+                    Theme
+                </Menu.Label>
+
+                <Box
+                    px='xs'
+                >
+                    <SegmentedControl
+                        radius='md'
+                        value={colorScheme}
+                        onChange={(value) => setColorScheme(value as 'light' | 'dark' | 'auto')}
+                        data={colorSchemeOptions.map(({ name, icon, value }) => ({
+                            value,
+                            label: (
+                                <Group
+                                    gap={4}
+                                    wrap='nowrap'
+                                >
+                                    {React.createElement(icon, { size: 16, stroke: 2 })}
+                                    {name}
+                                </Group>
+                            )
+                        }))}
+                    />
+                </Box>
+
+                <Menu.Label>
                     Account
-                </Menu.Item>
-
+                </Menu.Label>
+                
                 <Menu.Item>
                     Logout
                 </Menu.Item>
-
             </Menu.Dropdown>
         </Menu>
     );

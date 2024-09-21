@@ -2,14 +2,14 @@ import { Box, ActionIcon, Divider, Group, Text } from '@mantine/core';
 import { IconHome } from '@tabler/icons-react';
 import { forwardRef } from 'react';
 
-export type BarItem = {
+export type BarProp = {
     name: string;
     icon: typeof IconHome;
     clickEvent: () => void;
 } | null;
 
 type BarItemProps = {
-    barItem: BarItem;
+    barItem: BarProp;
 };
 
 export default forwardRef<HTMLButtonElement, BarItemProps>(({
@@ -35,7 +35,7 @@ export default forwardRef<HTMLButtonElement, BarItemProps>(({
                 gap='xs'
                 wrap='nowrap'
                 style={{
-                    transition: 'width 0.5s ease-in-out',
+                    transition: 'width 0.3s ease-in-out',
                     overflow: 'hidden'
                 }}
             >
@@ -60,9 +60,10 @@ export default forwardRef<HTMLButtonElement, BarItemProps>(({
             </Group>
 
         </ActionIcon>
+
         :
-        <Divider
-            size='sm'
-            w='100%'
-        />
+            <Divider
+                size='sm'
+                w='100%'
+            />
 ));

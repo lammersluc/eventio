@@ -2,19 +2,23 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Group, Stack, Text, Image, ActionIcon, Divider } from '@mantine/core';
-import { IconUser, IconWallet, IconDashboard, IconChevronRight, IconHome, IconSearch } from '@tabler/icons-react';
-import { useDisclosure } from '@mantine/hooks';
+import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
+import { IconUser, IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments } from '@tabler/icons-react';
+import { useLocalStorage } from '@mantine/hooks';
 
-import BarProp, { type BarItem } from './barItem';
+import BarItem, { type BarProp } from './barItem';
 import Settings from './settings';
 
 export default () => {
-    const [menuOpened, menu] = useDisclosure(false);
+    const [menuOpened, setMenuOpened] = useLocalStorage({
+        key: 'menuOpened',
+        defaultValue: false
+    });
 
     const router = useRouter();
 
-    const topBar: BarItem[] = [
+    const topBar: BarProp[] = [
+        null,
         {
             name: 'Home',
             icon: IconHome,
@@ -32,11 +36,11 @@ export default () => {
         }
     ];
 
-    const bottomBar: BarItem[] = [
+    const bottomBar: BarProp[] = [
         {
-            name: 'Hosting',
-            icon: IconDashboard,
-            clickEvent: () => router.push('/hosting')
+            name: 'Management',
+            icon: IconAdjustments,
+            clickEvent: () => router.push('/management')
         },
         null,
         {
@@ -64,34 +68,43 @@ export default () => {
             >
 
                 <Group
+                    w='100%'
                     gap='xs'
                     wrap='nowrap'
-                    justify='flex-end'
+                    justify='end'
                     style={{
-                        transition: 'width 0.5s ease-in-out',
-                        overflow: 'hidden'
+                        transition: 'width 0.5s ease-in-out'
                     }}
                     onClick={() => router.push('/')}
                 >
 
                     <Group
+                        justify='space-between'
+                        w='100%'
+                    >
+
+                    <Group
                         align='end'
                         wrap='nowrap'
                         gap='0'
+                        style={{
+                            opacity: menuOpened ? 1 : 0,
+                            transition: 'opacity 0.1s ease-in-out',
+                            transitionDelay: '0.2s'
+                        }}
                     >
-
                         <Image
                             src='/logo.png'
-                            w={32}
+                            w={26}
                         />
-
                         <Text
                             inline
-                            size='xl'
+                            size='md'
                             fw={700}
                         >
                             ventio
                         </Text>
+                    </Group>
 
                     </Group>
 
@@ -100,29 +113,18 @@ export default () => {
                         size='lg'
                         variant='default'
                         color='normal'
-                        onClick={() => menu.toggle()}
-                        style={{
-                            zIndex: 1,
-                            transform: menuOpened ? 'rotate(0.25turn)' : 'rotate(0turn)',
-                            transition: 'transform 0.3s ease-in-out'
-                        }}
+                        onClick={() => setMenuOpened(!menuOpened)}
                     >
                         <IconChevronRight
                             stroke={1.5}
                             style={{
-                                transform: menuOpened ? 'rotate(0.25turn)' : 'rotate(0turn)',
+                                transform: menuOpened ? 'rotate(0.5turn)' : 'rotate(0turn)',
                                 transition: 'transform 0.5s ease-in-out'
                             }}
                         />
                     </ActionIcon>
 
                 </Group>
-
-
-                <Divider
-                    size='sm'
-                    w='100%'
-                />
 
             </Stack>
 
@@ -135,7 +137,7 @@ export default () => {
 
                     {
                         topBar.map((barItem, i) =>
-                            <BarProp
+                            <BarItem
                                 barItem={barItem}
                                 key={i}
                             />
@@ -147,7 +149,7 @@ export default () => {
 
                     {
                         bottomBar.map((barItem, i) =>
-                            <BarProp
+                            <BarItem
                                 barItem={barItem}
                                 key={i}
                             />
