@@ -6,10 +6,10 @@ import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
 import { IconUser, IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments } from '@tabler/icons-react';
 import { useLocalStorage } from '@mantine/hooks';
 
-import BarItem, { type BarProp } from './barItem';
-import Settings from './settings';
+import { BarItem, type BarProp } from './barItem';
+import { Settings } from './settings';
 
-export default () => {
+export const Navbar = () => {
     const [menuOpened, setMenuOpened] = useLocalStorage({
         key: 'menuOpened',
         defaultValue: false
@@ -96,6 +96,7 @@ export default () => {
                         <Image
                             src='/logo.png'
                             w={26}
+                            alt=''
                         />
                         <Text
                             inline

@@ -1,23 +1,28 @@
 'use client';
-import { Box, Group, Menu, SegmentedControl, useMantineColorScheme } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { Box, Group, MantineColorScheme, Menu, SegmentedControl, useMantineColorScheme } from '@mantine/core';
+import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
 
-import BarItem from './barItem';
-import React from 'react';
+import { BarItem } from './barItem';
 
-export default () => {
-    const { colorScheme, setColorScheme } = useMantineColorScheme({
+export const Settings = () => {
+    const {colorScheme, setColorScheme} = useMantineColorScheme({
         keepTransitions: true
     });
+    const [auth, setAuth, removeAuth] = useLocalStorage({
+        key: 'auth'
+    });
     const [opened, menu] = useDisclosure(false);
+
+    const router = useRouter();
 
     const barItem = {
         name: 'Settings',
         icon: IconSettings,
         clickEvent: () => menu.toggle()
     };
-
 
     const colorSchemeOptions = [
         {
@@ -47,7 +52,7 @@ export default () => {
             offset={32}
             transitionProps={{
                 transition: 'fade',
-                duration: 200
+                duration: 300
             }}
         >
 
@@ -70,7 +75,7 @@ export default () => {
                     <SegmentedControl
                         radius='md'
                         value={colorScheme}
-                        onChange={(value) => setColorScheme(value as 'light' | 'dark' | 'auto')}
+                        onChange={(value) => setColorScheme(value as MantineColorScheme)}
                         data={colorSchemeOptions.map(({ name, icon, value }) => ({
                             value,
                             label: (
@@ -90,7 +95,12 @@ export default () => {
                     Account
                 </Menu.Label>
                 
-                <Menu.Item>
+                <Menu.Item
+                    onClick={() => {
+                        removeAuth();
+                        router.push('/auth');
+                    }}
+                >
                     Logout
                 </Menu.Item>
             </Menu.Dropdown>

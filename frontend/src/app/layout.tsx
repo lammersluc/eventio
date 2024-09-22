@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Eventio",
   description: "Event management",
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +24,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={nunito.className}>
         <MantineProvider defaultColorScheme='auto'>
-          <App children={children} />
+          <App>
+            {children}
+          </App>
         </MantineProvider>
       </body>
     </html>

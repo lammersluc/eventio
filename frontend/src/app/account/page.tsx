@@ -11,7 +11,7 @@ type Account = {
     createdAt: Date;
 } | null;
 
-export default () => {
+export default function Page() {
     const [account, setAccount] = React.useState<Account>();
 
     React.useEffect(() => {
@@ -39,6 +39,7 @@ export default () => {
                         radius='xl'
                         width={64}
                         height={64}
+                        alt=''
                     />
 
                 </Box>

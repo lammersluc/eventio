@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 
 import client from '@/lib/client';
 
-export default ({
+export const Login = ({
     toggleVisible
 }: {
     toggleVisible: () => void
@@ -16,7 +16,7 @@ export default ({
     const router = useRouter();
 
     const form = useForm({
-        initialValues: { username: 'test', password: 'Test123!@' }
+        initialValues: { username: '', password: '' }
     });
 
     const handleSubmit = (values: typeof form.values) => {

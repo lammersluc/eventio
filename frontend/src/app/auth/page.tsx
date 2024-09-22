@@ -2,10 +2,9 @@
 import React from 'react';
 import { Center, Group, Image, Paper } from '@mantine/core'
 
-import Login from '@/components/auth/login';
-import Register from '@/components/auth/register';
+import { Login, Register } from '@/components/auth';
 
-export default () => {
+export default function Page() {
     const toggleVisible = () => {
         const banner = document.getElementById('banner');
         if (!banner) return;
@@ -49,6 +48,7 @@ export default () => {
                             w='auto'
                             top={0}
                             left={0}
+                            alt=''
                         />
                     </Paper>
 

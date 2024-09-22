@@ -1,18 +1,17 @@
 'use client';
-
 import { usePathname } from 'next/navigation';
-import { Flex, Group, Paper, useMantineColorScheme, useMantineTheme } from '@mantine/core'
+import { Flex, Group, Paper, useComputedColorScheme, useMantineTheme } from '@mantine/core'
 import { Toaster } from 'react-hot-toast';
 
-import Navbar from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 
-export default ({
+export default function App ({
     children,
 }: Readonly<{
     children: React.ReactNode;
-}>) => {
-    const { colorScheme } = useMantineColorScheme();
+}>) {
     const theme = useMantineTheme();
+    const colorScheme = useComputedColorScheme();
     const pathname = usePathname();
 
     const hiddenNavbarRoutes = [
@@ -21,10 +20,10 @@ export default ({
 
     return (
         <Group
-            bg={colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1]}
             h='100dvh'
             p={0}
             gap={0}
+            bg={colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1]}
         >
 
             {
@@ -37,7 +36,7 @@ export default ({
                 justify='center'
                 align='center'
                 style={{
-                    flexGrow: 1,
+                    flexGrow: 1
                 }}
                 p='md'
             >
@@ -54,11 +53,15 @@ export default ({
 
                     <Toaster
                         position='bottom-right'
-                        containerStyle={
-                            {
-                                margin: '16px'
+                        containerStyle={{
+                            margin: '16px'
+                        }}
+                        toastOptions={{
+                            style: {
+                                color: colorScheme === 'dark' ? '#fff' : '#000',
+                                background: colorScheme === 'dark' ? '#000' : '#fff',
                             }
-                        }
+                        }}
                     />
 
                 </Paper>

@@ -10,7 +10,7 @@ import { zxcvbn } from '@zxcvbn-ts/core';
 
 import client from '@/lib/client';
 
-export default ({
+export const Register = ({
     toggleVisible
 } : {
     toggleVisible: () => void
@@ -18,7 +18,7 @@ export default ({
     const router = useRouter();
 
     const form = useForm({
-        initialValues: { username: 'test', email: 'test@example.com', password: 'Test123!@' },
+        initialValues: { username: '', email: '', password: '' },
         validate: {
             username: (value) => /^[a-z0-9_]{3,16}$/.test(value) ? null
                 : '3-16 characters (a-z, 0-9, _)',

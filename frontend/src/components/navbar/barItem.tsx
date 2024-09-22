@@ -8,11 +8,7 @@ export type BarProp = {
     clickEvent: () => void;
 } | null;
 
-type BarItemProps = {
-    barItem: BarProp;
-};
-
-export default forwardRef<HTMLButtonElement, BarItemProps>(({
+export const BarItem = forwardRef<HTMLButtonElement, { barItem: BarProp }>(({
     barItem
 }, ref) => (
     barItem ?
@@ -28,7 +24,6 @@ export default forwardRef<HTMLButtonElement, BarItemProps>(({
             }}
             ref={ref}
         >
-
             <Group
                 w='100%'
                 ml='3.5px'
@@ -58,9 +53,7 @@ export default forwardRef<HTMLButtonElement, BarItemProps>(({
                 </Text>
 
             </Group>
-
         </ActionIcon>
-
         :
             <Divider
                 size='sm'
