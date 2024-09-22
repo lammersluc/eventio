@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Group, MantineColorScheme, Menu, SegmentedControl, useMantineColorScheme } from '@mantine/core';
+import { Box, Group, Menu, SegmentedControl, useMantineColorScheme, isMantineColorScheme } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
 
@@ -11,7 +11,7 @@ export const Settings = () => {
     const {colorScheme, setColorScheme} = useMantineColorScheme({
         keepTransitions: true
     });
-    const [auth, setAuth, removeAuth] = useLocalStorage({
+    const [, , removeAuth] = useLocalStorage({
         key: 'auth'
     });
     const [opened, menu] = useDisclosure(false);
@@ -42,6 +42,23 @@ export const Settings = () => {
         }
     ];
 
+    const changeColorScheme = (value: string) => {
+        if (!isMantineColorScheme(value)) return;
+
+        document.querySelectorAll<HTMLElement>('*').forEach((element) => {
+            // element.classList.add('colorscheme-transition');
+            const previousTransition = element.style.transition;
+            element.style.transition = 'all 0.3s ease-in-out';
+
+            setTimeout(() => {
+                // element.classList.remove('colorscheme-transition');
+                element.style.transition = previousTransition;
+            }, 300);
+        });
+
+        setColorScheme(value);
+    };
+
     return (
         <Menu
             opened={opened}
@@ -50,10 +67,6 @@ export const Settings = () => {
             radius='md'
             position='right-end'
             offset={32}
-            transitionProps={{
-                transition: 'fade',
-                duration: 300
-            }}
         >
 
             <Menu.Target>
@@ -63,6 +76,9 @@ export const Settings = () => {
 
             <Menu.Dropdown
                 p='xs'
+                style={{
+                    transition: 'opacity 0.2s ease'
+                }}
             >
 
                 <Menu.Label>
@@ -75,7 +91,7 @@ export const Settings = () => {
                     <SegmentedControl
                         radius='md'
                         value={colorScheme}
-                        onChange={(value) => setColorScheme(value as MantineColorScheme)}
+                        onChange={changeColorScheme}
                         data={colorSchemeOptions.map(({ name, icon, value }) => ({
                             value,
                             label: (
