@@ -77,7 +77,7 @@ export const Settings = () => {
             <Menu.Dropdown
                 p='xs'
                 style={{
-                    transition: 'opacity 0.2s ease'
+                    transition: 'opacity 0.2s ease-in-out'
                 }}
             >
 

@@ -5,8 +5,9 @@ import "./globals.css";
 import { MantineProvider } from '@mantine/core';
 
 import '@mantine/core/styles.css';
+import dynamic from "next/dynamic";
 
-import App from "./app";
+const App = dynamic(() => import("./app"), { ssr: false });
 
 const nunito = Nunito({ subsets: ["latin"] });
 

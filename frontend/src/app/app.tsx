@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { usePathname } from 'next/navigation';
 import { Flex, Group, Paper, useComputedColorScheme, useMantineTheme } from '@mantine/core'
 import { Toaster } from 'react-hot-toast';
@@ -16,7 +17,7 @@ export default function App ({
 
     const hiddenNavbarRoutes = [
         '/auth'
-    ]
+    ];
 
     return (
         <Group
@@ -25,7 +26,6 @@ export default function App ({
             gap={0}
             bg={colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[1]}
         >
-
             {
                 hiddenNavbarRoutes.every(route => pathname !== route) &&
                 <Navbar />
