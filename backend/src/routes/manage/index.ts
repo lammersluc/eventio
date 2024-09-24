@@ -46,10 +46,10 @@ export default new Elysia({ prefix: '/manage/events/:eventId' })
         },
         params: t.Object({
             id: t.String()
-        }),
-        response: {
-            403: t.String()
-        }
+        })
+        // response: {
+        //     403: t.String()
+        // }
     }, app => app
         .use(ownerRouter)
         .use(managerRouter)

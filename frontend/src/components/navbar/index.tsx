@@ -69,44 +69,36 @@ export const Navbar = () => {
 
                 <Group
                     w='100%'
-                    gap='xs'
+                    gap={0}
                     wrap='nowrap'
                     justify='end'
-                    style={{
-                        transition: 'width 0.5s ease-in-out'
-                    }}
-                    onClick={() => router.push('/')}
                 >
 
-                    <Group
-                        justify='space-between'
-                        w='100%'
-                    >
-
-                    <Group
-                        align='end'
-                        wrap='nowrap'
-                        gap='0'
-                        style={{
-                            opacity: menuOpened ? 1 : 0,
-                            transition: 'opacity 0.1s ease-in-out',
-                            transitionDelay: '0.2s'
-                        }}
-                    >
-                        <Image
-                            src='/logo.png'
-                            w={26}
-                            alt=''
-                        />
-                        <Text
-                            inline
-                            size='md'
-                            fw={700}
+                        <Group
+                            w='100%'
+                            align='end'
+                            pl='sm'
+                            gap={0}
+                            wrap='nowrap'
+                            style={{
+                                overflow: 'hidden',
+                                // opacity: menuOpened ? 1 : 0,
+                                // transition: 'opacity 0.2s ease-in-out',
+                                // transitionDelay: menuOpened ? '0' : '0.2s'
+                            }}
                         >
-                            ventio
-                        </Text>
-                    </Group>
-
+                            <Image
+                                src='/logo.png'
+                                w={26}
+                                alt=''
+                            />
+                            <Text
+                                inline
+                                size='md'
+                                fw={700}
+                            >
+                                ventio
+                            </Text>
                     </Group>
 
                     <ActionIcon
