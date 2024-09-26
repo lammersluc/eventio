@@ -98,7 +98,7 @@ model TicketDate {
 }
 
 model Event {
-  id                String           @id @default(uuid())
+  id                String        @id @default(uuid())
   name              String
   description       String?
   has_image         Boolean       @default(false)

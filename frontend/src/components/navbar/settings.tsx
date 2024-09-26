@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Group, Menu, SegmentedControl, useMantineColorScheme, isMantineColorScheme } from '@mantine/core';

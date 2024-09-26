@@ -1,6 +1,3 @@
-'use client';
-
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Text, Stack, Button, TextInput, PasswordInput, Anchor, Progress } from '@mantine/core'
 import { useForm } from '@mantine/form';

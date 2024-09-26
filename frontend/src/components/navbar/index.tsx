@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
@@ -81,10 +79,7 @@ export const Navbar = () => {
                             gap={0}
                             wrap='nowrap'
                             style={{
-                                overflow: 'hidden',
-                                // opacity: menuOpened ? 1 : 0,
-                                // transition: 'opacity 0.2s ease-in-out',
-                                // transitionDelay: menuOpened ? '0' : '0.2s'
+                                overflow: 'hidden'
                             }}
                         >
                             <Image

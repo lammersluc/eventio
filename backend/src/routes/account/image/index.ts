@@ -8,11 +8,14 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
     .post('', async ({ body, error, store }) => {  
         const { id } = store as { id: string };
 
-        const image = await sharp(Buffer.from(body.image, 'base64'))
+        const image = await sharp(Buffer.from(body.image.replace(/^data:image\/\w+;base64,/, ''), 'base64'))
             .resize(128, 128)
             .png()
             .toFile(`./images/users/${id}.png`)
-            .catch(() => null);
+            .catch((e) => {
+                console.error(e);
+                return null;
+            });
 
         if (!image) return error(500, '');
 

@@ -18,7 +18,7 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
 
     try {
         access = jwt.verify(accessToken, secret, {
-            ignoreExpiration: refreshToken ? true : true
+            ignoreExpiration: !!refreshToken
         }) as Token;
     } catch {
         return false;
@@ -44,6 +44,9 @@ export const checkTokens = async (accessToken: string, refreshToken?: string) =>
     const user = await prisma.user.findUnique({
         where: {
             id: access.id
+        },
+        select: {
+            updated_at: true
         }
     });
 
