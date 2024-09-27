@@ -1,6 +1,5 @@
 import { Elysia, t } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
-import cors from '@elysiajs/cors';
 import bearer from '@elysiajs/bearer';
 
 import { checkTokens } from '@/services/tokens';
@@ -12,7 +11,6 @@ import eventRouter from './event';
 import manageRouter from './manage';
 
 export default new Elysia()
-    .use(cors())
     .use(bearer())
     .state({
         id: '',

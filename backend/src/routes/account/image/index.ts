@@ -9,13 +9,10 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
         const { id } = store as { id: string };
 
         const image = await sharp(Buffer.from(body.image.replace(/^data:image\/\w+;base64,/, ''), 'base64'))
-            .resize(128, 128)
+            .resize(256, 256)
             .png()
-            .toFile(`./images/users/${id}.png`)
-            .catch((e) => {
-                console.error(e);
-                return null;
-            });
+            .toFile(`public/images/users/${id}.png`)
+            .catch(() => null);
 
         if (!image) return error(500, '');
 
@@ -47,8 +44,8 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
     .delete('', async ({ error, store }) => {
         const { id } = store as { id: string };
 
-        if (fs.existsSync(`./images/users/${id}.png`))
-            fs.rmSync(`./images/users/${id}.png`);
+        if (fs.existsSync(`./public/images/users/${id}.png`))
+            fs.rmSync(`./public/images/users/${id}.png`);
 
         const deleted = await prisma.user.update({
             where: {

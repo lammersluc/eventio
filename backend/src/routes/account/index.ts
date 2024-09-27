@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import fs from 'fs';
+import sharp from 'sharp';
 
 import prisma from '@/services/database';
 
@@ -31,7 +32,8 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
 
         if (!user) return error(404, '');
 
-        const image = user.has_image ? fs.readFileSync(`./images/users/${id}.png`, { encoding: 'base64' }) : null;
+        const image = (typeof window !== 'undefined' ? window.location.host : 'http://localhost:3000') +
+                '/public/images/users/' + (user.has_image ? id : 'default') + '.png';
 
         return {
             username: user.username,
@@ -59,13 +61,17 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
                 id
             },
             select: {
-                password: true
+                password: true,
+                has_image: true
             }
         });
 
         if (!user) return error(500, '');
 
         if (await Bun.password.verify(body.password, user.password)) return error(401, '');
+
+        if (user.has_image && fs.existsSync(`./public/images/users/${id}.png`))
+            fs.rmSync(`./public/images/users/${id}.png`);
 
         const deleted = await prisma.user.delete({
             where: {

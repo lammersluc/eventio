@@ -1,8 +1,12 @@
-import { Elysia } from "elysia";
+import { Elysia } from 'elysia';
+import cors from '@elysiajs/cors';
+import { staticPlugin } from '@elysiajs/static';
 
-import apiRouter from "./routes";
+import apiRouter from './routes';
 
 const app = new Elysia()
+    .use(cors())
+    .use(staticPlugin())
     .use(apiRouter)
     .listen(3000);
 

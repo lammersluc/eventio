@@ -2,7 +2,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Flex, Group, Image, Paper, Stack, Text } from '@mantine/core'
-import { IconPencil, IconUser } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 
 import { PictureModal } from '@/components/account/pictureModal';
 
@@ -24,15 +24,15 @@ export default function Page() {
 
     React.useEffect(() => {
         (async () => {
-
             const result = await client.account.get();
 
-            if (result.error)
-                return router.push('/auth');
-
+            if (result.error) {
+                localStorage.removeItem('auth');
+                router.push('/auth');
+                return;
+            }
 
             setAccount(result.data);
-
         })();
 
     }, []);
@@ -48,32 +48,19 @@ export default function Page() {
 
                 <Paper
                     pos='relative'
+                    w='92px'
+                    h='92px'
                     shadow='sm'
-                    radius='xl'
+                    radius='50%'
                     style={{
                         overflow: 'hidden'
                     }}
                 >
 
-                    <Flex
-                        w='64px'
-                        h='64px'
-                        justify='center'
-                        align='center'
-                    >
-                        {account.image ?
-                            <Image
-                                src={account.image}
-                                radius='xl'
-                                height={64}
-                                alt=''
-                            />
-                            :
-                            <IconUser
-                                size={48}
-                            />
-                        }
-                    </Flex>
+                    <Image
+                        src={account.image}
+                        alt=''
+                    />
 
                     <Flex
                         pos='absolute'

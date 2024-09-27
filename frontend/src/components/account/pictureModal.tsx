@@ -3,10 +3,8 @@ import { Modal, Stack, Button, Group, Paper, Text, Anchor, Slider } from '@manti
 import { IconUpload, IconDeviceFloppy } from '@tabler/icons-react';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import AvatarEditor from 'react-avatar-editor';
-import sharp from 'sharp';
 
 import client from '@/lib/client';
-import { format } from 'path';
 
 export const PictureModal = ({
     opened,
@@ -28,7 +26,18 @@ export const PictureModal = ({
             return;
         }
 
-        const image = (editor.current as AvatarEditor).getImage().toDataURL();
+        const canvas = (editor.current as AvatarEditor).getImageScaledToCanvas();
+
+        const res = 256;
+
+        const resizedCanvas = document.createElement('canvas');
+        resizedCanvas.width = res;
+        resizedCanvas.height = res;
+        const ctx = resizedCanvas.getContext('2d');
+        if (ctx) {
+            ctx.drawImage(canvas, 0, 0, res, res);
+        }
+        const image = resizedCanvas.toDataURL();
 
         await client.account.image.post({
             image
@@ -36,7 +45,7 @@ export const PictureModal = ({
 
         onClose();
 
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 200));
         setFile(null);
     }
 
@@ -76,16 +85,15 @@ export const PictureModal = ({
                         <Dropzone
                             w='100%'
                             h='100%'
-                            pt='xl'
-                            onDrop={([file]) => {setZoom(1); setFile(file);}}
+                            onDrop={([file]) => { setZoom(1); setFile(file); }}
                             maxFiles={1}
-                            maxSize={5 * 1024 ** 2}
                             accept={IMAGE_MIME_TYPE}
                             style={{
                                 border: 'none'
                             }}
                         >
                             <Stack
+                                my='xl'
                                 justify='center'
                                 align='center'
                                 style={{
@@ -98,26 +106,12 @@ export const PictureModal = ({
                                     color='gray'
                                 />
 
-                                <Stack
-                                    gap={0}
-                                    align='center'
+                                <Text
+                                    size='md'
+                                    c='gray'
                                 >
-
-                                    <Text
-                                        size='md'
-                                        c='gray'
-                                    >
-                                        Drop or click to upload
-                                    </Text>
-
-                                    <Text
-                                        size='sm'
-                                        c='gray'
-                                    >
-                                        (max 5mb)
-                                    </Text>
-
-                                </Stack>
+                                    Drop or click to upload
+                                </Text>
 
                             </Stack>
                         </Dropzone>
