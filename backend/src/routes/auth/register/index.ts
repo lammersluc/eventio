@@ -29,7 +29,6 @@ export default new Elysia({ prefix: '/register' })
             if (email === body.email) conflicts.push('email');
         });
 
-
         if (conflicts.length) return error(409, conflicts);
 
         const created = await prisma.user.create({
@@ -49,7 +48,7 @@ export default new Elysia({ prefix: '/register' })
         body: t.Object({
             username: t.String({ pattern: '^[a-z0-9_]{3,16}$' }),
             email: t.String({ format: 'email' }),
-            password: t.String({  })
+            password: t.String()
         }),
         response: {
             201: t.Object({

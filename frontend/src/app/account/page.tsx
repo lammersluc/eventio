@@ -1,12 +1,15 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Group, Image, Paper, Stack, Text } from '@mantine/core'
-import { IconPencil } from '@tabler/icons-react';
+import { Anchor, Button, Center, Group, Image, Paper, Stack, TextInput } from '@mantine/core'
+import { IconDeviceFloppy } from '@tabler/icons-react';
+import { toast } from 'react-hot-toast';
 
 import { PictureModal } from '@/components/account/pictureModal';
 
 import client from '@/lib/client';
+import { useForm } from '@mantine/form';
+import { checkEmail, checkUsername } from '@/lib/accountRegex';
 
 type Account = {
     username: string;
@@ -17,10 +20,16 @@ type Account = {
 
 export default function Page() {
     const [account, setAccount] = React.useState<Account>();
-    const [hovered, setHovered] = React.useState(false);
     const [pictureModal, setPictureModal] = React.useState(false);
 
     const router = useRouter();
+
+    const form = useForm({
+        validate: {
+            username: checkUsername,
+            email: checkEmail
+        }
+    });
 
     React.useEffect(() => {
         (async () => {
@@ -33,69 +42,158 @@ export default function Page() {
             }
 
             setAccount(result.data);
+            form.setValues({
+                username: result.data.username,
+                email: result.data.email
+            });
+            form.resetDirty();
         })();
 
     }, []);
 
+    const handleSubmit = async (values: typeof form.values) => {
+
+        const promise = new Promise(async (resolve, reject) => {
+
+            if (!account) {
+                reject('Something went wrong');
+                return;
+            }
+
+            const body = {
+                username: values.username !== account.username ? values.username : undefined,
+                email: values.email !== account.email ? values.email : undefined
+            };
+
+            if (!body.username && !body.email) {
+                resolve('');
+                return;
+            }
+
+            const result = await client.account.patch(body);
+
+            if (!result.error) {
+
+                setAccount({
+                    ...account,
+                    username: values.username,
+                    email: values.email
+                });
+
+                form.resetDirty();
+
+                resolve('');
+                return;
+            }
+
+            if (result.error.status === 409) {
+
+                const conflicts = result.error.value;
+
+                form.setErrors({
+                    username: conflicts.includes('username') ? 'Username already exists' : null,
+                    email: conflicts.includes('email') ? 'Email already exists' : null
+                })
+
+                const text = conflicts.join(' and ');
+
+                reject(text.charAt(0).toUpperCase() + text.slice(1) + ' already exist' + (conflicts.length === 1 ? 's' : ''));
+                return;
+            }
+
+            reject('Something went wrong');
+        });
+
+        toast.promise(promise, {
+            loading: 'Saving...',
+            success: 'Saved',
+            error: (error) => error
+        });
+    }
+
     return account && (
-        <Stack
-            p='xl'
+        <Center
+            h='100%'
         >
 
-            <Group
-                w='100%'
+            <Paper
+                p='lg'
+                radius='lg'
+                shadow='lg'
             >
-
-                <Paper
-                    pos='relative'
-                    w='92px'
-                    h='92px'
-                    shadow='sm'
-                    radius='50%'
-                    style={{
-                        overflow: 'hidden'
-                    }}
+                <Group
+                    gap='100px'
                 >
 
-                    <Image
-                        src={account.image}
-                        alt=''
-                    />
+                    <form onSubmit={form.onSubmit(handleSubmit)}>
+                        <Stack>
 
-                    <Flex
-                        pos='absolute'
-                        top={0}
-                        left={0}
-                        w='100%'
-                        h='100%'
-                        justify='center'
-                        align='center'
-                        opacity={hovered ? 0.7 : 0}
-                        bg='black'
-                        style={{
-                            cursor: 'pointer',
-                            transition: 'opacity 0.3s ease-in-out'
-                        }}
-                        onMouseEnter={() => setHovered(true)}
-                        onMouseLeave={() => setHovered(false)}
-                        onClick={() => setPictureModal(true)}
-                    >
-                        <IconPencil size={24} color='white' />
-                    </Flex>
+                            <TextInput
+                                label='Username'
+                                key={form.key('username')}
+                                {...form.getInputProps('username')}
+                            />
 
-                </Paper>
+                            <TextInput
+                                label='Email'
+                                key={form.key('email')}
+                                {...form.getInputProps('email')}
+                            />
 
-                <Box>
+                            <Group>
 
-                    <Text size='xl'>{account.username}</Text>
-                    <Text size='sm'>{account.email}</Text>
+                                <Button
+                                    w='fit-content'
+                                    leftSection={<IconDeviceFloppy />}
+                                    type='submit'
+                                >
+                                    Save
+                                </Button>
 
-                </Box>
+                                {form.isDirty() && (
+                                    <Anchor
+                                        mx='xl'
+                                        onClick={() => form.reset()}
+                                    >
+                                        Reset
+                                    </Anchor>
+                                )}
 
-            </Group>
+                            </Group>
+
+                        </Stack>
+                    </form>
+
+                    <Stack>
+
+                        <Paper
+                            w='128px'
+                            h='128px'
+                            shadow='sm'
+                            radius='50%'
+                            style={{
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <Image
+                                src={account.image}
+                                alt=''
+                            />
+                        </Paper>
+
+                        <Button
+                            onClick={() => setPictureModal(true)}
+                        >
+                            Change Picture
+                        </Button>
+
+                    </Stack>
+
+                </Group>
+            </Paper>
 
             <PictureModal opened={pictureModal} onClose={() => setPictureModal(false)} />
 
-        </Stack>
+        </Center>
     );
 }

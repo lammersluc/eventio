@@ -53,7 +53,7 @@ export const Login = ({
     }
 
     return (
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
 
             <Stack
                 p='xl'

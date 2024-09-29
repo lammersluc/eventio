@@ -5,12 +5,14 @@ import sharp from 'sharp';
 import prisma from '@/services/database';
 
 import usernameRouter from './username';
+import emailRouter from './email';
 import passwordRouter from './password';
 import imageRouter from './image';
 import findRouter from './find';
 
 export default new Elysia({ prefix: '/account', tags: ['Account'] })
     .use(usernameRouter)
+    .use(emailRouter)
     .use(passwordRouter)
     .use(imageRouter)
     .use(findRouter)
@@ -50,6 +52,59 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
                 createdAt: t.Date(),
             }),
             404: t.String()
+        }
+    })
+
+    .patch('', async ({ body, error, store }) => {
+        const { id } = store as { id: string };
+
+        const users = await prisma.user.findMany({
+            where: {
+                OR: [
+                    { username: body.username },
+                    { email: body.email }
+                ]
+            },
+            select: {
+                username: true,
+                email: true
+            }
+        });
+
+        let conflicts: string[] = [];
+
+        users.forEach(({ username, email }) => {
+            if (username === body.username) conflicts.push('username');
+            if (email === body.email) conflicts.push('email');
+        });
+
+        if (conflicts.length) return error(409, conflicts);
+
+        const updated = await prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                username: body.username,
+                email: body.email
+            },
+            select: {
+                id: true
+            }
+        }).catch(() => null);
+
+        if (!updated) return error(500, '');
+
+        return '';
+    }, {
+        body: t.Partial(t.Object({
+            username: t.String(),
+            email: t.String()
+        })),
+        response: {
+            200: t.String(),
+            409: t.Array(t.String()),
+            500: t.String()
         }
     })
 

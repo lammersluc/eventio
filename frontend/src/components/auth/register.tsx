@@ -3,13 +3,13 @@ import { Text, Stack, Button, TextInput, PasswordInput, Anchor, Progress } from 
 import { useForm } from '@mantine/form';
 import { IconUser, IconMail } from '@tabler/icons-react'
 import { toast } from 'react-hot-toast';
-import { zxcvbn } from '@zxcvbn-ts/core';
 
+import { checkUsername, checkEmail, checkPassword, checkPasswordStrength } from '@/lib/accountRegex';
 import client from '@/lib/client';
 
 export const Register = ({
     toggleVisible
-} : {
+}: {
     toggleVisible: () => void
 }) => {
     const router = useRouter();
@@ -17,12 +17,9 @@ export const Register = ({
     const form = useForm({
         initialValues: { username: '', email: '', password: '' },
         validate: {
-            username: (value) => /^[a-z0-9_]{3,16}$/.test(value) ? null
-                : '3-16 characters (a-z, 0-9, _)',
-            email: (value) => /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i.test(value) ? null
-                : 'Invalid email',
-            password: (value) => zxcvbn(value).score > 2 ? null
-                : 'Password not strong enough'
+            username: checkUsername,
+            email: checkEmail,
+            password: checkPassword
         }
     });
 
@@ -63,7 +60,6 @@ export const Register = ({
             }
 
             reject('Something went wrong');
-
         });
 
         toast.promise(promise, {
@@ -74,7 +70,7 @@ export const Register = ({
     }
 
     return (
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack
                 p='xl'
                 gap='lg'
@@ -89,7 +85,7 @@ export const Register = ({
                     size='md'
                     placeholder='Username'
                     spellCheck={false}
-                    rightSection={<IconUser stroke={1.5} size={20}/>}
+                    rightSection={<IconUser stroke={1.5} size={20} />}
                     key={form.key('username')}
                     {...form.getInputProps('username')}
                 />
@@ -99,7 +95,7 @@ export const Register = ({
                     size='md'
                     placeholder='Email'
                     spellCheck={false}
-                    rightSection={<IconMail stroke={1.5} size={20}/>}
+                    rightSection={<IconMail stroke={1.5} size={20} />}
                     key={form.key('email')}
                     {...form.getInputProps('email')}
                 />
@@ -115,12 +111,17 @@ export const Register = ({
                         key={form.key('password')}
                         {...form.getInputProps('password')}
                     />
-                    <Progress
-                        value={zxcvbn(form.values.password).score * 25}
-                        color={zxcvbn(form.values.password).score < 3 ? 'red' : 'blue'}
-                        size={4}
-                        radius='xl'
-                    />
+                    {(() => {
+                        const { strength, color } = checkPasswordStrength(form.values.password);
+                        return (
+                            <Progress
+                                value={strength}
+                                color={color}
+                                size={4}
+                                radius='xl'
+                            />
+                        );
+                    })()}
                 </Stack>
 
                 <Button

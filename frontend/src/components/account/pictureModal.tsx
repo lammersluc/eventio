@@ -119,22 +119,30 @@ export const PictureModal = ({
                 </Paper>
 
                 {file &&
-                    <Slider
-                        w='256px'
-                        value={zoom}
-                        min={1}
-                        max={5}
-                        step={0.1}
-                        onChange={setZoom}
-                    />
-                }
+                    <Stack
+                        gap='xs'
+                        align='center'
+                    >
 
-                <Anchor
-                    c='red'
-                    onClick={() => setFile(null)}
-                >
-                    Remove Picture
-                </Anchor>
+                        <Slider
+                            w='256px'
+                            value={zoom}
+                            min={1}
+                            max={5}
+                            step={0.01}
+                            label={null}
+                            onChange={setZoom}
+                        />
+
+                        <Anchor
+                            c='red'
+                            onClick={() => setFile(null)}
+                        >
+                            Remove Picture
+                        </Anchor>
+
+                    </Stack>
+                }
 
 
                 <Stack
@@ -166,7 +174,7 @@ export const PictureModal = ({
                             leftSection={<IconDeviceFloppy />}
                             onClick={handleSave}
                         >
-                            Save
+                            {file ? 'Save' : 'Remove'}
                         </Button>
 
                     </Group>
