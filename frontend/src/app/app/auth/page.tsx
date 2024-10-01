@@ -2,7 +2,7 @@
 import React from 'react';
 import { Center, Group, Image, Paper } from '@mantine/core'
 
-import { Login, Register } from '@/components/auth';
+import { Login, Register } from '@/components/app/auth';
 
 export default function Page() {
     const toggleVisible = () => {
@@ -13,7 +13,10 @@ export default function Page() {
     }
 
     return (
-        <Center h='100%'>
+        <Center
+            w='100%'
+            h='100%'
+        >
 
             <Paper
                 radius='lg'

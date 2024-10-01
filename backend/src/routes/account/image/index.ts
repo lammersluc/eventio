@@ -16,12 +16,14 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
 
         if (!image) return error(500, '');
 
+        const imageHash = require('crypto').createHash('sha1').update(body.image).digest('hex');
+
         const updated = await prisma.user.update({
             where: {
                 id
             },
             data: {
-                has_image: true
+                image_hash: imageHash
             },
             select: {
                 id: true
@@ -52,7 +54,7 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
                 id
             },
             data: {
-                has_image: false
+                image_hash: null
             },
             select: {
                 id: true

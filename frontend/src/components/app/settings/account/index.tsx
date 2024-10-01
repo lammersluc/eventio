@@ -1,11 +1,10 @@
-'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Anchor, Button, Center, Group, Image, Paper, Stack, TextInput } from '@mantine/core'
 import { IconDeviceFloppy } from '@tabler/icons-react';
 import { toast } from 'react-hot-toast';
 
-import { PictureModal } from '@/components/account/pictureModal';
+import { PictureModal } from './pictureModal';
 
 import client from '@/lib/client';
 import { useForm } from '@mantine/form';
@@ -18,7 +17,7 @@ type Account = {
     createdAt: Date;
 } | null;
 
-export default function Page() {
+export const Account = () => {
     const [account, setAccount] = React.useState<Account>();
     const [pictureModal, setPictureModal] = React.useState(false);
 
@@ -32,6 +31,8 @@ export default function Page() {
     });
 
     React.useEffect(() => {
+        if (pictureModal) return;
+
         (async () => {
             const result = await client.account.get();
 
@@ -49,7 +50,7 @@ export default function Page() {
             form.resetDirty();
         })();
 
-    }, []);
+    }, [pictureModal]);
 
     const handleSubmit = async (values: typeof form.values) => {
 
@@ -112,88 +113,80 @@ export default function Page() {
     }
 
     return account && (
-        <Center
-            h='100%'
-        >
-
-            <Paper
-                p='lg'
-                radius='lg'
-                shadow='lg'
+        <>
+            <Group
+                gap='150px'
             >
-                <Group
-                    gap='100px'
-                >
 
-                    <form onSubmit={form.onSubmit(handleSubmit)}>
-                        <Stack>
-
-                            <TextInput
-                                label='Username'
-                                key={form.key('username')}
-                                {...form.getInputProps('username')}
-                            />
-
-                            <TextInput
-                                label='Email'
-                                key={form.key('email')}
-                                {...form.getInputProps('email')}
-                            />
-
-                            <Group>
-
-                                <Button
-                                    w='fit-content'
-                                    leftSection={<IconDeviceFloppy />}
-                                    type='submit'
-                                >
-                                    Save
-                                </Button>
-
-                                {form.isDirty() && (
-                                    <Anchor
-                                        mx='xl'
-                                        onClick={() => form.reset()}
-                                    >
-                                        Reset
-                                    </Anchor>
-                                )}
-
-                            </Group>
-
-                        </Stack>
-                    </form>
-
+                <form onSubmit={form.onSubmit(handleSubmit)}>
                     <Stack>
 
-                        <Paper
-                            w='128px'
-                            h='128px'
-                            shadow='sm'
-                            radius='50%'
-                            style={{
-                                overflow: 'hidden'
-                            }}
-                        >
-                            <Image
-                                src={account.image}
-                                alt=''
-                            />
-                        </Paper>
+                        <TextInput
+                            label='Username'
+                            key={form.key('username')}
+                            {...form.getInputProps('username')}
+                        />
 
-                        <Button
-                            onClick={() => setPictureModal(true)}
+                        <TextInput
+                            label='Email'
+                            key={form.key('email')}
+                            {...form.getInputProps('email')}
+                        />
+
+                        <Group
+                            justify='space-between'
+                            pr='10%'
                         >
-                            Change Picture
-                        </Button>
+
+                            <Button
+                                w='fit-content'
+                                leftSection={<IconDeviceFloppy />}
+                                type='submit'
+                            >
+                                Save
+                            </Button>
+
+                            {form.isDirty() && (
+                                <Anchor
+                                    onClick={() => form.reset()}
+                                >
+                                    Reset
+                                </Anchor>
+                            )}
+
+                        </Group>
 
                     </Stack>
+                </form>
 
-                </Group>
-            </Paper>
+                <Stack>
+
+                    <Paper
+                        w='128px'
+                        h='128px'
+                        shadow='sm'
+                        radius='50%'
+                        style={{
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <Image
+                            src={account.image}
+                            alt=''
+                        />
+                    </Paper>
+
+                    <Button
+                        onClick={() => setPictureModal(true)}
+                    >
+                        Change Picture
+                    </Button>
+
+                </Stack>
+
+            </Group>
 
             <PictureModal opened={pictureModal} onClose={() => setPictureModal(false)} />
-
-        </Center>
+        </>
     );
 }

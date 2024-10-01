@@ -1,11 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
-import { IconUser, IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments } from '@tabler/icons-react';
+import { Group, Stack, Text, Image, ActionIcon, Menu } from '@mantine/core';
+import { IconUser, IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments, IconSettings } from '@tabler/icons-react';
 import { useLocalStorage } from '@mantine/hooks';
 
 import { BarItem, type BarProp } from './barItem';
-import { Settings } from './settings';
+import { MenuItem } from './menuItem';
 
 export const Navbar = () => {
     const [menuOpened, setMenuOpened] = useLocalStorage({
@@ -16,21 +16,21 @@ export const Navbar = () => {
     const router = useRouter();
 
     const topBar: BarProp[] = [
-        null,
+        'divider',
         {
             name: 'Home',
             icon: IconHome,
-            clickEvent: () => router.push('/')
+            clickEvent: () => router.push('/app')
         },
         {
             name: 'Search',
             icon: IconSearch,
-            clickEvent: () => router.push('/search')
+            clickEvent: () => router.push('/app/search')
         },
         {
             name: 'Wallet',
             icon: IconWallet,
-            clickEvent: () => router.push('/wallet')
+            clickEvent: () => router.push('/app/wallet')
         }
     ];
 
@@ -38,14 +38,15 @@ export const Navbar = () => {
         {
             name: 'Management',
             icon: IconAdjustments,
-            clickEvent: () => router.push('/management')
+            clickEvent: () => router.push('/app/management')
         },
-        null,
+        'divider',
         {
-            name: 'Account',
-            icon: IconUser,
-            clickEvent: () => router.push('/account')
-        }
+            name: 'Settings',
+            icon: IconSettings,
+            clickEvent: () => router.push('/app/settings')
+        },
+        <MenuItem />
     ];
 
     return (
@@ -72,28 +73,28 @@ export const Navbar = () => {
                     justify='end'
                 >
 
-                        <Group
-                            w='100%'
-                            align='end'
-                            pl='sm'
-                            gap={0}
-                            wrap='nowrap'
-                            style={{
-                                overflow: 'hidden'
-                            }}
+                    <Group
+                        w='100%'
+                        align='end'
+                        pl='sm'
+                        gap={0}
+                        wrap='nowrap'
+                        style={{
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <Image
+                            src='/logo.png'
+                            w={26}
+                            alt=''
+                        />
+                        <Text
+                            inline
+                            size='md'
+                            fw={700}
                         >
-                            <Image
-                                src='/logo.png'
-                                w={26}
-                                alt=''
-                            />
-                            <Text
-                                inline
-                                size='md'
-                                fw={700}
-                            >
-                                ventio
-                            </Text>
+                            ventio
+                        </Text>
                     </Group>
 
                     <ActionIcon
@@ -143,8 +144,6 @@ export const Navbar = () => {
                             />
                         )
                     }
-
-                    <Settings />
 
                 </Stack>
 

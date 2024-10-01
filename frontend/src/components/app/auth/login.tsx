@@ -33,7 +33,7 @@ export const Login = ({
                 resolve('');
                 await new Promise((resolve) => setTimeout(resolve, 1000));
 
-                router.push('/');
+                router.push('/app');
                 return;
             }
 

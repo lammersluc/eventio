@@ -2,11 +2,11 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Group, Menu, SegmentedControl, useMantineColorScheme, isMantineColorScheme } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-import { IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
+import { IconCategory, IconMenu, IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
 
 import { BarItem } from './barItem';
 
-export const Settings = () => {
+export const MenuItem = () => {
     const {colorScheme, setColorScheme} = useMantineColorScheme({
         keepTransitions: true
     });
@@ -18,8 +18,8 @@ export const Settings = () => {
     const router = useRouter();
 
     const barItem = {
-        name: 'Settings',
-        icon: IconSettings,
+        name: 'Menu',
+        icon: IconCategory,
         clickEvent: () => menu.toggle()
     };
 
@@ -45,12 +45,10 @@ export const Settings = () => {
         if (!isMantineColorScheme(value)) return;
 
         document.querySelectorAll<HTMLElement>('*').forEach((element) => {
-            // element.classList.add('colorscheme-transition');
             const previousTransition = element.style.transition;
             element.style.transition = 'all 0.3s ease-in-out';
 
             setTimeout(() => {
-                // element.classList.remove('colorscheme-transition');
                 element.style.transition = previousTransition;
             }, 300);
         });

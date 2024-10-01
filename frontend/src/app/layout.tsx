@@ -6,9 +6,6 @@ import { MantineProvider } from '@mantine/core';
 
 import '@mantine/core/styles.css';
 import '@mantine/dropzone/styles.css';
-import dynamic from "next/dynamic";
-
-const App = dynamic(() => import("./app"), { ssr: false });
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -19,16 +16,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={nunito.className}>
-        <MantineProvider defaultColorScheme='auto'>
-          <App>
+        <MantineProvider defaultColorScheme='light'>
+          <div style={{ width: '100dvw', height: '100dvh' }}>
             {children}
-          </App>
+          </div>
         </MantineProvider>
       </body>
     </html>

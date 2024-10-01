@@ -8,7 +8,7 @@ const client = treaty<App>('localhost:3000', {
             const tokens = await refreshTokens();
 
             if (!tokens) {
-                window.location.href = '/auth';
+                window.location.href = '/app/auth';
                 return;
             }
 

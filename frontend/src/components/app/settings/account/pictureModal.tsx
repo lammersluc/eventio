@@ -55,6 +55,7 @@ export const PictureModal = ({
             onClose={onClose}
             title='Change Picture'
             radius='lg'
+            centered={true}
         >
             <Stack
                 p='md'
@@ -83,8 +84,6 @@ export const PictureModal = ({
                         />
                         :
                         <Dropzone
-                            w='100%'
-                            h='100%'
                             onDrop={([file]) => { setZoom(1); setFile(file); }}
                             maxFiles={1}
                             accept={IMAGE_MIME_TYPE}

@@ -17,16 +17,16 @@ export default new Elysia({ prefix: '/password' })
         });
 
         if (!user) return error(500, '');
-        if (!await Bun.password.verify(body.password.current, user.password)) return error(401, '');
+        if (!await Bun.password.verify(body.oldPassword, user.password)) return error(401, '');
 
-        if (zxcvbn(body.password.new).score < 3) return error(400, '');
+        if (zxcvbn(body.newPassword).score < 3) return error(400, '');
 
         const updated = await prisma.user.update({
             where: {
                 id
             },
             data: {
-                password: await Bun.password.hash(body.password.new)
+                password: await Bun.password.hash(body.newPassword)
             },
             select: {
                 id: true
@@ -38,10 +38,8 @@ export default new Elysia({ prefix: '/password' })
         return '';
     }, {
         body: t.Object({
-            password: t.Object({
-                current: t.String(),
-                new: t.String({ pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,128}$' })
-            })
+            oldPassword: t.String(),
+            newPassword: t.String()
         }),
         response: {
             200: t.String(),

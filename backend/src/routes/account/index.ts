@@ -1,18 +1,13 @@
 import { Elysia, t } from 'elysia';
 import fs from 'fs';
-import sharp from 'sharp';
 
 import prisma from '@/services/database';
 
-import usernameRouter from './username';
-import emailRouter from './email';
 import passwordRouter from './password';
 import imageRouter from './image';
 import findRouter from './find';
 
 export default new Elysia({ prefix: '/account', tags: ['Account'] })
-    .use(usernameRouter)
-    .use(emailRouter)
     .use(passwordRouter)
     .use(imageRouter)
     .use(findRouter)
@@ -27,7 +22,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
             select: {
                 username: true,
                 email: true,
-                has_image: true,
+                image_hash: true,
                 created_at: true
             }
         });
@@ -35,7 +30,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
         if (!user) return error(404, '');
 
         const image = (typeof window !== 'undefined' ? window.location.host : 'http://localhost:3000') +
-                '/public/images/users/' + (user.has_image ? id : 'default') + '.png';
+                '/public/images/users/' + (user.image_hash ? id : 'default') + '.png?h=' + user.image_hash;
 
         return {
             username: user.username,
@@ -117,7 +112,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
             },
             select: {
                 password: true,
-                has_image: true
+                image_hash: true
             }
         });
 
@@ -125,7 +120,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
 
         if (await Bun.password.verify(body.password, user.password)) return error(401, '');
 
-        if (user.has_image && fs.existsSync(`./public/images/users/${id}.png`))
+        if (user.image_hash && fs.existsSync(`./public/images/users/${id}.png`))
             fs.rmSync(`./public/images/users/${id}.png`);
 
         const deleted = await prisma.user.delete({

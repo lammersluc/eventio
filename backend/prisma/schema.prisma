@@ -11,7 +11,7 @@ model User {
   id            String        @id @default(uuid())
   username      String        @unique
   email         String        @unique
-  has_image     Boolean       @default(false)
+  image_hash    String?
   password      String
   created_at    DateTime      @default(now())
   updated_at    DateTime      @default(now())
