@@ -45,4 +45,4 @@ package-lock.json
 .DS_Store
 
 # custom files
-/images
+/public

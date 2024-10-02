@@ -139,7 +139,6 @@ export const Account = () => {
                         >
 
                             <Button
-                                w='fit-content'
                                 leftSection={<IconDeviceFloppy />}
                                 type='submit'
                             >
@@ -148,6 +147,7 @@ export const Account = () => {
 
                             {form.isDirty() && (
                                 <Anchor
+                                    size='md'
                                     onClick={() => form.reset()}
                                 >
                                     Reset

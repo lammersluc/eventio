@@ -1,17 +1,13 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Group, Stack, Text, Image, ActionIcon, Menu } from '@mantine/core';
-import { IconUser, IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments, IconSettings } from '@tabler/icons-react';
-import { useLocalStorage } from '@mantine/hooks';
+import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
+import { IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments, IconSettings } from '@tabler/icons-react';
 
 import { BarItem, type BarProp } from './barItem';
 import { MenuItem } from './menuItem';
 
 export const Navbar = () => {
-    const [menuOpened, setMenuOpened] = useLocalStorage({
-        key: 'menuOpened',
-        defaultValue: false
-    });
+    const [menuOpened, setMenuOpened] = React.useState(false);
 
     const router = useRouter();
 

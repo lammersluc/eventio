@@ -33,6 +33,7 @@ export default function Page() {
                         {
                             tabs.map((tab) => (
                                 <Tabs.Tab
+                                    size='xl'
                                     key={tab.value}
                                     value={tab.value}
                                 >

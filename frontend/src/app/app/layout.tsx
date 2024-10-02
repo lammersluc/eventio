@@ -33,50 +33,44 @@ function AppLayout({
         >
 
             {
-                pathName.includes('auth') ?
-                    children
-                    :
-                    <>
-
-                        <Navbar />
-
-                        <Flex
-                            h='100%'
-                            justify='center'
-                            align='center'
-                            style={{
-                                flexGrow: 1
-                            }}
-                            p='md'
-                        >
-                            <Paper
-                                w='100%'
-                                h='100%'
-                                radius='lg'
-                                shadow='xl'
-                                bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
-                            >
-
-                                {children}
-
-                                <Toaster
-                                    position='bottom-right'
-                                    containerStyle={{
-                                        margin: '16px'
-                                    }}
-                                    toastOptions={{
-                                        style: {
-                                            color: colorScheme === 'dark' ? '#fff' : '#000',
-                                            background: colorScheme === 'dark' ? '#000' : '#fff',
-                                        }
-                                    }}
-                                />
-
-                            </Paper>
-                        </Flex>
-
-                    </>
+                !pathName.includes('auth') &&
+                    <Navbar />
             }
+
+            <Flex
+                h='100%'
+                justify='center'
+                align='center'
+                style={{
+                    flexGrow: 1
+                }}
+                p='md'
+            >
+                <Paper
+                    w='100%'
+                    h='100%'
+                    radius='lg'
+                    shadow='xl'
+                    bg={colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0]}
+                >
+
+                    {children}
+
+                    <Toaster
+                        position='bottom-right'
+                        containerStyle={{
+                            margin: '16px'
+                        }}
+                        toastOptions={{
+                            style: {
+                                color: colorScheme === 'dark' ? '#fff' : '#000',
+                                background: colorScheme === 'dark' ? '#000' : '#fff',
+                            }
+                        }}
+                    />
+
+                </Paper>
+            </Flex>
 
         </Group>
     );
