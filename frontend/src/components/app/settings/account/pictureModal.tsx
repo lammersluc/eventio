@@ -21,7 +21,9 @@ export const PictureModal = ({
     const handleSave = async () => {
 
         if (!file || !editor.current) {
-            await client.account.image.delete();
+            await client.account.image.post({
+                image: null
+            });
             onClose();
             return;
         }

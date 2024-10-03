@@ -100,12 +100,12 @@ model TicketDate {
 model Event {
   id                String        @id @default(uuid())
   name              String
-  description       String?
+  description       String        @default("")
   image_hash        String?
   location          String?
   start_at          DateTime?
   end_at            DateTime?
-  tickets_users_max Int           @default(-1)
+  tickets_users_max Int?
   is_private        Boolean       @default(true)
   ticket_dates      TicketDate[]
   wallets           Wallet[]

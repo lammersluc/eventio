@@ -8,6 +8,28 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
     .post('', async ({ body, error, store }) => {  
         const { id } = store as { id: string };
 
+        if (!body.image) {
+
+            if (fs.existsSync(`./public/images/users/${id}.png`))
+                fs.unlinkSync(`./public/images/users/${id}.png`);
+    
+            const updated = await prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    image_hash: null
+                },
+                select: {
+                    id: true
+                }
+            }).catch(() => null);
+    
+            if (!updated) return error(500, '');
+
+            return '';
+        }
+
         const image = await sharp(Buffer.from(body.image.replace(/^data:image\/\w+;base64,/, ''), 'base64'))
             .resize(256, 256)
             .png()
@@ -35,36 +57,8 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
         return '';
     }, {
         body: t.Object({
-            image: t.String()
+            image: t.Nullable(t.String())
         }),
-        response: {
-            200: t.String(),
-            500: t.String()
-        }
-    })
-
-    .delete('', async ({ error, store }) => {
-        const { id } = store as { id: string };
-
-        if (fs.existsSync(`./public/images/users/${id}.png`))
-            fs.rmSync(`./public/images/users/${id}.png`);
-
-        const deleted = await prisma.user.update({
-            where: {
-                id
-            },
-            data: {
-                image_hash: null
-            },
-            select: {
-                id: true
-            }
-        }).catch(() => null);
-
-        if (!deleted) return error(500, '');
-
-        return '';
-    }, {
         response: {
             200: t.String(),
             500: t.String()

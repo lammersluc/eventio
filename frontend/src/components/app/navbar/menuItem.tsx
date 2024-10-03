@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Group, Menu, SegmentedControl, useMantineColorScheme, isMantineColorScheme } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-import { IconCategory, IconMenu, IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
+import { IconCategory, IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
 
 import { BarItem } from './barItem';
 

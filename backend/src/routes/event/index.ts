@@ -72,36 +72,3 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
             }))
         }
     })
-
-    .post('', async ({ body, store }) => {
-        const { id } = store as { id: string };
-
-        const event = await prisma.event.create({
-            data: {
-                name: body.name,
-                event_members: {
-                    create: {
-                        user_id: id,
-                        role: 'creator'
-                    }
-                }
-            },
-            select: {
-                id: true
-            }
-        });
-
-        return {
-            id: event.id
-        };
-    }, {
-        body: t.Object({
-            name: t.String()
-        }),
-        response: {
-            201: t.Object({
-                id: t.String()
-            })
-        },
-        tags: ['Creator']
-    })

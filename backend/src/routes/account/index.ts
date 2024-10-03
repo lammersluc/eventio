@@ -121,7 +121,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
         if (await Bun.password.verify(body.password, user.password)) return error(401, '');
 
         if (user.image_hash && fs.existsSync(`./public/images/users/${id}.png`))
-            fs.rmSync(`./public/images/users/${id}.png`);
+            fs.unlinkSync(`./public/images/users/${id}.png`);
 
         const deleted = await prisma.user.delete({
             where: {
