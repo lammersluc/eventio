@@ -43,8 +43,3 @@ package-lock.json
 **/*.bun
 
 .DS_Store
-
-# custom files
-/public
-!/public/images/events/default.png
-!/public/images/users/default.jpg
