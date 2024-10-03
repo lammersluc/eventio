@@ -10,8 +10,6 @@ const app = new Elysia()
     .use(apiRouter)
     .listen(3000);
 
-export const origin = app.server ? `http${app.server.port === 443 ? 's' : ''}://${app.server.hostname}:${app.server.port}` : '';
-
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
 
 export type App = typeof app;

@@ -1,5 +1,3 @@
-import { origin } from '@/.';
-
 export const getImage = (id: string, hash: string | null, type: string): string => {
     
     if (!hash) {
@@ -9,5 +7,5 @@ export const getImage = (id: string, hash: string | null, type: string): string 
         hash = '?h=' + hash;
     }
 
-    return origin + `/public/images/${type}/${id}.png` + hash;
+    return process.env.APP_URL + `/public/images/${type}/${id}.png` + hash;
 }
