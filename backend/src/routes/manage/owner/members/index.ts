@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
-import fs from 'fs';
 
 import prisma from '@/services/database';
+import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/members'})
     .get('', async ({ params, error }) => {
@@ -15,7 +15,7 @@ export default new Elysia({ prefix: '/members'})
                 user: {
                     select: {
                         username: true,
-                        has_image: true
+                        image_hash: true
                     }
                 }
             }
@@ -24,7 +24,8 @@ export default new Elysia({ prefix: '/members'})
         if (!members) return error(404, '');
 
         return members.map(member => {
-            const image = member.user.has_image ? fs.readFileSync(`./images/users/${member.user_id}.png`, { encoding: 'base64' }) : null;
+            const image = getImage(member.user_id, member.user.image_hash, 'users');
+
             return {
                 id: member.user_id,
                 username: member.user.username,
@@ -111,7 +112,7 @@ export default new Elysia({ prefix: '/members'})
             500: t.String()
         }
     })
-
+    
     .delete('/:userId', async ({ params, error }) => {
         const eventMember = await prisma.eventMember.findUnique({
             where: {

@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
-import fs from 'fs';
 
 import prisma from '@/services/database';
+import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/users' })    
     .get('', async ({ params, query }) => {        
@@ -23,12 +23,12 @@ export default new Elysia({ prefix: '/users' })
             select: {
                 id: true,
                 username: true,
-                has_image: true
+                image_hash: true
             }
         });
 
         return users.map(user => {
-            const image = user.has_image ? fs.readFileSync(`./images/users/${user.id}.png`, { encoding: 'base64' }) : null;
+            const image = getImage(user.id, user.image_hash, 'users');
             return {
                 id: user.id,
                 username: user.username,

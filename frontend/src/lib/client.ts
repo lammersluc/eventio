@@ -1,8 +1,8 @@
 import { treaty } from '@elysiajs/eden';
 
-import type { App } from '@/../../backend/src';
+import { type App, origin } from '@/../../backend/src';
 
-const client = treaty<App>('localhost:3000', {
+const client = treaty<App>(origin, {
     async onRequest(path, options) {
         if (!path.startsWith('/auth')) {
             const tokens = await refreshTokens();

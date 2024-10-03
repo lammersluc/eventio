@@ -1,10 +1,10 @@
 import { Elysia, t } from 'elysia';
-import fs from 'fs';
 
 import prisma from '@/services/database';
 
 import userRouter from './user';
 import eventIdRouter from './{eventId}';
+import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/events', tags: ['Event'] })
     .use(userRouter)
@@ -26,7 +26,7 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
             select: {
                 id: true,
                 name: true,
-                has_image: true,
+                image_hash: true,
                 start_at: true,
                 wallets: {
                     select: {
@@ -47,8 +47,8 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
         });
 
         return events.map(event => {
-            const image = event.has_image ? fs.readFileSync(`./images/events/${event.id}.png`, { encoding: 'base64' }) : null;
-            
+            const image = getImage(event.id, event.image_hash, 'events');
+
             return {
                 id: event.id,
                 name: event.name,

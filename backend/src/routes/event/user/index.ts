@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 import fs from 'fs';
 
 import prisma from '@/services/database';
+import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/user' })
     .get('', async ({ query, store }) => {
@@ -25,14 +26,14 @@ export default new Elysia({ prefix: '/user' })
             select: {
                 id: true,
                 name: true,
-                has_image: true,
+                image_hash: true,
                 start_at: true,
                 _count: true
             }
         });
 
         return events.map(event => {
-            const image = event.has_image ? fs.readFileSync(`./images/events/${event.id}.png`, { encoding: 'base64' }) : null;
+            const image = getImage(event.id, event.image_hash, 'events');
 
             return {
                 id: event.id,
@@ -78,14 +79,14 @@ export default new Elysia({ prefix: '/user' })
             select: {
                 id: true,
                 name: true,
-                has_image: true,
+                image_hash: true,
                 start_at: true,
                 _count: true
             }
         });
 
         return events.map(event => {
-            const image = event.has_image ? fs.readFileSync(`./images/events/${event.id}.png`, { encoding: 'base64' }) : null;
+            const image = getImage(event.id, event.image_hash, 'events');
 
             return {
                 id: event.id,

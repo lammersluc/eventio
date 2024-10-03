@@ -46,3 +46,5 @@ package-lock.json
 
 # custom files
 /public
+!/public/images/events/default.png
+!/public/images/users/default.jpg

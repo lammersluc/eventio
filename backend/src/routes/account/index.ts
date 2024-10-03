@@ -6,6 +6,7 @@ import prisma from '@/services/database';
 import passwordRouter from './password';
 import imageRouter from './image';
 import findRouter from './find';
+import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/account', tags: ['Account'] })
     .use(passwordRouter)
@@ -29,8 +30,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
 
         if (!user) return error(404, '');
 
-        const image = (typeof window !== 'undefined' ? window.location.host : 'http://localhost:3000') +
-                '/public/images/users/' + (user.image_hash ? id : 'default') + '.png?h=' + user.image_hash;
+        const image = getImage(id, user.image_hash, 'users');
 
         return {
             username: user.username,

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Center, Flex, Paper, Tabs } from '@mantine/core'
+import { Center, Tabs } from '@mantine/core'
 import { Account } from '@/components/app/settings/account';
 import { Security } from '@/components/app/settings/security';
 

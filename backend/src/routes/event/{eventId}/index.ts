@@ -4,6 +4,7 @@ import fs from 'fs';
 import prisma from '@/services/database';
 
 import dateRouter from './date';
+import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/:eventId' })
     .use(dateRouter)
@@ -18,7 +19,7 @@ export default new Elysia({ prefix: '/:eventId' })
             select: {
                 name: true,
                 description: true,
-                has_image: true,
+                image_hash: true,
                 location: true,
                 start_at: true,
                 end_at: true,
@@ -45,7 +46,7 @@ export default new Elysia({ prefix: '/:eventId' })
 
         if (!event) return error(404, '');
 
-        const image = event.has_image ? fs.readFileSync(`./images/events/${eventId}.png`, { encoding: 'base64' }) : null;
+        const image = getImage(eventId, event.image_hash, 'events');
 
         return {
             name: event.name,
