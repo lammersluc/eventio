@@ -5,15 +5,15 @@ import sharp from 'sharp';
 import prisma from '@/services/database';
 import { createHash } from '@/services/image';
 
-export default new Elysia({ prefix: '/image', detail: { description: 'base64 256x256' } })
-    .post('', async ({ body, params, error }) => {  
+export default new Elysia({ prefix: '/banner', detail: { description: 'base64 384x256' } })
+    .post('/banner', async ({ body, params, error }) => {
         const eventId = params.eventId;
         const eventDir = `./events/${eventId}`;
 
-        if (!body.image) {
+        if (!body.banner) {
 
-            if (fs.existsSync(`${eventDir}/image.png`))
-                fs.unlinkSync(`${eventDir}/image.png`);
+            if (fs.existsSync(`${eventDir}/banner.png`))
+                fs.unlinkSync(`${eventDir}/banner.png`);
 
             if (fs.readdirSync(eventDir).length === 0)
                 fs.rmdirSync(eventDir);
@@ -23,7 +23,7 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 256
                     id: eventId
                 },
                 data: {
-                    image_hash: null
+                    banner_hash: null
                 },
                 select: {
                     id: true
@@ -38,22 +38,22 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 256
         if (!fs.existsSync(eventDir))
             fs.mkdirSync(eventDir);
 
-        const image = await sharp(Buffer.from(body.image, 'base64'))
-            .resize(360, 900)
+        const banner = await sharp(Buffer.from(body.banner, 'base64'))
+            .resize(384, 256)
             .png()
-            .toFile(`${eventDir}/image.png`)
+            .toFile(`${eventDir}/banner.png`)
             .catch(() => null);
 
-        if (!image) return error(500, '');
+        if (!banner) return error(500, '');
 
-        const imageHash = createHash(body.image);
+        const bannerHash = createHash(body.banner);
 
         const updated = await prisma.event.update({
             where: {
                 id: eventId
             },
             data: {
-                image_hash: imageHash
+                banner_hash: bannerHash
             },
             select: {
                 id: true
@@ -65,7 +65,7 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 256
         return '';
     }, {
         body: t.Object({
-            image: t.Nullable(t.String()),
+            banner: t.Nullable(t.String()),
         }),
         params: t.Object({
             eventId: t.String()

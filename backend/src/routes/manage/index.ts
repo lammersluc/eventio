@@ -78,7 +78,7 @@ export default new Elysia({ prefix: '/manage/events' })
         });
 
         return events.map(event => {
-            const image = getImage(event.id, event.image_hash, 'event');
+            const image = getImage(event.id, event.image_hash, 'events', 'banner');
 
             return {
                 id: event.id,

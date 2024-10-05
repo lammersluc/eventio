@@ -1,4 +1,4 @@
-export const getImage = (id: string, hash: string | null, type: string): string => {
+export const getImage = (id: string, hash: string | null, folder: string, type = 'image'): string => {
     
     if (!hash) {
         id = 'default';
@@ -7,5 +7,9 @@ export const getImage = (id: string, hash: string | null, type: string): string 
         hash = '?h=' + hash;
     }
 
-    return process.env.APP_URL + `/public/images/${type}/${id}.png` + hash;
+    return process.env.APP_URL + `/public/${folder}/${id}/${type}.png` + hash;
+}
+
+export const createHash = (data: string): string => {
+    return require('crypto').createHash('sha1').update(data).digest('hex');
 }

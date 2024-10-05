@@ -61,7 +61,6 @@ export const CreateEventPopup = ({
 
                     <TextInput
                         label='Name'
-                        placeholder='Event name'
                         key={form.key('name')}
                         {...form.getInputProps('name')}
                     />

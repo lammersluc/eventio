@@ -20,11 +20,13 @@ export const EventCard = ({
             h='300px'
         >
 
-            <Card.Section>
+            <Card.Section
+            >
                 <Image
                     src={image}
                     alt={title}
-                    w='100%'
+                    mx='auto'
+                    w='120px'
                     h='120px'
                 />
             </Card.Section>

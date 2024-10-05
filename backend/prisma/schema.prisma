@@ -102,6 +102,7 @@ model Event {
   name              String
   description       String        @default("")
   image_hash        String?
+  banner_hash       String?
   location          String?
   start_at          DateTime?
   end_at            DateTime?

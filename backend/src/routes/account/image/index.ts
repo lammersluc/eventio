@@ -3,6 +3,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 
 import prisma from '@/services/database';
+import { createHash } from '@/services/image';
 
 export default new Elysia({ prefix: '/image', detail: { description: 'base64 128x128' } })
     .post('', async ({ body, error, store }) => {  
@@ -38,7 +39,7 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
 
         if (!image) return error(500, '');
 
-        const imageHash = require('crypto').createHash('sha1').update(body.image).digest('hex');
+        const imageHash = createHash(body.image);
 
         const updated = await prisma.user.update({
             where: {
