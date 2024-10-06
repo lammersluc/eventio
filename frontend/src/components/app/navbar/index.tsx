@@ -4,7 +4,7 @@ import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
 import { IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments, IconSettings } from '@tabler/icons-react';
 
 import { BarItem, type BarProp } from './barItem';
-import { MenuItem } from './menuItem';
+import { ProfileItem } from './profileItem';
 
 export const Navbar = () => {
     const [menuOpened, setMenuOpened] = React.useState(false);
@@ -34,15 +34,14 @@ export const Navbar = () => {
         {
             name: 'Management',
             icon: IconAdjustments,
-            clickEvent: () => router.push('/app/management')
+            clickEvent: () => router.push('/app/management/events')
         },
         'divider',
         {
             name: 'Settings',
             icon: IconSettings,
             clickEvent: () => router.push('/app/settings')
-        },
-        <MenuItem />
+        }
     ];
 
     return (
@@ -140,6 +139,8 @@ export const Navbar = () => {
                             />
                         )
                     }
+
+                    <ProfileItem />
 
                 </Stack>
 

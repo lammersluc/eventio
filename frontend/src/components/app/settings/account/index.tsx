@@ -13,7 +13,7 @@ import { checkEmail, checkUsername } from '@/lib/accountRegex';
 type Account = {
     username: string;
     email: string;
-    image: string | null;
+    avatar: string;
     createdAt: Date;
 } | null;
 
@@ -171,7 +171,7 @@ export const Account = () => {
                         }}
                     >
                         <Image
-                            src={account.image}
+                            src={account.avatar}
                             alt=''
                         />
                     </Paper>

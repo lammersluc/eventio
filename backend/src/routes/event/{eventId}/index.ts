@@ -2,9 +2,9 @@ import { Elysia, t } from 'elysia';
 import fs from 'fs';
 
 import prisma from '@/services/database';
+import { getImage } from '@/services/image';
 
 import dateRouter from './date';
-import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/:eventId' })
     .use(dateRouter)
@@ -19,7 +19,7 @@ export default new Elysia({ prefix: '/:eventId' })
             select: {
                 name: true,
                 description: true,
-                image_hash: true,
+                banner_hash: true,
                 location: true,
                 start_at: true,
                 end_at: true,
@@ -46,12 +46,12 @@ export default new Elysia({ prefix: '/:eventId' })
 
         if (!event) return error(404, '');
 
-        const image = getImage(eventId, event.image_hash, 'events');
+        const banner = getImage(eventId, event.banner_hash, 'events', 'banner');
 
         return {
             name: event.name,
             description: event.description,
-            image,
+            banner,
             location: event.location,
             startAt: event.start_at,
             endAt: event.end_at,
@@ -71,7 +71,7 @@ export default new Elysia({ prefix: '/:eventId' })
             200: t.Object({
                 name: t.String(),
                 description: t.Nullable(t.String()),
-                image: t.Nullable(t.String()),
+                banner: t.String(),
                 location: t.Nullable(t.String()),
                 startAt: t.Nullable(t.Date()),
                 endAt: t.Nullable(t.Date()),

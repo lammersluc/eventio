@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Group, Stack, Title } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks';
 import toast from 'react-hot-toast';
@@ -13,13 +14,14 @@ type Event = {
     id: string;
     name: string;
     description: string;
-    image: string;
+    banner: string;
 }
 
 export default function Page() {
-
     const [opened, { open, close }] = useDisclosure(false);
     const [events, setEvents] = React.useState<Event[]>([]);
+
+    const router = useRouter();
 
     React.useEffect(() => {
 
@@ -63,11 +65,11 @@ export default function Page() {
                 {
                     events.map((event) => (
                         <EventCard
-                            key={event.name}
+                            key={event.id}
                             title={event.name}
                             description={event.description}
-                            image={event.image}
-                            clickEvent={() => {}}
+                            banner={event.banner}
+                            clickEvent={() => router.push('./events/' + event.id)}
                         />
                     ))
                 }

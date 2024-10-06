@@ -21,8 +21,8 @@ export const PictureModal = ({
     const handleSave = async () => {
 
         if (!file || !editor.current) {
-            await client.account.image.post({
-                image: null
+            await client.account.avatar.post({
+                avatar: null
             });
             onClose();
             return;
@@ -39,10 +39,10 @@ export const PictureModal = ({
         if (ctx) {
             ctx.drawImage(canvas, 0, 0, res, res);
         }
-        const image = resizedCanvas.toDataURL();
+        const avatar = resizedCanvas.toDataURL();
 
-        await client.account.image.post({
-            image
+        await client.account.avatar.post({
+            avatar
         });
 
         onClose();

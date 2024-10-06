@@ -8,7 +8,7 @@ type Item = {
     clickEvent: () => void;
 };
 
-export type BarProp = Item | 'divider' | React.JSX.Element;
+export type BarProp = Item | 'divider';
 
 export const BarItem = forwardRef<HTMLButtonElement, { barItem: BarProp }>(({
     barItem
@@ -22,11 +22,6 @@ export const BarItem = forwardRef<HTMLButtonElement, { barItem: BarProp }>(({
             />
         );
 
-    if (React.isValidElement(barItem))
-        return barItem;
-    else
-        barItem = barItem as Item;
-
     return (
         <ActionIcon
             w='100%'
@@ -35,9 +30,6 @@ export const BarItem = forwardRef<HTMLButtonElement, { barItem: BarProp }>(({
             variant='subtle'
             color='normal'
             onClick={barItem.clickEvent}
-            style={{
-                transition: 'background-color 0.2s ease-in-out',
-            }}
             ref={ref}
         >
             <Group
@@ -46,7 +38,6 @@ export const BarItem = forwardRef<HTMLButtonElement, { barItem: BarProp }>(({
                 gap='xs'
                 wrap='nowrap'
                 style={{
-                    transition: 'width 0.3s ease-in-out',
                     overflow: 'hidden'
                 }}
             >
@@ -55,9 +46,7 @@ export const BarItem = forwardRef<HTMLButtonElement, { barItem: BarProp }>(({
                     w='25px'
                     h='25px'
                 >
-
                     <barItem.icon stroke={1.5} />
-
                 </Box>
 
                 <Text

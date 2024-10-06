@@ -26,7 +26,7 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
             select: {
                 id: true,
                 name: true,
-                image_hash: true,
+                banner_hash: true,
                 start_at: true,
                 wallets: {
                     select: {
@@ -47,12 +47,12 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
         });
 
         return events.map(event => {
-            const image = getImage(event.id, event.image_hash, 'events');
+            const banner = getImage(event.id, event.banner_hash, 'events', 'banner');
 
             return {
                 id: event.id,
                 name: event.name,
-                image,
+                banner,
                 startAt: event.start_at,
                 available: event.ticket_dates.reduce((amount, date) => amount + date.amount, 0) - event.wallets.reduce((amount, wallet) => amount + wallet._count.tickets, 0)
             }
@@ -66,7 +66,7 @@ export default new Elysia({ prefix: '/events', tags: ['Event'] })
             200: t.Array(t.Object({
                 id: t.String(),
                 name: t.String(),
-                image: t.Nullable(t.String()),
+                banner: t.String(),
                 startAt: t.Nullable(t.Date()),
                 available: t.Number()
             }))

@@ -4,13 +4,13 @@ import fs from 'fs';
 import prisma from '@/services/database';
 
 import passwordRouter from './password';
-import imageRouter from './image';
+import avatarRouter from './avatar';
 import findRouter from './find';
 import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/account', tags: ['Account'] })
     .use(passwordRouter)
-    .use(imageRouter)
+    .use(avatarRouter)
     .use(findRouter)
 
     .get('', async ({ error, store }) => {
@@ -23,19 +23,19 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
             select: {
                 username: true,
                 email: true,
-                image_hash: true,
+                avatar_hash: true,
                 created_at: true
             }
         });
 
         if (!user) return error(404, '');
 
-        const image = getImage(id, user.image_hash, 'users');
+        const avatar = getImage(id, user.avatar_hash, 'users');
 
         return {
             username: user.username,
             email: user.email,
-            image,
+            avatar,
             createdAt: user.created_at
         };
     }, {
@@ -43,7 +43,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
             200: t.Object({
                 username: t.String(),
                 email: t.String(),
-                image: t.Nullable(t.String()),
+                avatar: t.String(),
                 createdAt: t.Date(),
             }),
             404: t.String()
@@ -112,7 +112,7 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
             },
             select: {
                 password: true,
-                image_hash: true
+                avatar_hash: true
             }
         });
 
@@ -120,8 +120,8 @@ export default new Elysia({ prefix: '/account', tags: ['Account'] })
 
         if (await Bun.password.verify(body.password, user.password)) return error(401, '');
 
-        if (user.image_hash && fs.existsSync(`./public/images/users/${id}.png`))
-            fs.unlinkSync(`./public/images/users/${id}.png`);
+        if (user.avatar_hash && fs.existsSync(`./public/users/${id}/avatar.png`))
+            fs.unlinkSync(`./public/users/${id}/avatar.png`);
 
         const deleted = await prisma.user.delete({
             where: {

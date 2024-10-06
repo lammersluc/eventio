@@ -1,4 +1,4 @@
-export const getImage = (id: string, hash: string | null, folder: string, type = 'image'): string => {
+export const getImage = (id: string, hash: string | null, folder: string, type = 'avatar'): string => {
     
     if (!hash) {
         id = 'default';

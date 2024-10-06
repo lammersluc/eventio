@@ -3,7 +3,6 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 import membersRouter from './members';
-import imageRouter from './image';
 import bannerRouter from './banner';
 
 export default new Elysia({ tags: ['Owner'] })
@@ -14,7 +13,6 @@ export default new Elysia({ tags: ['Owner'] })
     })
     
     .use(membersRouter)
-    .use(imageRouter)
     .use(bannerRouter)
 
     .patch('', async ({ body, params, error }) => {

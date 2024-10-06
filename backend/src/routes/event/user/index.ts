@@ -1,5 +1,4 @@
 import { Elysia, t } from 'elysia';
-import fs from 'fs';
 
 import prisma from '@/services/database';
 import { getImage } from '@/services/image';
@@ -26,19 +25,19 @@ export default new Elysia({ prefix: '/user' })
             select: {
                 id: true,
                 name: true,
-                image_hash: true,
+                banner_hash: true,
                 start_at: true,
                 _count: true
             }
         });
 
         return events.map(event => {
-            const image = getImage(event.id, event.image_hash, 'events');
+            const banner = getImage(event.id, event.banner_hash, 'events', 'banner');
 
             return {
                 id: event.id,
                 name: event.name,
-                image,
+                banner,
                 startAt: event.start_at
             }
         })
@@ -52,7 +51,7 @@ export default new Elysia({ prefix: '/user' })
             200: t.Array(t.Object({
                 id: t.String(),
                 name: t.String(),
-                image: t.Nullable(t.String()),
+                banner: t.String(),
                 startAt: t.Nullable(t.Date())
             }))
         }
@@ -79,19 +78,19 @@ export default new Elysia({ prefix: '/user' })
             select: {
                 id: true,
                 name: true,
-                image_hash: true,
+                banner_hash: true,
                 start_at: true,
                 _count: true
             }
         });
 
         return events.map(event => {
-            const image = getImage(event.id, event.image_hash, 'events');
+            const banner = getImage(event.id, event.banner_hash, 'events', 'banner');
 
             return {
                 id: event.id,
                 name: event.name,
-                image,
+                banner,
                 startAt: event.start_at
             }
         })
@@ -105,7 +104,7 @@ export default new Elysia({ prefix: '/user' })
             200: t.Array(t.Object({
                 id: t.String(),
                 name: t.String(),
-                image: t.Nullable(t.String()),
+                banner: t.String(),
                 startAt: t.Nullable(t.Date())
             }))
         }

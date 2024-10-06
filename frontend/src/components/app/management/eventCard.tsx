@@ -4,12 +4,12 @@ import { Button, Card, Image, Stack, Text, Title } from '@mantine/core';
 export const EventCard = ({
     title,
     description,
-    image,
+    banner,
     clickEvent
 }: {
     title: string;
     description: string;
-    image: string;
+    banner: string;
     clickEvent: () => void;
 }) => {
     return (
@@ -23,8 +23,8 @@ export const EventCard = ({
             <Card.Section
             >
                 <Image
-                    src={image}
-                    alt={title}
+                    src={banner}
+                    alt=''
                     mx='auto'
                     w='120px'
                     h='120px'

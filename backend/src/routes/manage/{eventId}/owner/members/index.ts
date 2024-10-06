@@ -15,7 +15,7 @@ export default new Elysia({ prefix: '/members'})
                 user: {
                     select: {
                         username: true,
-                        image_hash: true
+                        avatar_hash: true
                     }
                 }
             }
@@ -24,12 +24,12 @@ export default new Elysia({ prefix: '/members'})
         if (!members) return error(404, '');
 
         return members.map(member => {
-            const image = getImage(member.user_id, member.user.image_hash, 'users');
+            const avatar = getImage(member.user_id, member.user.avatar_hash, 'users');
 
             return {
                 id: member.user_id,
                 username: member.user.username,
-                image,
+                avatar,
                 role: member.role
             };
         });
@@ -41,7 +41,7 @@ export default new Elysia({ prefix: '/members'})
             200: t.Array(t.Object({
                 id: t.String(),
                 username: t.String(),
-                image: t.Nullable(t.String()),
+                avatar: t.String(),
                 role: t.String()
             })),
             404: t.String()

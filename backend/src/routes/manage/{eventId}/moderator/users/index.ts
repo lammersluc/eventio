@@ -23,16 +23,16 @@ export default new Elysia({ prefix: '/users' })
             select: {
                 id: true,
                 username: true,
-                image_hash: true
+                avatar_hash: true
             }
         });
 
         return users.map(user => {
-            const image = getImage(user.id, user.image_hash, 'users');
+            const avatar = getImage(user.id, user.avatar_hash, 'users');
             return {
                 id: user.id,
                 username: user.username,
-                image
+                avatar
             };
         });
     }, {
@@ -47,7 +47,7 @@ export default new Elysia({ prefix: '/users' })
             200: t.Array(t.Object({
                 id: t.String(),
                 username: t.String(),
-                image: t.Nullable(t.String())
+                avatar: t.String()
             })),
             404: t.String()
         }

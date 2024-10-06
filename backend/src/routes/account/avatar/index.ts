@@ -5,21 +5,25 @@ import sharp from 'sharp';
 import prisma from '@/services/database';
 import { createHash } from '@/services/image';
 
-export default new Elysia({ prefix: '/image', detail: { description: 'base64 128x128' } })
+export default new Elysia({ prefix: '/avatar', detail: { description: 'base64 128x128' } })
     .post('', async ({ body, error, store }) => {  
         const { id } = store as { id: string };
+        const userDir = `public/users/${id}`;
 
-        if (!body.image) {
+        if (!body.avatar) {
 
-            if (fs.existsSync(`./public/images/users/${id}.png`))
-                fs.unlinkSync(`./public/images/users/${id}.png`);
+            if (fs.existsSync(`${userDir}/avatar.png`))
+                fs.unlinkSync(`${userDir}/avatar.png`);
+
+            if (fs.readdirSync(userDir).length === 0)
+                fs.rmdirSync(userDir);
     
             const updated = await prisma.user.update({
                 where: {
                     id
                 },
                 data: {
-                    image_hash: null
+                    avatar_hash: null
                 },
                 select: {
                     id: true
@@ -31,22 +35,22 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
             return '';
         }
 
-        const image = await sharp(Buffer.from(body.image.replace(/^data:image\/\w+;base64,/, ''), 'base64'))
+        const avatar = await sharp(Buffer.from(body.avatar.replace(/^data:image\/\w+;base64,/, ''), 'base64'))
             .resize(256, 256)
             .png()
-            .toFile(`public/images/users/${id}.png`)
+            .toFile(`${userDir}/avatar.png`)
             .catch(() => null);
 
-        if (!image) return error(500, '');
+        if (!avatar) return error(500, '');
 
-        const imageHash = createHash(body.image);
+        const avatarHash = createHash(body.avatar);
 
         const updated = await prisma.user.update({
             where: {
                 id
             },
             data: {
-                image_hash: imageHash
+                avatar_hash: avatarHash
             },
             select: {
                 id: true
@@ -58,7 +62,7 @@ export default new Elysia({ prefix: '/image', detail: { description: 'base64 128
         return '';
     }, {
         body: t.Object({
-            image: t.Nullable(t.String())
+            avatar: t.Nullable(t.String())
         }),
         response: {
             200: t.String(),

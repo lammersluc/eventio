@@ -11,7 +11,7 @@ model User {
   id            String        @id @default(uuid())
   username      String        @unique
   email         String        @unique
-  image_hash    String?
+  avatar_hash    String?
   password      String
   created_at    DateTime      @default(now())
   updated_at    DateTime      @default(now())
@@ -101,7 +101,6 @@ model Event {
   id                String        @id @default(uuid())
   name              String
   description       String        @default("")
-  image_hash        String?
   banner_hash       String?
   location          String?
   start_at          DateTime?
