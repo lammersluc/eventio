@@ -24,31 +24,39 @@ export const PictureModal = ({
             await client.account.avatar.post({
                 avatar: null
             });
+
             onClose();
             return;
         }
 
         const canvas = (editor.current as AvatarEditor).getImageScaledToCanvas();
+        const resizedCanvas = document.createElement('canvas');
 
         const res = 256;
 
-        const resizedCanvas = document.createElement('canvas');
         resizedCanvas.width = res;
         resizedCanvas.height = res;
+
         const ctx = resizedCanvas.getContext('2d');
-        if (ctx) {
-            ctx.drawImage(canvas, 0, 0, res, res);
-        }
-        const avatar = resizedCanvas.toDataURL();
 
-        await client.account.avatar.post({
-            avatar
-        });
+        if (ctx) ctx.drawImage(canvas, 0, 0, res, res);
 
-        onClose();
+        resizedCanvas.toBlob(async (blob) => {
+            if (!blob) return;
 
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        setFile(null);
+            const avatar = new File([blob], 'avatar.png', {
+                type: 'image/png'
+            });
+
+            await client.account.avatar.post({
+                avatar
+            });
+
+            onClose();
+
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            setFile(null);
+        }, 'image/png', 1);
     }
 
     return (
