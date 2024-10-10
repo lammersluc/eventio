@@ -103,6 +103,14 @@ export default function Page() {
                         {event.startAt ? new Date(event.startAt).toLocaleString() : 'No start date'} - {event.endAt ? new Date(event.endAt).toLocaleString() : 'No end date'}
                     </Text>
 
+                    <Text>
+                        {event.ticketsUserMax || 'No tickets limit'}
+                    </Text>
+
+                    <Text>
+                        {event.isPrivate ? 'Private' : 'Public'}
+                    </Text>
+
                 </Stack>
             </Paper>
 

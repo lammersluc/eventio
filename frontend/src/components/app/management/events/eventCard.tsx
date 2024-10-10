@@ -15,6 +15,7 @@ export const EventCard = ({
     return (
         <Card
             padding='lg'
+            shadow='lg'
             radius='lg'
             w='250px'
             h='300px'

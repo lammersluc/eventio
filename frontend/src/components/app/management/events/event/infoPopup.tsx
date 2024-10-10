@@ -35,8 +35,8 @@ export const InfoPopup = ({
             name: info.name,
             description: info.description || '',
             location: info.location || '',
-            startAt: info.startAt,
-            endAt: info.endAt,
+            startAt: info.startAt ? new Date(info.startAt) : null,
+            endAt: info.endAt ? new Date(info.endAt) : null,
             ticketsUserMax: info.ticketsUserMax,
             isPrivate: info.isPrivate
         }
@@ -47,14 +47,14 @@ export const InfoPopup = ({
         const promise = new Promise(async (resolve, reject) => {
 
             const dirty = form.getDirty();
-            
+
             const changedValues = Object.keys(dirty).reduce((acc: any, key) => {
                 const typedKey = key as keyof typeof values;
 
                 if (dirty[typedKey])
                     acc[typedKey] = values[typedKey];
 
-                    return acc;
+                return acc;
             }, {});
 
             const result = await client.manage.events({
@@ -110,27 +110,21 @@ export const InfoPopup = ({
                         {...form.getInputProps('location')}
                     />
 
-                    <Group
-                        gap='sm'
-                    >
+                    <DateTimePicker
+                        label='Start At'
+                        key={form.key('startAt')}
+                        {...form.getInputProps('startAt')}
+                        style={{ flexGrow: 1 }}
+                        clearable
+                    />
 
-                        <DateTimePicker
-                            label='Start At'
-                            key={form.key('startAt')}
-                            {...form.getInputProps('startAt')}
-                            style={{ flexGrow: 1 }}
-                            clearable
-                        />
-
-                        <DateTimePicker
-                            label='End At'
-                            key={form.key('endAt')}
-                            {...form.getInputProps('endAt')}
-                            style={{ flexGrow: 1 }}
-                            clearable
-                        />
-
-                    </Group>
+                    <DateTimePicker
+                        label='End At'
+                        key={form.key('endAt')}
+                        {...form.getInputProps('endAt')}
+                        style={{ flexGrow: 1 }}
+                        clearable
+                    />
 
                     <NumberInput
                         label='Max Tickets Per User'
