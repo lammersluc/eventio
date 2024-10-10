@@ -8,41 +8,6 @@ export default new Elysia({ tags: ['Creator'] })
 
         if (eventMember.role < 5) return error(403, '');
     })
-
-    .post('', async ({ body, store }) => {
-        const { id } = store as unknown as { id: string };
-
-        const event = await prisma.event.create({
-            data: {
-                name: body.name,
-                event_members: {
-                    create: {
-                        user_id: id,
-                        role: 'creator'
-                    }
-                }
-            },
-            select: {
-                id: true
-            }
-        });
-
-        if (!event) return error(500, '');
-
-        return {
-            id: event.id
-        };
-    }, {
-        body: t.Object({
-            name: t.String()
-        }),
-        response: {
-            201: t.Object({
-                id: t.String()
-            }),
-            500: t.String()
-        }
-    })
     
     .delete('', async ({ params }) => {
         const eventId = params.eventId;

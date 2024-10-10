@@ -100,7 +100,7 @@ model TicketDate {
 model Event {
   id                String        @id @default(uuid())
   name              String
-  description       String        @default("")
+  description       String?
   banner_hash       String?
   location          String?
   start_at          DateTime?

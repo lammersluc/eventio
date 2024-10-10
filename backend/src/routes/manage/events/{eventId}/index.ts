@@ -64,6 +64,8 @@ export default new Elysia({ prefix: '/:eventId' })
                 location: true,
                 start_at: true,
                 end_at: true,
+                tickets_users_max: true,
+                is_private: true,
                 ticket_dates: {
                     select: {
                         id: true,
@@ -96,6 +98,8 @@ export default new Elysia({ prefix: '/:eventId' })
             location: event.location,
             startAt: event.start_at,
             endAt: event.end_at,
+            ticketsUserMax: event.tickets_users_max,
+            isPrivate: event.is_private,
             dates: event.ticket_dates.map(date => ({
                 id: date.id,
                 name: date.name,
@@ -113,11 +117,13 @@ export default new Elysia({ prefix: '/:eventId' })
         response: {
             200: t.Object({
                 name: t.String(),
-                description: t.String(),
+                description: t.Nullable(t.String()),
                 banner: t.String(),
                 location: t.Nullable(t.String()),
                 startAt: t.Nullable(t.Date()),
                 endAt: t.Nullable(t.Date()),
+                ticketsUserMax: t.Nullable(t.Number()),
+                isPrivate: t.Boolean(),
                 dates: t.Array(t.Object({
                     id: t.String(),
                     name: t.String(),

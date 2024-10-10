@@ -5,6 +5,7 @@ import "./globals.css";
 import { MantineProvider } from '@mantine/core';
 
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import '@mantine/dropzone/styles.css';
 
 const nunito = Nunito({ subsets: ["latin"] });

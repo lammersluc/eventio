@@ -16,14 +16,15 @@ export default new Elysia({ tags: ['Owner'] })
     .use(bannerRouter)
 
     .patch('', async ({ body, params, error }) => {
+
         const data = {
             name: body.name,
             description: body.description,
             location: body.location,
-            startAt: body.startAt,
-            endAt: body.endAt,
-            ticketsUserMax: body.ticketsUserMax,
-            isPrivate: body.isPrivate
+            start_at: body.startAt,
+            end_at: body.endAt,
+            tickets_user_max: body.ticketsUserMax,
+            is_private: body.isPrivate
         }
 
         const updated = await prisma.event.update({
@@ -42,11 +43,11 @@ export default new Elysia({ tags: ['Owner'] })
     }, {
         body: t.Partial(t.Object({
             name: t.String(),
-            description: t.String(),
-            location: t.String(),
-            startAt: t.String(),
-            endAt: t.String(),
-            ticketsUserMax: t.Number(),
+            description: t.Nullable(t.String()),
+            location: t.Nullable(t.String()),
+            startAt: t.Nullable(t.Date()),
+            endAt: t.Nullable(t.Date()),
+            ticketsUserMax: t.Nullable(t.Number()),
             isPrivate: t.Boolean()
         })),
         params: t.Object({

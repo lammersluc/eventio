@@ -6,7 +6,7 @@ import { IconCirclePlus } from '@tabler/icons-react';
 import client from '@/lib/client';
 import toast from 'react-hot-toast';
 
-export const CreateEventPopup = ({
+export const EventPopup = ({
     opened,
     onClose
 }: {

@@ -5,15 +5,15 @@ import { Button, Group, Stack, Title } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks';
 import toast from 'react-hot-toast';
 
-import { EventCard } from '@/components/app/management/eventCard';
-import { CreateEventPopup } from '@/components/app/management/createEventPopup';
+import { EventCard } from '@/components/app/management/events/eventCard';
+import { EventPopup } from '@/components/app/management/events/eventPopup';
 
 import client from '@/lib/client';
 
 type Event = {
     id: string;
     name: string;
-    description: string;
+    description: string | null;
     banner: string;
 }
 
@@ -67,7 +67,7 @@ export default function Page() {
                         <EventCard
                             key={event.id}
                             title={event.name}
-                            description={event.description}
+                            description={event.description || ''}
                             banner={event.banner}
                             clickEvent={() => router.push('./events/' + event.id)}
                         />
@@ -75,7 +75,7 @@ export default function Page() {
                 }
             </Group>
 
-            <CreateEventPopup
+            <EventPopup
                 opened={opened}
                 onClose={close}
             />
