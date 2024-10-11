@@ -1,20 +1,21 @@
 'use client';
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Stack, Title, Text, Paper, ActionIcon, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconEdit } from '@tabler/icons-react';
+import { IconCirclePlus, IconEdit } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
 
 import client from '@/lib/client';
 import { InfoPopup } from '@/components/app/management/events/event/infoPopup';
+import { DatePopup } from '@/components/app/management/events/event/datePopup';
 
 type EventDate = {
     id: string;
-    amount: number;
     name: string;
     validFrom: Date | null;
     validUntil: Date | null;
+    amount: number | null;
     sold: number;
 }
 
@@ -34,13 +35,16 @@ type Event = {
 export default function Page() {
     const [event, setEvent] = React.useState<Event>();
 
-    const [opened, { open, close }] = useDisclosure(false);
+    const [infoOpened, info] = useDisclosure(false);
+    const [dateOpened, dates] = useDisclosure(false);
 
     const params = useParams<{ eventId: string; }>();
 
+    const router = useRouter();
+
     React.useEffect(() => {
 
-        if (opened) return;
+        if (infoOpened || dateOpened) return;
 
         (async () => {
             const result = await client.manage.events({ eventId: params.eventId }).get();
@@ -50,23 +54,21 @@ export default function Page() {
                 return;
             }
 
-            console.log(result.data.startAt)
-
             setEvent(result.data);
         })();
 
-    }, [opened]);
+    }, [infoOpened, dateOpened]);
 
     return event && (
         <Stack
             p='xl'
+            w='fit-content'
         >
 
             <Paper
                 p='lg'
                 shadow='lg'
                 radius='lg'
-                w='fit-content'
             >
                 <Stack>
 
@@ -84,7 +86,7 @@ export default function Page() {
                             radius='lg'
                             variant='subtle'
                             color='default'
-                            onClick={open}
+                            onClick={info.open}
                         >
                             <IconEdit />
                         </ActionIcon>
@@ -114,15 +116,98 @@ export default function Page() {
                 </Stack>
             </Paper>
 
+            <Stack>
+
+                <Group
+                    gap='md'
+                >
+
+                    <Title>
+                        Dates
+                    </Title>
+
+                    <ActionIcon
+                        size='xl'
+                        radius='lg'
+                        variant='subtle'
+                        color='default'
+                        onClick={dates.open}
+                    >
+                        <IconCirclePlus />
+                    </ActionIcon>
+
+                </Group>
+
+                <Group
+                    gap='md'
+                >
+                    {event.dates.map(date => (
+                        <Paper
+                            p='lg'
+                            shadow='lg'
+                            radius='lg'
+                        >
+                            <Stack
+                                key={date.id}
+                            >
+
+                                <Group
+                                    justify='space-between'
+                                    gap='xl'
+                                >
+
+                                    <Title
+                                        order={3}
+                                    >
+                                        {date.name}
+                                    </Title>
+
+                                    <ActionIcon
+                                        size='xl'
+                                        radius='lg'
+                                        variant='subtle'
+                                        color='default'
+                                        onClick={() => router.push('dates/' + date.id)}
+                                    >
+                                        <IconEdit />
+                                    </ActionIcon>
+
+                                </Group>
+
+                                <Text>
+                                    {date.amount} tickets
+                                </Text>
+
+                                <Text>
+                                    {date.validFrom ? new Date(date.validFrom).toLocaleString() : 'No valid from'} - {date.validUntil ? new Date(date.validUntil).toLocaleString() : 'No valid until'}
+                                </Text>
+
+                                <Text>
+                                    {date.sold} sold
+                                </Text>
+
+                            </Stack>
+                        </Paper>
+                    ))}
+                </Group>
+
+            </Stack>
+
             <InfoPopup
-                opened={opened}
-                onClose={close}
+                opened={infoOpened}
+                onClose={info.close}
                 info={{
                     ...event,
                     id: params.eventId
                 }}
             />
 
-        </Stack>
+            <DatePopup
+                opened={dateOpened}
+                onClose={dates.close}
+                eventId={params.eventId}
+            />
+
+        </Stack >
     );
 }

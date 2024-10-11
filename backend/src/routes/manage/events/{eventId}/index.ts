@@ -129,7 +129,7 @@ export default new Elysia({ prefix: '/:eventId' })
                     name: t.String(),
                     validFrom: t.Nullable(t.Date()),
                     validUntil: t.Nullable(t.Date()),
-                    amount: t.Number(),
+                    amount: t.Nullable(t.Number()),
                     sold: t.Number()
                 })),
                 role: t.Number()
