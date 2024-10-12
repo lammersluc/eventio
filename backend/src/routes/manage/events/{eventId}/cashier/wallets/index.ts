@@ -4,10 +4,10 @@ import { checkData } from '@/services/qrcode';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
-    .get('', async ({ params, error, store }) => {
+    .get('', async ({ params: { walletQR }, error, store }) => {
         const { eventMember } = store as { eventMember: { id: string } };
 
-        const data = await checkData(params.walletQR);
+        const data = await checkData(walletQR);
 
         if (!data || data.type !== 'wallet') return error(404, '');
 
@@ -35,10 +35,6 @@ export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
             createdAt: purchase.created_at
         };
     }, {
-        params: t.Object({
-            eventId: t.String(),
-            walletQR: t.String()
-        }),
         response: {
             200: t.Object({
                 id: t.String(),
@@ -49,9 +45,9 @@ export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
         }
     })
 
-    .put('', async ({ body, params, error }) => {
+    .put('', async ({ body, params: { walletQR }, error }) => {
 
-        const data = await checkData(params.walletQR);
+        const data = await checkData(walletQR);
 
         if (!data || data.type !== 'wallet') return error(404, '');
 
@@ -87,9 +83,6 @@ export default new Elysia({ prefix: '/wallets/:walletQR/transactions' })
     }, {
         body: t.Object({
             amount: t.Number({ minimum: 1 })
-        }),
-        params: t.Object({
-            walletQR: t.String()
         }),
         response: {
             200: t.String(),

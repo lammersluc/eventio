@@ -3,7 +3,7 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/buy' })
-    .post('', async ({ body, params, error }) => {
+    .post('', async ({ body, params: { walletId }, error }) => {
 
         const ticketOptions = await prisma.ticketOption.findMany({
             where: {
@@ -31,7 +31,7 @@ export default new Elysia({ prefix: '/buy' })
 
         const wallet = await prisma.wallet.findUnique({
             where: {
-                id: params.walletId
+                id: walletId
             },
             select: {
                 id: true,
@@ -53,13 +53,13 @@ export default new Elysia({ prefix: '/buy' })
 
         if (ticketOptions.some(option => option.ticket_date.event_id !== wallet.event.id)) return error(400, '');
 
-        const eventTooMany = wallet._count.tickets + body.reduce((acc, option) => acc + option.amount, 0) - wallet.event.tickets_users_max;
+        const eventTooMany = wallet.event.tickets_users_max ? wallet._count.tickets + body.reduce((acc, option) => acc + option.amount, 0) - wallet.event.tickets_users_max : 0;
 
         if (eventTooMany > 0) return error(410, { eventTooMany });
 
         const dates: {
             id: string,
-            amount: number,
+            amount: number | null,
             tickets: number
         }[] = [];
 
@@ -74,9 +74,9 @@ export default new Elysia({ prefix: '/buy' })
             else date.tickets += option._count.tickets;
         });
 
-        const datesTooMany = dates.filter(date => date.tickets > date.amount).map(date => ({
+        const datesTooMany = dates.filter(date => date.amount && date.tickets > date.amount).map(date => ({
             id: date.id,
-            tooMany: date.tickets - date.amount
+            tooMany: date.amount ? date.tickets - date.amount : 0
         }));
 
         if (datesTooMany.length > 0) return error(410, { datesTooMany });
@@ -91,7 +91,7 @@ export default new Elysia({ prefix: '/buy' })
 
             if (!optionData) return null;
             
-            const tooMany = option.amount + optionData._count.tickets - optionData.amount;
+            const tooMany = optionData.amount ? option.amount + optionData._count.tickets - optionData.amount : 0;
 
             if (tooMany > 0)
                 optionsTooMany.push({
@@ -107,7 +107,7 @@ export default new Elysia({ prefix: '/buy' })
         const now = new Date();
 
         const tickets = body.map(option => ({
-            wallet_id: params.walletId,
+            wallet_id: walletId,
             ticket_option_id: option.optionId,
             purchased_at: now
         }));
@@ -124,9 +124,6 @@ export default new Elysia({ prefix: '/buy' })
             optionId: t.String(),
             amount: t.Number({ minimum: 1 })
         })),
-        params: t.Object({
-            walletId: t.String()
-        }),
         response: {
             200: t.String(),
             400: t.String(),

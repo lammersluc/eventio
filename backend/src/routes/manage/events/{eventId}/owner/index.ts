@@ -15,7 +15,7 @@ export default new Elysia({ tags: ['Owner'] })
     .use(membersRouter)
     .use(bannerRouter)
 
-    .patch('', async ({ body, params, error }) => {
+    .patch('', async ({ body, params: { eventId }, error }) => {
 
         const data = {
             name: body.name,
@@ -29,7 +29,7 @@ export default new Elysia({ tags: ['Owner'] })
 
         const updated = await prisma.event.update({
             where: {
-                id: params.eventId
+                id: eventId
             },
             data,
             select: {
@@ -50,9 +50,6 @@ export default new Elysia({ tags: ['Owner'] })
             ticketsUserMax: t.Nullable(t.Number()),
             isPrivate: t.Boolean()
         })),
-        params: t.Object({
-            eventId: t.String()
-        }),
         response: {
             200: t.String(),
             500: t.String(),

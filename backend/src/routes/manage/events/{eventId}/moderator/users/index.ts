@@ -4,7 +4,7 @@ import prisma from '@/services/database';
 import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/users' })    
-    .get('', async ({ params, query }) => {        
+    .get('', async ({ params: { eventId }, query }) => {        
         const users = await prisma.user.findMany({
             where: {
                 username: {
@@ -12,7 +12,7 @@ export default new Elysia({ prefix: '/users' })
                 },
                 wallets: {
                     some: {
-                        event_id: params.eventId
+                        event_id: eventId
                     }
                 }
             },
@@ -36,9 +36,6 @@ export default new Elysia({ prefix: '/users' })
             };
         });
     }, {
-        params: t.Object({
-            eventId: t.String()
-        }),
         query: t.Object({
             search: t.String(),
             limit: t.String({ pattern: '^(10|[1-9])$', default: '1' })
@@ -53,12 +50,12 @@ export default new Elysia({ prefix: '/users' })
         }
     })
 
-    .get('/:userId/wallet', async ({ params, error }) => {        
+    .get('/:userId/wallet', async ({ params: { userId, eventId }, error }) => {        
         const wallet = await prisma.wallet.findUnique({
             where: {
                 user_id_event_id: {
-                    user_id: params.userId,
-                    event_id: params.eventId
+                    user_id: userId,
+                    event_id: eventId
                 }
             },
             select: {
@@ -99,8 +96,8 @@ export default new Elysia({ prefix: '/users' })
         };
     }, {
         params: t.Object({
-            eventId: t.String(),
-            userId: t.String()
+            userId: t.String(),
+            eventId: t.String()
         }),
         response: {
             200: t.Object({

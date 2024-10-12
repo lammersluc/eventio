@@ -3,11 +3,11 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/tickets' })
-    .get('', async ({ params }) => {
+    .get('', async ({ params: { dateId } }) => {
                     
         const ticketOptions = await prisma.ticketOption.findMany({
             where: {
-                ticket_date_id: params.dateId
+                ticket_date_id: dateId
             },
             select: {
                 id: true,
@@ -30,9 +30,6 @@ export default new Elysia({ prefix: '/tickets' })
             tickets_sold: option._count.tickets
         }));
     }, {
-        params: t.Object({
-            dateId: t.String()
-        }),
         response: {
             200: t.Array(t.Object({
                 id: t.String(),
@@ -44,11 +41,11 @@ export default new Elysia({ prefix: '/tickets' })
         }
     })
 
-    .put('', async ({ body, params, error, set }) => {
+    .put('', async ({ body, params: { dateId }, error, set }) => {
 
         const created = await prisma.ticketOption.create({
             data: {
-                ticket_date_id: params.dateId,
+                ticket_date_id: dateId,
                 name: body.name,
             }
         });
@@ -58,9 +55,6 @@ export default new Elysia({ prefix: '/tickets' })
         set.status = 201;
         return '';
     }, {
-        params: t.Object({
-            dateId: t.String()
-        }),
         body: t.Object({
             name: t.String()
         }),

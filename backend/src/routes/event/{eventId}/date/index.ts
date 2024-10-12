@@ -3,8 +3,7 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/dates/:dateId' })
-    .get('', async ({ error, params }) => {
-        const dateId = params.dateId;
+    .get('', async ({ error, params: { dateId } }) => {
 
         const date = await prisma.ticketDate.findUnique({
             where: {
@@ -41,13 +40,10 @@ export default new Elysia({ prefix: '/dates/:dateId' })
                 id: option.id,
                 name: option.name,
                 price: option.price,
-                available: option.amount - option._count.tickets
+                available: option.amount ? option.amount - option._count.tickets : null
             }))
         }
     }, {
-        params: t.Object({
-            dateId: t.String()
-        }),
         response: {
             200: t.Object({
                 name: t.String(),
@@ -57,7 +53,7 @@ export default new Elysia({ prefix: '/dates/:dateId' })
                     id: t.String(),
                     name: t.String(),
                     price: t.Number(),
-                    available: t.Number()
+                    available: t.Nullable(t.Number())
                 }))
             }),
             404: t.String()

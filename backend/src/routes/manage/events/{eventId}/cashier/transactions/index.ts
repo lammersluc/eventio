@@ -3,9 +3,8 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/transactions/:transactionId' })
-    .patch('', async ({ params, body, error, store }) => {
+    .patch('', async ({ params: { transactionId }, body, error, store }) => {
         const { eventMember } = store as { eventMember: { id: string } };
-        const transactionId = params.transactionId;
 
         const transaction = await prisma.transaction.findFirst({
             where: {
@@ -61,9 +60,6 @@ export default new Elysia({ prefix: '/transactions/:transactionId' })
 
         return '';
     }, {
-        params: t.Object({
-            transactionId: t.String()
-        }),
         body: t.Object({
             amount: t.Number({ minimum: 1 })
         }),

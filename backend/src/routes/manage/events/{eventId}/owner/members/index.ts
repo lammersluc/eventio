@@ -4,10 +4,10 @@ import prisma from '@/services/database';
 import { getImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/members'})
-    .get('', async ({ params, error }) => {
+    .get('', async ({ params: { eventId }, error }) => {
         const members = await prisma.eventMember.findMany({
             where: {
-                event_id: params.eventId
+                event_id: eventId
             },
             select: {
                 user_id: true,
@@ -34,9 +34,6 @@ export default new Elysia({ prefix: '/members'})
             };
         });
     }, {
-        params: t.Object({
-            eventId: t.String()
-        }),
         response: {
             200: t.Array(t.Object({
                 id: t.String(),
@@ -48,7 +45,7 @@ export default new Elysia({ prefix: '/members'})
         }
     })
 
-    .post('', async ({ body, params, error }) => {        
+    .post('', async ({ body, params: { eventId }, error }) => {        
         const user = await prisma.user.findUnique({
             where: {
                 id: body.userId
@@ -63,7 +60,7 @@ export default new Elysia({ prefix: '/members'})
             where: {
                 user_id_event_id: {
                     user_id: body.userId,
-                    event_id: params.eventId
+                    event_id: eventId
                 }
             }
         });
@@ -88,7 +85,7 @@ export default new Elysia({ prefix: '/members'})
         const created = await prisma.eventMember.create({
             data: {
                 user_id: body.userId,
-                event_id: params.eventId,
+                event_id: eventId,
                 role
             }
         }).catch(() => null);
@@ -101,9 +98,6 @@ export default new Elysia({ prefix: '/members'})
             userId: t.String(),
             role: t.String({ pattern: '/^(owner|manager|moderator|cashier)$/' })
         }),
-        params: t.Object({
-            eventId: t.String()
-        }),
         response: {
             200: t.String(),
             400: t.String(),
@@ -113,12 +107,12 @@ export default new Elysia({ prefix: '/members'})
         }
     })
     
-    .delete('/:userId', async ({ params, error }) => {
+    .delete('/:userId', async ({ params: { userId, eventId }, error }) => {
         const eventMember = await prisma.eventMember.findUnique({
             where: {
                 user_id_event_id: {
-                    user_id: params.userId,
-                    event_id: params.eventId
+                    user_id: userId,
+                    event_id: eventId
                 }
             }
         });
@@ -137,8 +131,8 @@ export default new Elysia({ prefix: '/members'})
         return '';
     }, {
         params: t.Object({
-            eventId: t.String(),
-            userId: t.String()
+            userId: t.String(),
+            eventId: t.String()
         }),
         response: {
             200: t.String(),

@@ -1,14 +1,15 @@
 'use client';
 import React from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Stack, Title, Text, Paper, ActionIcon, Group } from '@mantine/core';
+import { useParams } from 'next/navigation';
+import { Stack, Title, Text, Paper, ActionIcon, Group, Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCirclePlus, IconEdit } from '@tabler/icons-react';
+import { IconCirclePlus, IconEdit, IconTrash } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
 
 import client from '@/lib/client';
 import { InfoPopup } from '@/components/app/management/events/event/infoPopup';
 import { DatePopup } from '@/components/app/management/events/event/datePopup';
+import { DeletePopup } from '@/components/app/management/events/event/deletePopup';
 
 type EventDate = {
     id: string;
@@ -32,19 +33,23 @@ type Event = {
     role: number;
 };
 
+type DeleteType = {
+    type: 'event' | 'date';
+    id: string;
+}
+
 export default function Page() {
     const [event, setEvent] = React.useState<Event>();
 
     const [infoOpened, info] = useDisclosure(false);
-    const [dateOpened, dates] = useDisclosure(false);
+    const [date, setDate] = React.useState<EventDate | null>(null);
+    const [deleteType, setDeleteType] = React.useState<DeleteType | null>(null);
 
     const params = useParams<{ eventId: string; }>();
 
-    const router = useRouter();
-
     React.useEffect(() => {
 
-        if (infoOpened || dateOpened) return;
+        if (infoOpened || date || deleteType) return;
 
         (async () => {
             const result = await client.manage.events({ eventId: params.eventId }).get();
@@ -57,7 +62,7 @@ export default function Page() {
             setEvent(result.data);
         })();
 
-    }, [infoOpened, dateOpened]);
+    }, [infoOpened, date, deleteType]);
 
     return event && (
         <Stack
@@ -131,7 +136,14 @@ export default function Page() {
                         radius='lg'
                         variant='subtle'
                         color='default'
-                        onClick={dates.open}
+                        onClick={() => setDate({
+                            id: '',
+                            name: '',
+                            validFrom: null,
+                            validUntil: null,
+                            amount: null,
+                            sold: 0
+                        })}
                     >
                         <IconCirclePlus />
                     </ActionIcon>
@@ -162,29 +174,65 @@ export default function Page() {
                                         {date.name}
                                     </Title>
 
-                                    <ActionIcon
-                                        size='xl'
-                                        radius='lg'
-                                        variant='subtle'
-                                        color='default'
-                                        onClick={() => router.push('dates/' + date.id)}
+                                    <Group
+                                        gap='xs'
                                     >
-                                        <IconEdit />
-                                    </ActionIcon>
+
+                                        <ActionIcon
+                                            size='xl'
+                                            radius='lg'
+                                            variant='subtle'
+                                            color='default'
+                                            onClick={() => setDate(date)}
+                                        >
+                                            <IconEdit />
+                                        </ActionIcon>
+
+                                        <ActionIcon
+                                            size='xl'
+                                            radius='lg'
+                                            variant='subtle'
+                                            color='red'
+                                            onClick={() => setDeleteType({
+                                                type: 'date',
+                                                id: date.id
+                                            })
+                                            }
+                                        >
+                                            <IconTrash />
+                                        </ActionIcon>
+
+                                    </Group>
 
                                 </Group>
 
-                                <Text>
-                                    {date.amount} tickets
-                                </Text>
+                                <Group
+                                    justify='space-between'
+                                    gap='xl'
+                                >
+                                    <Box>
+                                        {date.validFrom ? new Date(date.validFrom).toLocaleString() : 'No valid from'}
+                                    </Box>
+                                    -
+                                    <Box>
+                                        {date.validUntil ? new Date(date.validUntil).toLocaleString() : 'No valid until'}
+                                    </Box>
+                                </Group>
 
-                                <Text>
-                                    {date.validFrom ? new Date(date.validFrom).toLocaleString() : 'No valid from'} - {date.validUntil ? new Date(date.validUntil).toLocaleString() : 'No valid until'}
-                                </Text>
+                                <Group>
+                                    <Text>
+                                        {date.sold} {!date.amount && 'sold'}
+                                    </Text>
 
-                                <Text>
-                                    {date.sold} sold
-                                </Text>
+                                    {date.amount !== null &&
+                                        <>
+                                            /
+                                            <Text>
+                                                {date.amount} sold
+                                            </Text>
+                                        </>
+                                    }
+                                </Group>
 
                             </Stack>
                         </Paper>
@@ -203,9 +251,24 @@ export default function Page() {
             />
 
             <DatePopup
-                opened={dateOpened}
-                onClose={dates.close}
+                opened={date !== null}
+                onClose={() => setDate(null)}
                 eventId={params.eventId}
+                date={date || {
+                    id: '',
+                    name: '',
+                    validFrom: null,
+                    validUntil: null,
+                    amount: null,
+                    sold: 0
+                }}
+            />
+
+            <DeletePopup
+                opened={deleteType !== null}
+                onClose={() => setDeleteType(null)}
+                eventId={params.eventId}
+                dateId={deleteType?.id || null}
             />
 
         </Stack >

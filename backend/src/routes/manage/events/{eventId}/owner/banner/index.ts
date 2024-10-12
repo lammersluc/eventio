@@ -4,8 +4,7 @@ import prisma from '@/services/database';
 import { createImage, deleteImage } from '@/services/image';
 
 export default new Elysia({ prefix: '/banner', detail: { description: 'base64 384x256' } })
-    .post('/banner', async ({ body, params, error }) => {
-        const eventId = params.eventId;
+    .post('/banner', async ({ body, params: { eventId }, error }) => {
 
         if (!body.banner) {
 
@@ -50,9 +49,6 @@ export default new Elysia({ prefix: '/banner', detail: { description: 'base64 38
     }, {
         body: t.Object({
             banner: t.Nullable(t.File()),
-        }),
-        params: t.Object({
-            eventId: t.String()
         }),
         response: {
             200: t.String(),

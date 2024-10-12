@@ -3,11 +3,11 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/wallets/:walletId' })
-    .patch('/coins', async ({ body, params, error }) => {
+    .patch('/coins', async ({ body, params: { walletId }, error }) => {
 
         const updated = await prisma.wallet.update({
             where: {
-                id: params.walletId
+                id: walletId
             },
             data: {
                 coins: body.amount
@@ -20,9 +20,6 @@ export default new Elysia({ prefix: '/wallets/:walletId' })
     }, {
         body: t.Object({
             amount: t.Number({ minimum: 0 })
-        }),
-        params: t.Object({
-            walletId: t.String()
         }),
         response: {
             200: t.String(),

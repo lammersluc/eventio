@@ -7,7 +7,7 @@ import optionsRouter from './options';
 export default new Elysia({ prefix: '/:dateId' })
     .use(optionsRouter)
    
-    .patch('', async ({ body, params, error }) => {
+    .patch('', async ({ body, params: { dateId }, error }) => {
 
         const data = {
             name: body.name,
@@ -18,7 +18,7 @@ export default new Elysia({ prefix: '/:dateId' })
             
         const updated = await prisma.ticketDate.update({
             where: {
-                id: params.dateId
+                id: dateId
             },
             data
         });
@@ -27,14 +27,11 @@ export default new Elysia({ prefix: '/:dateId' })
 
         return '';
     }, {
-        params: t.Object({
-            dateId: t.String()
-        }),
         body: t.Partial(t.Object({
             name: t.String(),
             validFrom: t.Nullable(t.Date()),
             validUntil: t.Nullable(t.Date()),
-            amount: t.Number()
+            amount: t.Nullable(t.Number())
         })),
         response: {
             200: t.String(),
@@ -42,30 +39,39 @@ export default new Elysia({ prefix: '/:dateId' })
         }
     })
 
-    .delete('', async ({ params, error }) => {
-            
-        const deleted = await prisma.ticketDate.delete({
+    .delete('', async ({ params: { dateId }, error }) => {
+
+        const tickets = await prisma.ticketOption.findFirst({
             where: {
-                id: params.dateId,
-                ticket_options: {
-                    every: {
-                        tickets: {
-                            none: {}
-                        }
-                    }
-                }
+                ticket_date_id: dateId
             }
         });
 
-        if (!deleted) return error(409, '');
+        if (tickets) return error(409, '');
+            
+        const deleted = await prisma.$transaction([
+            prisma.ticketDate.delete({
+                where: {
+                    id: dateId
+                },
+                select: {
+                    id: true
+                }
+            }),
+            prisma.ticketOption.deleteMany({
+                where: {
+                    ticket_date_id: dateId
+                }
+            })
+        ]);
+
+        if (!deleted) return error(500, '');
 
         return '';
     }, {
-        params: t.Object({
-            dateId: t.String()
-        }),
         response: {
             200: t.String(),
-            409: t.String()
+            409: t.String(),
+            500: t.String()
         }
     })

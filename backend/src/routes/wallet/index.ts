@@ -8,12 +8,12 @@ import coinsRouter from './coins';
 
 export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
     .guard({
-        async beforeHandle({ params, error, store }) {
+        async beforeHandle({ params: { walletId }, error, store }) {
             const { id } = store as { id: string };
 
             const wallet = await prisma.wallet.findUnique({
                 where: {
-                    id: params.walletId,
+                    id: walletId,
                     user_id: id
                 }
             });
@@ -24,18 +24,19 @@ export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
             walletId: t.String()
         }),
         response: {
+            200: t.Any(),
             403: t.String()
         }
     }, app => app
         .use(ticketsRouter)
         .use(coinsRouter)
 
-        .get('/qr', async ({ error, params, store }) => {
+        .get('/qr', async ({ error, params: { walletId }, store }) => {
             const { id } = store as { id: string };
 
             const wallet = await prisma.wallet.findUnique({
                 where: {
-                    id: params.walletId,
+                    id: walletId,
                     user_id: id
                 }
             });
@@ -44,17 +45,13 @@ export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
 
             return generateData(wallet.id, 'wallet');
         }, {
-            params: t.Object({
-                walletId: t.String()
-            }),
             response: {
                 200: t.String(),
                 404: t.String()
             }
         })
 
-        .get('/transactions', async ({ error, params, query }) => {
-            const walletId = params.walletId;
+        .get('/transactions', async ({ params: { walletId }, query }) => {
 
             const transactions = await prisma.transaction.findMany({
                 where: {
@@ -82,9 +79,6 @@ export default new Elysia({ prefix: '/wallets/:walletId', tags: ['Wallet'] })
                 createdAt: transaction.created_at
             }));
         }, {
-            params: t.Object({
-                walletId: t.String()
-            }),
             query: t.Object({
                 page: t.String({ pattern: '^([1-9]\d*)$' }),
                 size: t.String({ pattern: '^([1-9]|1[0-5])$' })

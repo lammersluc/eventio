@@ -29,7 +29,7 @@ export default new Elysia({ prefix: '/tickets' })
         }
     })
 
-    .patch('/:ticketId', async ({ body, params, error }) => {
+    .patch('/:ticketId', async ({ body, params: { ticketId }, error }) => {
 
         const data = {
             ticket_option_id: body.optionId,
@@ -38,7 +38,7 @@ export default new Elysia({ prefix: '/tickets' })
 
         const updated = await prisma.ticket.update({
             where: {
-                id: params.ticketId
+                id: ticketId
             },
             data
         });
@@ -51,20 +51,17 @@ export default new Elysia({ prefix: '/tickets' })
             optionId: t.String(),
             scannedAt: t.Nullable(t.Date())
         })),
-        params: t.Object({
-            ticketId: t.String()
-        }),
         response: {
             200: t.String(),
             404: t.String()
         }
     })
 
-    .delete('/:ticketId', async ({ params, error }) => {
+    .delete('/:ticketId', async ({ params: { ticketId }, error }) => {
             
         const deleted = await prisma.ticket.delete({
             where: {
-                id: params.ticketId
+                id: ticketId
             }
         });
 
@@ -72,9 +69,6 @@ export default new Elysia({ prefix: '/tickets' })
 
         return '';
     }, {
-        params: t.Object({
-            ticketId: t.String()
-        }),
         response: {
             200: t.String(),
             404: t.String()

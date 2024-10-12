@@ -9,18 +9,25 @@ export default new Elysia({ tags: ['Creator'] })
         if (eventMember.role < 5) return error(403, '');
     })
     
-    .delete('', async ({ params }) => {
-        const eventId = params.eventId;
+    .delete('', async ({ params: { eventId } }) => {
 
-        const wallets = await prisma.wallet.findFirst({
+        const event = await prisma.event.findFirst({
             where: {
-                id: eventId
+                id: eventId,
+                wallets: {
+                    some: {
+                        OR: [
+                            { coins: { not: 0 } },
+                            { tickets: { none: {} } }
+                        ]
+                    }
+                }
             }
         });
 
-        if (wallets) return error(409, '');
+        if (event) return error(409, '');
 
-        const result = await prisma.$transaction([
+        const deleted = await prisma.$transaction([
             prisma.ticketOption.deleteMany({
                 where: {
                     ticket_date: {
@@ -45,13 +52,10 @@ export default new Elysia({ tags: ['Creator'] })
             })
         ]).catch(() => null);
 
-        if (!result) return error(500, '');
+        if (!deleted) return error(500, '');
 
         return '';
     }, {
-        params: t.Object({
-            eventId: t.String()
-        }),
         response: {
             200: t.String(),
             409: t.String(),
