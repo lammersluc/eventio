@@ -2,7 +2,7 @@
 import React from 'react';
 import { Center, Group, Image, Paper } from '@mantine/core'
 
-import { Login, Register } from '@/components/app/auth';
+import { Login, Register } from '@/components/auth';
 
 export default function Page() {
     const toggleVisible = () => {

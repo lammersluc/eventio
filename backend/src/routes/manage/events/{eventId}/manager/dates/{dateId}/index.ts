@@ -6,6 +6,72 @@ import optionsRouter from './options';
 
 export default new Elysia({ prefix: '/:dateId' })
     .use(optionsRouter)
+
+    .get('', async ({ params: { dateId }, error }) => {
+                    
+        const date = await prisma.ticketDate.findUnique({
+            where: {
+                id: dateId
+            },
+            select: {
+                id: true,
+                name: true,
+                amount: true,
+                valid_from: true,
+                valid_until: true,
+                ticket_options: {
+                    select: {
+                        id: true,
+                        name: true,
+                        price: true,
+                        amount: true,
+                        _count: {
+                            select: {
+                                tickets: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!date) return error(404, '');
+
+        return {
+            id: date.id,
+            name: date.name,
+            amount: date.amount,
+            sold: date.ticket_options.reduce((acc, option) => acc + option._count.tickets, 0),
+            validFrom: date.valid_from,
+            validUntil: date.valid_until,
+            options: date.ticket_options.map(option => ({
+                id: option.id,
+                name: option.name,
+                price: option.price,
+                amount: option.amount,
+                sold: option._count.tickets
+            }))
+        };
+    }, {
+        response: {
+            200: t.Object({
+                id: t.String(),
+                name: t.String(),
+                amount: t.Nullable(t.Number()),
+                sold: t.Number(),
+                validFrom: t.Nullable(t.Date()),
+                validUntil: t.Nullable(t.Date()),
+                options: t.Array(t.Object({
+                    id: t.String(),
+                    name: t.String(),
+                    price: t.Number(),
+                    amount: t.Nullable(t.Number()),
+                    sold: t.Number()
+                }))
+            }),
+            404: t.String()
+        }
+    })
    
     .patch('', async ({ body, params: { dateId }, error }) => {
 

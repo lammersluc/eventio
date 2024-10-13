@@ -9,13 +9,11 @@ import toast from 'react-hot-toast';
 export const DeletePopup = ({
     opened,
     onClose,
-    eventId,
-    dateId
+    eventId
 }: {
     opened: boolean;
     onClose: () => void;
     eventId: string;
-    dateId: string | null;
 }) => {
 
     const router = useRouter();
@@ -23,25 +21,6 @@ export const DeletePopup = ({
     const handleDelete = async () => {
 
         const promise = new Promise(async (resolve, reject) => {
-
-            if (dateId) {
-                const result = await client.manage.events({ eventId }).dates({ dateId }).delete();
-
-                if (result.error) {
-
-                    if (result.error.status === 409) {
-                        reject('There are tickets sold for this date');
-                        return;
-                    }
-
-                    reject('Failed to delete date');
-                    return;
-                }
-
-                resolve('');
-                onClose();
-                return;
-            }
 
             const result = await client.manage.events({ eventId }).index.delete();
 
@@ -57,12 +36,12 @@ export const DeletePopup = ({
 
             resolve('');
             onClose();
-            router.push('../');
+            router.push('.');
         });
 
         toast.promise(promise, {
-            loading: `Deleting ${dateId ? 'date' : 'event'}...`,
-            success: `${dateId ? 'Date' : 'Event'} deleted`,
+            loading: 'Deleting event...',
+            success: 'Event deleted',
             error: (error) => error
         });
     }
@@ -82,7 +61,7 @@ export const DeletePopup = ({
             >
 
                 <Text>
-                    Are you sure you want to delete this {dateId ? 'date' : 'event'}?
+                    Are you sure you want to delete this event?
                 </Text>
 
 

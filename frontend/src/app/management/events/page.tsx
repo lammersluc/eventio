@@ -5,8 +5,8 @@ import { Button, Group, Stack, Title } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks';
 import toast from 'react-hot-toast';
 
-import { EventCard } from '@/components/app/management/events/eventCard';
-import { EventPopup } from '@/components/app/management/events/eventPopup';
+import { EventCard } from '@/components/management/events/eventCard';
+import { EventPopup } from '@/components/management/events/eventPopup';
 
 import client from '@/lib/client';
 
@@ -41,9 +41,7 @@ export default function Page() {
     }, [opened]);
 
     return (
-        <Stack
-            p='xl'
-        >
+        <Stack>
 
             <Group
                 justify='space-between'

@@ -7,69 +7,32 @@ import { IconDeviceFloppy } from '@tabler/icons-react';
 import client from '@/lib/client';
 import toast from 'react-hot-toast';
 
-type EventDate = {
-    id: string;
-    name: string;
-    validFrom: Date | null;
-    validUntil: Date | null;
-    amount: number | null;
-}
-
 export const DatePopup = ({
     opened,
     onClose,
-    eventId,
-    date
+    eventId
 }: {
     opened: boolean;
     onClose: () => void;
     eventId: string;
-    date: EventDate;
 }) => {
 
     const form = useForm({
         validate: {
             name: (value) => value === '' ? 'Name is required' : null
-        },
-        initialValues: {
-            name: date.name,
-            validFrom: date.validFrom,
-            validUntil: date.validUntil,
-            amount: date.amount
         }
     });
-
-    React.useEffect(() => {
-        if (!opened) return;
-        
-        form.setValues({
-            name: date.name,
-            validFrom: date.validFrom ? new Date(date.validFrom) : null,
-            validUntil: date.validUntil ? new Date(date.validUntil) : null,
-            amount: date.amount
-        });
-    }, [date]);
 
     const handleSubmit = async (values: typeof form.values) => {
 
         const promise = new Promise(async (resolve, reject) => {
 
-            const result = date.id === '' ?
-                await client.manage.events({ eventId }).dates.put({
-                    name: values.name,
-                    validFrom: values.validFrom || undefined,
-                    validUntil: values.validUntil || undefined,
-                    amount: values.amount || undefined
-                }) :
-                await client.manage.events({ eventId }).dates({ dateId: date.id }).patch({
-                    name: values.name,
-                    validFrom: values.validFrom,
-                    validUntil: values.validUntil,
-                    amount: values.amount
+            const result = await client.manage.events({ eventId }).dates.put({
+                    name: values.name
                 });
 
             if (result.error) {
-                reject('Failed to save date');
+                reject('Failed to create date');
                 return;
             }
 
@@ -78,8 +41,8 @@ export const DatePopup = ({
         });
 
         toast.promise(promise, {
-            loading: 'Saving date...',
-            success: 'Date saved',
+            loading: 'Creating date...',
+            success: 'Date created',
             error: (error) => error
         });
     }
@@ -103,29 +66,6 @@ export const DatePopup = ({
                         label='Name'
                         key={form.key('name')}
                         {...form.getInputProps('name')}
-                    />
-
-                    <DateTimePicker
-                        label='Valid from'
-                        key={form.key('validFrom')}
-                        {...form.getInputProps('validFrom')}
-                        style={{ flexGrow: 1 }}
-                        clearable
-                    />
-
-                    <DateTimePicker
-                        label='Valid until'
-                        key={form.key('validUntil')}
-                        {...form.getInputProps('validUntil')}
-                        style={{ flexGrow: 1 }}
-                        clearable
-                    />
-
-                    <TextInput
-                        label='Amount'
-                        key={form.key('amount')}
-                        type='number'
-                        {...form.getInputProps('amount')}
                     />
 
                     <Group

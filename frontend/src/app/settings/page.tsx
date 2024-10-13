@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
 import { Center, Tabs } from '@mantine/core'
-import { Account } from '@/components/app/settings/account';
-import { Security } from '@/components/app/settings/security';
+import { Account } from '@/components/settings/account';
+import { Security } from '@/components/settings/security';
 
 const tabs = [
     {

@@ -5,17 +5,17 @@ import dynamic from 'next/dynamic';
 import { Flex, Group, Paper, useComputedColorScheme, useMantineTheme } from '@mantine/core'
 import { Toaster } from 'react-hot-toast';
 
-import { Navbar } from '@/components/app/navbar';
+import { Navbar } from '@/components/navbar';
 
 export default dynamic(() => Promise.resolve(({
     children
 }: {
     children: React.ReactNode
-}) => AppLayout({ children })), {
+}) => App({ children })), {
     ssr: false
 });
 
-function AppLayout({
+function App({
     children,
 }: {
     children: React.ReactNode;

@@ -4,7 +4,7 @@ import { Group, Stack, Text, Image, ActionIcon } from '@mantine/core';
 import { IconWallet, IconChevronRight, IconHome, IconSearch, IconAdjustments, IconSettings } from '@tabler/icons-react';
 
 import { BarItem, type BarProp } from './barItem';
-import { ProfileItem } from './profileItem';
+import { MenuItem } from './menuItem';
 
 export const Navbar = () => {
     const [menuOpened, setMenuOpened] = React.useState(false);
@@ -140,7 +140,7 @@ export const Navbar = () => {
                         )
                     }
 
-                    <ProfileItem />
+                    <MenuItem />
 
                 </Stack>
 

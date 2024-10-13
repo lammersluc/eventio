@@ -1,17 +1,17 @@
 'use client';
 import React from 'react';
-import { useParams } from 'next/navigation';
-import { Stack, Title, Text, Paper, ActionIcon, Group, Box } from '@mantine/core';
+import { useRouter, useParams } from 'next/navigation';
+import { Stack, Title, Text, Paper, ActionIcon, Group, Box, Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconCirclePlus, IconEdit, IconTrash } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
 
 import client from '@/lib/client';
-import { InfoPopup } from '@/components/app/management/events/event/infoPopup';
-import { DatePopup } from '@/components/app/management/events/event/datePopup';
-import { DeletePopup } from '@/components/app/management/events/event/deletePopup';
+import { InfoPopup } from '@/components/management/events/event/infoPopup';
+import { DatePopup } from '@/components/management/events/event/datePopup';
+import { DeletePopup } from '@/components/management/events/event/deletePopup';
 
-type EventDate = {
+type TicketDate = {
     id: string;
     name: string;
     validFrom: Date | null;
@@ -29,27 +29,23 @@ type Event = {
     endAt: Date | null;
     ticketsUserMax: number | null;
     isPrivate: boolean;
-    dates: EventDate[];
+    dates: TicketDate[];
     role: number;
 };
-
-type DeleteType = {
-    type: 'event' | 'date';
-    id: string;
-}
 
 export default function Page() {
     const [event, setEvent] = React.useState<Event>();
 
-    const [infoOpened, info] = useDisclosure(false);
-    const [date, setDate] = React.useState<EventDate | null>(null);
-    const [deleteType, setDeleteType] = React.useState<DeleteType | null>(null);
+    const [infoOpened, infoPopup] = useDisclosure(false);
+    const [dateOpened, datePopup] = useDisclosure(false);
+    const [deleteOpened, deletePopup] = useDisclosure(false);
 
     const params = useParams<{ eventId: string; }>();
+    const router = useRouter();
 
     React.useEffect(() => {
 
-        if (infoOpened || date || deleteType) return;
+        if (infoOpened || dateOpened) return;
 
         (async () => {
             const result = await client.manage.events({ eventId: params.eventId }).get();
@@ -62,64 +58,87 @@ export default function Page() {
             setEvent(result.data);
         })();
 
-    }, [infoOpened, date, deleteType]);
+    }, [infoOpened, dateOpened]);
 
     return event && (
-        <Stack
-            p='xl'
-            w='fit-content'
-        >
+        <Stack>
 
-            <Paper
-                p='lg'
-                shadow='lg'
-                radius='lg'
+            <Group
+                justify='space-between'
+                align='start'
             >
-                <Stack>
 
-                    <Group
-                        justify='space-between'
-                        gap='xl'
-                    >
+                <Paper
+                    p='lg'
+                    shadow='lg'
+                    radius='lg'
+                    w='fit-content'
+                >
+                    <Stack>
 
-                        <Title>
-                            {event.name}
-                        </Title>
-
-                        <ActionIcon
-                            size='xl'
-                            radius='lg'
-                            variant='subtle'
-                            color='default'
-                            onClick={info.open}
+                        <Group
+                            justify='space-between'
+                            gap='xl'
                         >
-                            <IconEdit />
-                        </ActionIcon>
 
-                    </Group>
+                            <Title>
+                                {event.name}
+                            </Title>
 
-                    <Text>
-                        {event.description || 'No description'}
-                    </Text>
+                            <ActionIcon
+                                size='xl'
+                                radius='lg'
+                                variant='subtle'
+                                color='default'
+                                onClick={infoPopup.open}
+                            >
+                                <IconEdit />
+                            </ActionIcon>
 
-                    <Text>
-                        {event.location || 'No location'}
-                    </Text>
+                        </Group>
 
-                    <Text>
-                        {event.startAt ? new Date(event.startAt).toLocaleString() : 'No start date'} - {event.endAt ? new Date(event.endAt).toLocaleString() : 'No end date'}
-                    </Text>
+                        <Text>
+                            {event.description || 'No description'}
+                        </Text>
 
-                    <Text>
-                        {event.ticketsUserMax || 'No tickets limit'}
-                    </Text>
+                        <Text>
+                            {event.location || 'No location'}
+                        </Text>
 
-                    <Text>
-                        {event.isPrivate ? 'Private' : 'Public'}
-                    </Text>
+                        <Group
+                            justify='space-between'
+                            gap='xl'
+                        >
+                            <Text>
+                                {event.startAt ? new Date(event.startAt).toLocaleString() : 'No start date'}
+                            </Text>
+                            -
+                            <Text>
+                                {event.endAt ? new Date(event.endAt).toLocaleString() : 'No end date'}
+                            </Text>
+                        </Group>
 
-                </Stack>
-            </Paper>
+                        <Text>
+                            {event.ticketsUserMax || 'No tickets limit'}
+                        </Text>
+
+                        <Text>
+                            {event.isPrivate ? 'Private' : 'Public'}
+                        </Text>
+
+                    </Stack>
+                </Paper>
+
+                <Button
+                    radius='md'
+                    color='red'
+                    leftSection={<IconTrash />}
+                    onClick={deletePopup.open}
+                >
+                    Delete event
+                </Button>
+
+            </Group>
 
             <Stack>
 
@@ -136,14 +155,7 @@ export default function Page() {
                         radius='lg'
                         variant='subtle'
                         color='default'
-                        onClick={() => setDate({
-                            id: '',
-                            name: '',
-                            validFrom: null,
-                            validUntil: null,
-                            amount: null,
-                            sold: 0
-                        })}
+                        onClick={datePopup.open}
                     >
                         <IconCirclePlus />
                     </ActionIcon>
@@ -183,12 +195,12 @@ export default function Page() {
                                             radius='lg'
                                             variant='subtle'
                                             color='default'
-                                            onClick={() => setDate(date)}
+                                            onClick={() => router.push(`${params.eventId}/${date.id}`)}
                                         >
                                             <IconEdit />
                                         </ActionIcon>
 
-                                        <ActionIcon
+                                        {/* <ActionIcon
                                             size='xl'
                                             radius='lg'
                                             variant='subtle'
@@ -200,7 +212,7 @@ export default function Page() {
                                             }
                                         >
                                             <IconTrash />
-                                        </ActionIcon>
+                                        </ActionIcon> */}
 
                                     </Group>
 
@@ -210,13 +222,13 @@ export default function Page() {
                                     justify='space-between'
                                     gap='xl'
                                 >
-                                    <Box>
+                                    <Text>
                                         {date.validFrom ? new Date(date.validFrom).toLocaleString() : 'No valid from'}
-                                    </Box>
+                                    </Text>
                                     -
-                                    <Box>
+                                    <Text>
                                         {date.validUntil ? new Date(date.validUntil).toLocaleString() : 'No valid until'}
-                                    </Box>
+                                    </Text>
                                 </Group>
 
                                 <Group>
@@ -243,7 +255,7 @@ export default function Page() {
 
             <InfoPopup
                 opened={infoOpened}
-                onClose={info.close}
+                onClose={infoPopup.close}
                 info={{
                     ...event,
                     id: params.eventId
@@ -251,24 +263,15 @@ export default function Page() {
             />
 
             <DatePopup
-                opened={date !== null}
-                onClose={() => setDate(null)}
+                opened={dateOpened}
+                onClose={datePopup.close}
                 eventId={params.eventId}
-                date={date || {
-                    id: '',
-                    name: '',
-                    validFrom: null,
-                    validUntil: null,
-                    amount: null,
-                    sold: 0
-                }}
             />
 
             <DeletePopup
-                opened={deleteType !== null}
-                onClose={() => setDeleteType(null)}
+                opened={deleteOpened}
+                onClose={deletePopup.close}
                 eventId={params.eventId}
-                dateId={deleteType?.id || null}
             />
 
         </Stack >

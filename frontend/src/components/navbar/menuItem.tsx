@@ -1,19 +1,12 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Group, Menu, Avatar, SegmentedControl, useMantineColorScheme, isMantineColorScheme, Button } from '@mantine/core';
+import { Box, Group, Menu, SegmentedControl, useMantineColorScheme, isMantineColorScheme, Button } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconCategory, IconMoon, IconSettings, IconSun } from '@tabler/icons-react';
 
 import { BarItem } from './barItem';
-import client from '@/lib/client';
 
-type Account = {
-    username: string;
-    email: string;
-    avatar: string;
-};
-
-export const ProfileItem = () => {
+export const MenuItem = () => {
     const { colorScheme, setColorScheme } = useMantineColorScheme({
         keepTransitions: true
     });
@@ -21,18 +14,8 @@ export const ProfileItem = () => {
         key: 'auth'
     });
     const [opened, menu] = useDisclosure(false);
-    const [account, setAccount] = React.useState<Account>();
 
     const router = useRouter();
-
-    React.useEffect(() => {
-        (async () => {
-            const result = await client.account.get();
-
-            if (!result.error)
-                setAccount(result.data);
-        })();
-    }, []);
 
     const colorSchemeOptions = [
         {
