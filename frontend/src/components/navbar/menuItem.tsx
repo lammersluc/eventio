@@ -112,7 +112,7 @@ export const MenuItem = () => {
                 <Menu.Item
                     onClick={() => {
                         removeAuth();
-                        router.push('/app/auth');
+                        router.push('/auth');
                     }}
                 >
                     Logout

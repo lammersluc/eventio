@@ -38,7 +38,7 @@ export const Account = () => {
 
             if (result.error) {
                 localStorage.removeItem('auth');
-                router.push('/app/auth');
+                router.push('/auth');
                 return;
             }
 

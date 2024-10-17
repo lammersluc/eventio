@@ -167,13 +167,12 @@ export default function Page() {
                 >
                     {event.dates.map(date => (
                         <Paper
+                            key={date.id}
                             p='lg'
                             shadow='lg'
                             radius='lg'
                         >
-                            <Stack
-                                key={date.id}
-                            >
+                            <Stack>
 
                                 <Group
                                     justify='space-between'
@@ -186,35 +185,15 @@ export default function Page() {
                                         {date.name}
                                     </Title>
 
-                                    <Group
-                                        gap='xs'
+                                    <ActionIcon
+                                        size='xl'
+                                        radius='lg'
+                                        variant='subtle'
+                                        color='default'
+                                        onClick={() => router.push(`${params.eventId}/${date.id}`)}
                                     >
-
-                                        <ActionIcon
-                                            size='xl'
-                                            radius='lg'
-                                            variant='subtle'
-                                            color='default'
-                                            onClick={() => router.push(`${params.eventId}/${date.id}`)}
-                                        >
-                                            <IconEdit />
-                                        </ActionIcon>
-
-                                        {/* <ActionIcon
-                                            size='xl'
-                                            radius='lg'
-                                            variant='subtle'
-                                            color='red'
-                                            onClick={() => setDeleteType({
-                                                type: 'date',
-                                                id: date.id
-                                            })
-                                            }
-                                        >
-                                            <IconTrash />
-                                        </ActionIcon> */}
-
-                                    </Group>
+                                        <IconEdit />
+                                    </ActionIcon>
 
                                 </Group>
 
@@ -231,20 +210,9 @@ export default function Page() {
                                     </Text>
                                 </Group>
 
-                                <Group>
-                                    <Text>
-                                        {date.sold} {!date.amount && 'sold'}
-                                    </Text>
-
-                                    {date.amount !== null &&
-                                        <>
-                                            /
-                                            <Text>
-                                                {date.amount} sold
-                                            </Text>
-                                        </>
-                                    }
-                                </Group>
+                                <Text>
+                                    {date.sold} {date.amount !== null && `/ ${date.amount}`} tickets sold
+                                </Text>
 
                             </Stack>
                         </Paper>

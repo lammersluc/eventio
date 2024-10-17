@@ -1,39 +1,27 @@
 import React from 'react';
-import { Button, Group, Modal, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
+import { Modal, Stack, Button, Group, TextInput } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { toast } from 'react-hot-toast';
-
-import client from '@/lib/client';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 
-type Info = {
-    eventId: string;
-    id: string;
-    name: string;
-    validFrom: Date | null;
-    validUntil: Date | null;
-    amount: number | null;
-}
+import client from '@/lib/client';
+import toast from 'react-hot-toast';
 
-export const InfoPopup = ({
+export const OptionPopup = ({
     opened,
     onClose,
-    info
+    eventId,
+    dateId
 }: {
     opened: boolean;
     onClose: () => void;
-    info: Info;
+    eventId: string;
+    dateId: string;
 }) => {
+
     const form = useForm({
         validate: {
             name: (value) => value === '' ? 'Name is required' : null
-        },
-        initialValues: {
-            name: info.name,
-            validFrom: info.validFrom ? new Date(info.validFrom) : null,
-            validUntil: info.validUntil ? new Date(info.validUntil) : null,
-            amount: info.amount
         }
     });
 
@@ -41,34 +29,22 @@ export const InfoPopup = ({
 
         const promise = new Promise(async (resolve, reject) => {
 
-            const dirty = form.getDirty();
-
-            const changedValues = Object.keys(dirty).reduce((acc: any, key) => {
-                const typedKey = key as keyof typeof values;
-
-                if (dirty[typedKey])
-                    acc[typedKey] = values[typedKey];
-
-                return acc;
-            }, {});
-
-            const result = await client.manage
-                .events({ eventId: info.eventId })
-                .dates({ dateId: info.id })
-                .patch(changedValues);
+            const result = await client.manage.events({ eventId }).dates({ dateId }).options.put({
+                    name: values.name
+                });
 
             if (result.error) {
-                reject('Failed to update date');
+                reject('Failed to create option');
                 return;
             }
 
-            onClose();
             resolve('');
+            onClose();
         });
 
         toast.promise(promise, {
-            loading: 'Updating date...',
-            success: 'Date updated',
+            loading: 'Creating option...',
+            success: 'Option created',
             error: (error) => error
         });
     }
@@ -92,28 +68,6 @@ export const InfoPopup = ({
                         label='Name'
                         key={form.key('name')}
                         {...form.getInputProps('name')}
-                    />
-
-                    <DateTimePicker
-                        label='Valid From'
-                        key={form.key('validFrom')}
-                        {...form.getInputProps('validFrom')}
-                        style={{ flexGrow: 1 }}
-                        clearable
-                    />
-
-                    <DateTimePicker
-                        label='Valid Until'
-                        key={form.key('validUntil')}
-                        {...form.getInputProps('validUntil')}
-                        style={{ flexGrow: 1 }}
-                        clearable
-                    />
-
-                    <NumberInput
-                        label='Amount'
-                        key={form.key('amount')}
-                        {...form.getInputProps('amount')}
                     />
 
                     <Group

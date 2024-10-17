@@ -28,6 +28,19 @@ export default new Elysia({ tags: ['Creator'] })
         if (event) return error(409, '');
 
         const deleted = await prisma.$transaction([
+            prisma.transaction.deleteMany({
+                where: {
+                    OR: [
+                        { sender: { event_id: eventId }},
+                        { receiver: { event_id: eventId }}
+                    ]
+                }
+            }),
+            prisma.wallet.deleteMany({
+                where: {
+                    event_id: eventId
+                }
+            }),
             prisma.ticketOption.deleteMany({
                 where: {
                     ticket_date: {

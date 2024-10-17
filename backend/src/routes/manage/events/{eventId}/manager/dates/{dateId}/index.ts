@@ -38,7 +38,6 @@ export default new Elysia({ prefix: '/:dateId' })
         if (!date) return error(404, '');
 
         return {
-            id: date.id,
             name: date.name,
             amount: date.amount,
             sold: date.ticket_options.reduce((acc, option) => acc + option._count.tickets, 0),
@@ -55,7 +54,6 @@ export default new Elysia({ prefix: '/:dateId' })
     }, {
         response: {
             200: t.Object({
-                id: t.String(),
                 name: t.String(),
                 amount: t.Nullable(t.Number()),
                 sold: t.Number(),
@@ -109,24 +107,24 @@ export default new Elysia({ prefix: '/:dateId' })
 
         const tickets = await prisma.ticketOption.findFirst({
             where: {
-                ticket_date_id: dateId
+                ticket_date_id: dateId,
+                tickets: {
+                    some: {}
+                }
             }
         });
 
         if (tickets) return error(409, '');
             
         const deleted = await prisma.$transaction([
-            prisma.ticketDate.delete({
-                where: {
-                    id: dateId
-                },
-                select: {
-                    id: true
-                }
-            }),
             prisma.ticketOption.deleteMany({
                 where: {
                     ticket_date_id: dateId
+                }
+            }),
+            prisma.ticketDate.delete({
+                where: {
+                    id: dateId
                 }
             })
         ]);

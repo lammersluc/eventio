@@ -29,7 +29,7 @@ export default new Elysia({ prefix: '/:eventId' })
                 id: true,
                 role: true
             }
-        })
+        });
 
         if (!eventMember) return error(403, '');
 
