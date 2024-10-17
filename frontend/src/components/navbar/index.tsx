@@ -11,22 +11,24 @@ export const Navbar = () => {
 
     const router = useRouter();
 
+    const baseUrl = '';
+
     const topBar: BarProp[] = [
         'divider',
         {
             name: 'Home',
             icon: IconHome,
-            clickEvent: () => router.push('/app')
+            clickEvent: () => router.push(`${baseUrl}/`)
         },
         {
             name: 'Search',
             icon: IconSearch,
-            clickEvent: () => router.push('/app/search')
+            clickEvent: () => router.push(`${baseUrl}/search`)
         },
         {
             name: 'Wallet',
             icon: IconWallet,
-            clickEvent: () => router.push('/app/wallet')
+            clickEvent: () => router.push(`${baseUrl}/wallet`)
         }
     ];
 
@@ -34,13 +36,13 @@ export const Navbar = () => {
         {
             name: 'Management',
             icon: IconAdjustments,
-            clickEvent: () => router.push('/app/management/events')
+            clickEvent: () => router.push(`${baseUrl}/management/events`)
         },
         'divider',
         {
             name: 'Settings',
             icon: IconSettings,
-            clickEvent: () => router.push('/app/settings')
+            clickEvent: () => router.push(`${baseUrl}/settings`)
         }
     ];
 
