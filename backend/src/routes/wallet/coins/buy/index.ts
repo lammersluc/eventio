@@ -3,10 +3,10 @@ import { Elysia, t } from 'elysia';
 import prisma from '@/services/database';
 
 export default new Elysia({ prefix: '/buy' })
-    .post('', async ({ body, params, error }) => {
+    .post('', async ({ body, params: { walletId }, error }) => {
         const wallet = await prisma.wallet.findUnique({
             where: {
-                id: params.walletId
+                id: walletId
             },
             select: {
                 id: true
@@ -38,9 +38,6 @@ export default new Elysia({ prefix: '/buy' })
         body: t.Object({
             eventId: t.Number(),
             amount: t.Number({ minimum: 1 }),
-        }),
-        params: t.Object({
-            walletId: t.String()
         }),
         response: {
             200: t.String(),

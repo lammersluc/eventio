@@ -9,8 +9,7 @@ import dateRouter from './date';
 export default new Elysia({ prefix: '/:eventId' })
     .use(dateRouter)
 
-    .get('', async ({ error, params }) => {
-        const eventId = params.eventId;
+    .get('', async ({ error, params: { eventId } }) => {
 
         const event = await prisma.event.findUnique({
             where: {
@@ -60,13 +59,10 @@ export default new Elysia({ prefix: '/:eventId' })
                 name: date.name,
                 validFrom: date.valid_from,
                 validUntil: date.valid_until,
-                available: date.amount - date.ticket_options.reduce((sold, option) => sold + option._count.tickets, 0)
+                available: date.amount ? date.amount - date.ticket_options.reduce((sold, option) => sold + option._count.tickets, 0) : null
             }))
         }
     }, {
-        params: t.Object({
-            eventId: t.String()
-        }),
         response: {
             200: t.Object({
                 name: t.String(),
@@ -80,21 +76,21 @@ export default new Elysia({ prefix: '/:eventId' })
                     name: t.String(),
                     validFrom: t.Nullable(t.Date()),
                     validUntil: t.Nullable(t.Date()),
-                    available: t.Number()
+                    available: t.Nullable(t.Number())
                 }))
             }),
             404: t.String()
         }
     })
 
-    .get('/wallet', async ({ error, params, store }) => {
+    .get('/wallet', async ({ error, params: { eventId }, store }) => {
         const { id } = store as { id: string };
 
         const wallet = await prisma.wallet.findUnique({
             where: {
                 user_id_event_id: {
                     user_id: id,
-                    event_id: params.eventId
+                    event_id: eventId
                 },
                 event: {
                     is_private: false
@@ -139,9 +135,6 @@ export default new Elysia({ prefix: '/:eventId' })
             }))
         };
     }, {
-        params: t.Object({
-            eventId: t.String()
-        }),
         response: {
             200: t.Object({
                 id: t.String(),

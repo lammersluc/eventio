@@ -5,7 +5,9 @@ import "./globals.css";
 import { MantineProvider } from '@mantine/core';
 
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import '@mantine/dropzone/styles.css';
+import App from "./app";
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -24,7 +26,9 @@ export default function RootLayout({
       <body className={nunito.className}>
         <MantineProvider defaultColorScheme='light'>
           <div style={{ width: '100dvw', height: '100dvh' }}>
-            {children}
+            <App>
+              {children}
+            </App>
           </div>
         </MantineProvider>
       </body>

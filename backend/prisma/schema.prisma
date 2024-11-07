@@ -82,7 +82,7 @@ model TicketOption {
   ticket_date_id String
   name           String
   price          Float      @default(0)
-  amount         Int        @default(-1)
+  amount         Int?
   tickets        Ticket[]
 }
 
@@ -93,14 +93,14 @@ model TicketDate {
   name           String
   valid_from     DateTime?
   valid_until    DateTime?
-  amount         Int            @default(-1)
+  amount         Int?
   ticket_options TicketOption[]
 }
 
 model Event {
   id                String        @id @default(uuid())
   name              String
-  description       String        @default("")
+  description       String?
   banner_hash       String?
   location          String?
   start_at          DateTime?
