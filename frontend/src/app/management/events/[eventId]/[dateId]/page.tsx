@@ -30,6 +30,7 @@ type TicketDate = {
 
 export default function Page() {
     const [date, setDate] = React.useState<TicketDate | null>(null);
+    const [option, setOption] = React.useState<TicketOption | null>(null);
 
     const [infoOpened, infoPopup] = useDisclosure(false);
     const [optionOpened, optionPopup] = useDisclosure(false);
@@ -140,7 +141,7 @@ export default function Page() {
                         radius='lg'
                         variant='subtle'
                         color='default'
-                        onClick={optionPopup.open}
+                        onClick={() => {setOption(null); optionPopup.open();}}
                     >
                         <IconCirclePlus />
                     </ActionIcon>
@@ -175,7 +176,7 @@ export default function Page() {
                                         radius='lg'
                                         variant='subtle'
                                         color='default'
-                                        onClick={() => {}}
+                                        onClick={() => {setOption(option); optionPopup.open();}}
                                     >
                                         <IconEdit />
                                     </ActionIcon>
@@ -212,6 +213,7 @@ export default function Page() {
                 onClose={optionPopup.close}
                 eventId={params.eventId}
                 dateId={params.dateId}
+                option={option}
             />
 
             <DeletePopup

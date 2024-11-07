@@ -19,7 +19,7 @@ export default new Elysia({ prefix: '/options/:optionId' })
         body: t.Partial(t.Object({
             name: t.String(),
             price: t.Number(),
-            amount: t.Number()
+            amount: t.Nullable(t.Number())
         })),
         response: {
             200: t.String(),

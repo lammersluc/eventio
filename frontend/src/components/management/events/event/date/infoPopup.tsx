@@ -111,7 +111,7 @@ export const InfoPopup = ({
                     />
 
                     <NumberInput
-                        label='Amount'
+                        label='Tickets Available'
                         key={form.key('amount')}
                         {...form.getInputProps('amount')}
                     />

@@ -40,7 +40,7 @@ export const Register = ({
 
                 await new Promise((resolve) => setTimeout(resolve, 1000));
 
-                router.push('/app');
+                router.push('/');
                 return;
             }
 
