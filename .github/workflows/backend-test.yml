@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Set up Bun
-      - uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
         working-directory: ./backend
